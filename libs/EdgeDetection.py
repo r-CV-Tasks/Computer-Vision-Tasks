@@ -64,3 +64,13 @@ def roberts_edge(image: np.ndarray):
     mag = apply_kernel(image, horizontal, vertical)
 
     return mag
+
+def canny_edge(image: np.ndarray):
+    """
+    Apply Canny Operator to detect edges
+    :param image: Image to detect edges in
+    :return: edges image
+    """
+
+    return image
+

@@ -69,7 +69,7 @@ def apply_edge_mask(data: np.array, type: str, shape: int = 3):
 
     elif type == "canny":
         # TODO: Add Canny Mask Algorithm on self.imgByte
-        pass
+        edged_image = EdgeDetection.canny_edge(data)
 
     return edged_image
 

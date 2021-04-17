@@ -40,32 +40,31 @@ class ImageProcessor(m.Ui_MainWindow):
         self.tabWidget_process.currentChanged.connect(self.tab_changed)
 
         # Images Lists
-        self.inputImages = [self.img1_input, self.img2_input, self.imgA_input, self.imgB_input, self.img4_input]
+        self.inputImages = [self.img1_input, self.img2_input, self.imgA_input, self.imgB_input, self.img4_input, self.img5_input]
         self.filtersImages = [self.img1_noisy, self.img1_filtered, self.img1_edged]
         self.histoImages = [self.img2_input_histo, self.img2_output, self.img2_output_histo]
 
         self.imageWidgets = [self.img1_input, self.img1_noisy, self.img1_filtered, self.img1_edged,
                              self.img2_input, self.img2_output,
                              self.imgA_input, self.imgB_input, self.imgX_output,
-                             self.img4_input, self.img4_output]
+                             self.img4_input, self.img4_output,
+                             self.img5_input, self.img5_output]
 
         # No Noisy Image Array yet
         self.currentNoiseImage = None
 
-        self.imagesData = {1:..., 2:..., 3:..., 4:..., 5:...}
-        self.heights = [..., ..., ..., ..., ...]
-        self.weights = [..., ..., ..., ..., ...]
+        self.imagesData = {1:..., 2:..., 3:..., 4:..., 5:..., 6:...}
+        self.heights = [..., ..., ..., ..., ..., ...]
+        self.weights = [..., ..., ..., ..., ..., ...]
 
         # Images Labels and Sizes
         self.imagesLabels = {1: [self.label_imgName_1], 2: [self.label_imgName_2],
                              3: [self.label_imgName_3], 4: [self.label_imgName_4],
-                             5: [self.label_imgName_5]}
+                             5: [self.label_imgName_5], 6: [self.label_imgName_6]}
 
         self.imagesSizes = {1: [self.label_imgSize_1], 2: [self.label_imgSize_2],
                             3: [self.label_imgSize_3], 4: [self.label_imgSize_4],
-                            5: [self.label_imgSize_5]}
-
-        self.hough_type = "lines"
+                            5: [self.label_imgSize_5], 6: [self.label_imgSize_6]}
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
@@ -85,6 +84,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_load_3.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_4.clicked.connect(lambda: self.load_file(self.tab_index + 1))
         self.btn_load_5.clicked.connect(lambda: self.load_file(self.tab_index + 1))
+        self.btn_load_6.clicked.connect(lambda: self.load_file(self.tab_index + 1))
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(self.tab_index, 0))
@@ -97,6 +97,11 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Setup Hough Button
         self.btn_hough.clicked.connect(self.hough_transform)
+
+        # Setup Active Contour Buttons
+        self.btn_apply_contour.clicked.connect(self.active_contour)
+        self.btn_clear_anchors.clicked.connect(self.clear_anchors)
+        self.btn_reset_contour.clicked.connect(self.reset_contour)
 
         self.setup_images_view()
 
@@ -208,6 +213,14 @@ class ImageProcessor(m.Ui_MainWindow):
             self.hough_settings_layout.setEnabled(True)
             self.btn_hough.setEnabled(True)
 
+        # in Active Contour Tab
+        elif tab_id == 5:
+            self.contour_settings_layout.setEnabled(True)
+            self.gradiant_settings_layout.setEnabled(True)
+            self.btn_clear_anchors.setEnabled(True)
+            self.btn_apply_contour.setEnabled(True)
+            self.btn_reset_contour.setEnabled(True)
+
     def clear_results(self, tab_id):
         # Reset previous outputs
         if tab_id == 0:
@@ -223,6 +236,9 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif tab_id == 4:
             self.img4_output.clear()
+
+        elif tab_id == 5:
+            self.img5_output.clear()
 
     def combo_box_changed(self, tab_id, combo_id):
         """
@@ -381,6 +397,26 @@ class ImageProcessor(m.Ui_MainWindow):
         circle_radius = self.text_radius.text()
         self.hough_image = apply_hough(data=self.imagesData[4], type=self.hough_type, radius=circle_radius)
         self.display_image(widget=self.img4_output, data=self.hough_image)
+
+    def active_contour(self):
+        """
+
+        :return:
+        """
+
+        # Get Contour Parameters
+        alpha = self.text_alpha.text()
+        beta = self.text_beta.text()
+        gamma = self.text_gamma.text()
+
+        self.contour_image = apply_active_contour(data=self.imagesData[5], alpha=alpha, beta=beta, gamma=gamma)
+        self.display_image(widget=self.img5_output, data=self.contour_image)
+
+    def clear_anchors(self):
+        print("Clearing anchors")
+
+    def reset_contour(self):
+        print("resetting contour")
 
     def slider_changed(self, indx, val):
         """

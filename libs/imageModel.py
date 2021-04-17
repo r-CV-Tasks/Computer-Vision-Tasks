@@ -5,6 +5,7 @@ from libs import Histogram
 from libs import FFilters
 from libs import EdgeDetection
 from libs import Hough
+from libs import Contour
 
 def add_noise(data: np.array, type: str, snr: float = 0.5, sigma: int = 64) -> np.ndarray:
     """
@@ -158,4 +159,19 @@ def apply_hough(data: np.ndarray, type: str = "lines", radius: int = 50):
         output_image = Hough.hough_circles()
         pass
 
+    return data
+
+def apply_active_contour(data: np.ndarray, alpha: int, beta: int, gamma:int):
+    """
+
+    :param data:
+    :param alpha:
+    :param beta:
+    :param gamma:
+    :return:
+    """
+
+    # TODO Apply Active Contour algorithm
+    print("Applying Active Contour Transform")
+    output_image = Contour.active_contour(data=data, alpha=alpha, beta=beta, gamma=gamma)
     return data

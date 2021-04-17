@@ -4,6 +4,7 @@ from libs import Noise, LowPass
 from libs import Histogram
 from libs import FFilters
 from libs import EdgeDetection
+from libs import Hough
 
 def add_noise(data: np.array, type: str, snr: float = 0.5, sigma: int = 64) -> np.ndarray:
     """
@@ -135,3 +136,26 @@ def mix_images(data1: np.ndarray, data2: np.ndarray, hpf_size: int = 15, lpf_siz
     image2_dft = FFilters.LowPass(data2, lpf_size)
 
     return image1_dft + image2_dft
+
+def apply_hough(data: np.ndarray, type: str = "lines", radius: int = 50):
+    """
+
+    :param data:
+    :param type:
+    :param radius:
+    :return:
+    """
+
+    if type == "lines":
+        # TODO Apply hough line detection algorithm
+        print("Applying Hough Line Transform")
+        output_image = Hough.hough_lines()
+        pass
+
+    if type == "circles":
+        # TODO Apply hough circle detection algorithm
+        print("Applying Hough Circle Transform")
+        output_image = Hough.hough_circles()
+        pass
+
+    return data

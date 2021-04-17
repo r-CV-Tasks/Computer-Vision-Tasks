@@ -40,27 +40,32 @@ class ImageProcessor(m.Ui_MainWindow):
         self.tabWidget_process.currentChanged.connect(self.tab_changed)
 
         # Images Lists
-        self.inputImages = [self.img1_input, self.img2_input, self.imgA_input, self.imgB_input]
+        self.inputImages = [self.img1_input, self.img2_input, self.imgA_input, self.imgB_input, self.img4_input]
         self.filtersImages = [self.img1_noisy, self.img1_filtered, self.img1_edged]
         self.histoImages = [self.img2_input_histo, self.img2_output, self.img2_output_histo]
 
         self.imageWidgets = [self.img1_input, self.img1_noisy, self.img1_filtered, self.img1_edged,
                              self.img2_input, self.img2_output,
-                             self.imgA_input, self.imgB_input, self.imgX_output]
+                             self.imgA_input, self.imgB_input, self.imgX_output,
+                             self.img4_input, self.img4_output]
 
         # No Noisy Image Array yet
         self.currentNoiseImage = None
 
-        self.imagesData = {1: ..., 2: ..., 3: ..., 4: ...}
-        self.heights = [..., ..., ..., ...]
-        self.weights = [..., ..., ..., ...]
+        self.imagesData = {1:..., 2:..., 3:..., 4:..., 5:...}
+        self.heights = [..., ..., ..., ..., ...]
+        self.weights = [..., ..., ..., ..., ...]
 
         # Images Labels and Sizes
         self.imagesLabels = {1: [self.label_imgName_1], 2: [self.label_imgName_2],
-                             3: [self.label_imgName_3], 4: [self.label_imgName_4]}
+                             3: [self.label_imgName_3], 4: [self.label_imgName_4],
+                             5: [self.label_imgName_5]}
 
         self.imagesSizes = {1: [self.label_imgSize_1], 2: [self.label_imgSize_2],
-                            3: [self.label_imgSize_3], 4: [self.label_imgSize_4]}
+                            3: [self.label_imgSize_3], 4: [self.label_imgSize_4],
+                            5: [self.label_imgSize_5]}
+
+        self.hough_type = "lines"
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
@@ -79,6 +84,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_load_2.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_3.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_4.clicked.connect(lambda: self.load_file(self.tab_index + 1))
+        self.btn_load_5.clicked.connect(lambda: self.load_file(self.tab_index + 1))
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(self.tab_index, 0))
@@ -88,6 +94,9 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Setup Hybrid Button
         self.btn_hybrid.clicked.connect(self.hybrid_image)
+
+        # Setup Hough Button
+        self.btn_hough.clicked.connect(self.hough_transform)
 
         self.setup_images_view()
 
@@ -115,7 +124,7 @@ class ImageProcessor(m.Ui_MainWindow):
     def load_file(self, img_id):
         """
         Load the File from User
-        :param img_id: 0, 1, 2 or 3
+        :param img_id: 0, 1, 2, 3 or 4
         :return:
         """
 
@@ -194,6 +203,11 @@ class ImageProcessor(m.Ui_MainWindow):
             if type(self.imagesData[3]) != type(...):
                 self.btn_hybrid.setEnabled(True)
 
+        # in Hough Tab
+        elif tab_id == 4:
+            self.hough_settings_layout.setEnabled(True)
+            self.btn_hough.setEnabled(True)
+
     def clear_results(self, tab_id):
         # Reset previous outputs
         if tab_id == 0:
@@ -206,6 +220,9 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif tab_id == 2:
             self.imgX_output.clear()
+
+        elif tab_id == 4:
+            self.img4_output.clear()
 
     def combo_box_changed(self, tab_id, combo_id):
         """
@@ -348,6 +365,22 @@ class ImageProcessor(m.Ui_MainWindow):
         """
         self.hybrid_image = mix_images(data1=self.imagesData[2], data2=self.imagesData[3], hpf_size=20, lpf_size=15)
         self.display_image(widget=self.imgX_output, data=self.hybrid_image)
+
+    def hough_transform(self):
+        """
+
+        :return:
+        """
+
+        # choose hough transform type
+        if (self.checkBox_lines.isChecked()):
+            self.hough_type = "lines"
+        elif (self.checkBox_circles.isChecked()):
+            self.hough_type = "circles"
+
+        circle_radius = self.text_radius.text()
+        self.hough_image = apply_hough(data=self.imagesData[4], type=self.hough_type, radius=circle_radius)
+        self.display_image(widget=self.img4_output, data=self.hough_image)
 
     def slider_changed(self, indx, val):
         """

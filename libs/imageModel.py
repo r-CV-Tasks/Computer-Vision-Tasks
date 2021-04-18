@@ -1,11 +1,12 @@
-import cv2
 import numpy as np
-from libs import Noise, LowPass
-from libs import Histogram
-from libs import FFilters
-from libs import EdgeDetection
-from libs import Hough
+
 from libs import Contour
+from libs import EdgeDetection
+from libs import FFilters
+from libs import Histogram
+from libs import Hough
+from libs import Noise, LowPass
+
 
 def add_noise(data: np.array, type: str, snr: float = 0.5, sigma: int = 64) -> np.ndarray:
     """
@@ -68,7 +69,6 @@ def apply_edge_mask(data: np.array, type: str, shape: int = 3):
         edged_image = EdgeDetection.prewitt_edge(data)
 
     elif type == "canny":
-        # TODO: Add Canny Mask Algorithm on self.imgByte
         edged_image = EdgeDetection.canny_edge(data)
 
     return edged_image
@@ -138,6 +138,7 @@ def mix_images(data1: np.ndarray, data2: np.ndarray, hpf_size: int = 15, lpf_siz
 
     return image1_dft + image2_dft
 
+
 def apply_hough(data: np.ndarray, type: str = "lines", radius: int = 50):
     """
 
@@ -161,7 +162,8 @@ def apply_hough(data: np.ndarray, type: str = "lines", radius: int = 50):
 
     return data
 
-def apply_active_contour(data: np.ndarray, alpha: int, beta: int, gamma:int):
+
+def apply_active_contour(data: np.ndarray, alpha: int, beta: int, gamma: int):
     """
 
     :param data:

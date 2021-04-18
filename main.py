@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 from threading import Thread
 from UI import mainGUI as m
+import cv2
 from libs.helpers import map_ranges
 from libs.imageModel import *
 

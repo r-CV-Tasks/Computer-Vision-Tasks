@@ -1,13 +1,14 @@
 # Importing Packages
 import sys
+import cv2
+import numpy as np
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
-from threading import Thread
+
 from UI import mainGUI as m
-import cv2
-from libs.helpers import map_ranges
-from libs.imageModel import *
+from libs import EdgeDetection, Noise, LowPass, Histogram, FreqFilters, Hough, Contour
 
 # importing module
 import logging
@@ -249,6 +250,10 @@ class ImageProcessor(m.Ui_MainWindow):
         :return:
         """
 
+        global edged_image
+        global filtered_image
+        global output_hist_image
+
         # If 1st tab is selected
         if tab_id == 0:
             # Get Values from combo box and sliders
@@ -256,31 +261,31 @@ class ImageProcessor(m.Ui_MainWindow):
 
             # Adjust Sliders Values
             noise_snr = self.snr_slider_1.value() / 10
-            noise_sigma = self.sigma_slider_1.value()  # This value from 0 -> 4
-            noise_sigma = np.round(map_ranges(noise_sigma, 0, 4, 0, 255))  # This value from 0 -> 255
+            noise_sigma = self.sigma_slider_1.value()                        # This value from 0 -> 4 so we need to map to another range
+            noise_sigma = np.round(np.interp(noise_sigma, [0, 4], [0, 255])) # This value from 0 -> 255
 
             filter_sigma = self.sigma_slider_2.value()
-            filter_sigma = np.round(map_ranges(filter_sigma, 0, 4, 0, 255))
+            filter_sigma = np.round(np.interp(filter_sigma, [0, 4], [0, 255]))
 
             mask_size = self.mask_size_1.value()
-            mask_size = int(np.round(map_ranges(mask_size, 1, 4, 3, 9)))
+            mask_size = int(np.round(np.interp(mask_size, [1, 4], [3, 9])))
 
             # Noise Options
             if combo_id == 0:
                 self.snr_slider_1.setEnabled(True)
+
                 if selected_component == "uniform noise":
-                    self.currentNoiseImage = add_noise(data=self.imagesData[0], type="uniform", snr=noise_snr)
-                    self.display_image(data=self.currentNoiseImage, widget=self.filtersImages[combo_id])
+                    self.currentNoiseImage = Noise.uniform_noise(source=self.imagesData[0], snr=noise_snr)
 
                 elif selected_component == "gaussian noise":
                     self.sigma_slider_1.setEnabled(True)
-                    self.currentNoiseImage = add_noise(data=self.imagesData[0], type="gaussian", snr=noise_snr,
-                                                       sigma=noise_sigma)
-                    self.display_image(data=self.currentNoiseImage, widget=self.filtersImages[combo_id])
+                    self.currentNoiseImage = Noise.gaussian_noise(source=self.imagesData[0], sigma=noise_sigma,
+                                                                  snr=noise_snr)
 
                 elif selected_component == "salt & pepper noise":
-                    self.currentNoiseImage = add_noise(data=self.imagesData[0], type="salt & pepper", snr=noise_snr)
-                    self.display_image(data=self.currentNoiseImage, widget=self.filtersImages[combo_id])
+                    self.currentNoiseImage = Noise.salt_pepper_noise(source=self.imagesData[0], snr=noise_snr)
+
+                self.display_image(data=self.currentNoiseImage, widget=self.filtersImages[combo_id])
 
             # Filters Options
             if combo_id == 1:
@@ -292,38 +297,38 @@ class ImageProcessor(m.Ui_MainWindow):
                                       button=QMessageBox.Ok, icon=QMessageBox.Warning)
 
                 elif selected_component == "average filter":
-                    filtered_image = apply_filter(data=self.currentNoiseImage, type="average", shape=mask_size)
-                    self.display_image(data=filtered_image, widget=self.filtersImages[combo_id])
+                    filtered_image = LowPass.average_filter(source=self.currentNoiseImage, shape=mask_size)
 
                 elif selected_component == "gaussian filter":
                     self.sigma_slider_2.setEnabled(True)
-                    filtered_image = apply_filter(data=self.currentNoiseImage, type="gaussian", shape=mask_size,
-                                                  sigma=filter_sigma)
-                    self.display_image(data=filtered_image, widget=self.filtersImages[combo_id])
+                    filtered_image = LowPass.gaussian_filter(source=self.currentNoiseImage, shape=mask_size,
+                                                             sigma=filter_sigma)
 
                 elif selected_component == "median filter":
-                    filtered_image = apply_filter(data=self.currentNoiseImage, type="median", shape=mask_size)
+                    filtered_image = LowPass.median_filter(source=self.currentNoiseImage, shape=mask_size)
+
+                try:
                     self.display_image(data=filtered_image, widget=self.filtersImages[combo_id])
+                except:
+                    pass
 
             # Edge Detection Options
             if combo_id == 2:
                 if selected_component == "sobel mask":
-                    edged_image = apply_edge_mask(data=self.imagesData[0], type="sobel")
-                    self.display_image(data=edged_image, widget=self.filtersImages[combo_id])
+                    edged_image = EdgeDetection.sobel_edge(image=self.imagesData[0])
 
                 elif selected_component == "roberts mask":
-                    edged_image = apply_edge_mask(data=self.imagesData[0], type="roberts")
-                    self.display_image(data=edged_image, widget=self.filtersImages[combo_id])
+                    edged_image = EdgeDetection.roberts_edge(image=self.imagesData[0])
 
                 elif selected_component == "prewitt mask":
-                    edged_image = apply_edge_mask(data=self.imagesData[0], type="prewitt")
-                    self.display_image(data=edged_image, widget=self.filtersImages[combo_id])
+                    edged_image = EdgeDetection.prewitt_edge(image=self.imagesData[0])
 
                 elif selected_component == "canny mask":
-                    edged_image = apply_edge_mask(data=self.imagesData[0], type="canny")
-                    self.display_image(data=edged_image, widget=self.filtersImages[combo_id])
+                    edged_image = EdgeDetection.canny_edge(image=self.imagesData[0])
 
-            logger.info(f"Viewing {selected_component} Component Of Image{combo_id + 1}")
+                self.display_image(data=edged_image, widget=self.filtersImages[combo_id])
+
+            logger.info(f"Viewing {selected_component} Of Image{combo_id + 1}")
 
         # If 2nd tab is selected
         elif tab_id == 1:
@@ -333,45 +338,55 @@ class ImageProcessor(m.Ui_MainWindow):
             if combo_id == 3:
                 if selected_component == "original histogram":
                     self.img2_input_histo.clear()
-                    self.draw_rgb_histogram(data=self.imagesData[1], widget=self.img2_input_histo)
+                    self.img2_output_histo.clear()
+                    output_hist_image = self.imagesData[1]
+                    self.draw_rgb_histogram(data=self.imagesData[1], widget=self.img2_input_histo,
+                                            title="Original Histogram", label="Pixels")
+                    self.draw_rgb_histogram(data=self.imagesData[1], widget=self.img2_output_histo,
+                                            title="Original Histogram", label="Pixels")
 
                 if selected_component == "equalized histogram":
                     self.img2_output_histo.clear()
-                    histo, bins = get_histogram(data=self.imagesData[1], type="equalized", bins_num=255)
-                    self.draw_rgb_histogram(data=histo, widget=self.img2_output_histo)
-                    self.display_image(data=histo, widget=self.img2_output)
+                    output_hist_image, bins = Histogram.equalize_histogram(data=self.imagesData[1], bins_num=255)
+                    self.draw_rgb_histogram(data=output_hist_image, widget=self.img2_output_histo,
+                                            title="Equalized Histogram", label="Pixels")
 
                 elif selected_component == "normalized histogram":
                     self.img2_output_histo.clear()
-                    normalized_image, histo, bins = get_histogram(data=self.imagesData[1], type="normalized", bins_num=255)
-                    self.draw_rgb_histogram(data=normalized_image, widget=self.img2_output_histo)
-                    self.display_image(data=normalized_image, widget=self.img2_output)
+                    normalized_image, hist, bins = Histogram.normalize_histogram(data=self.imagesData[1], bins_num=255)
+                    output_hist_image = normalized_image
+                    self.draw_rgb_histogram(data=output_hist_image, widget=self.img2_output_histo,
+                                            title="Normalized Histogram", label="Pixels")
 
                 elif selected_component == "local thresholding":
                     self.img2_output_histo.clear()
-                    local_threshold = thresholding(data=self.imagesData[1], type="local", threshold=128, divs=4)
-                    histo, bins = get_histogram(data=local_threshold, type="original", bins_num=2)
-                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=histo, width=0.6, brush='r',
+                    local_threshold = Histogram.local_threshold(data=self.imagesData[1], divs=4)
+                    hist, bins = Histogram.histogram(data=local_threshold, bins_num=2)
+                    output_hist_image = local_threshold
+                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Local Histogram", label="Pixels")
-
-                    self.display_image(data=local_threshold, widget=self.img2_output)
 
                 elif selected_component == "global thresholding":
                     self.img2_output_histo.clear()
-                    global_threshold = thresholding(data=self.imagesData[1], type="global", threshold=128)
-                    histo, bins = get_histogram(data=global_threshold, type="original", bins_num=2)
-                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=histo, width=0.6, brush='r',
+                    global_threshold = Histogram.global_threshold(data=self.imagesData[1], threshold=128)
+                    hist, bins = Histogram.histogram(data=global_threshold, bins_num=2)
+                    output_hist_image = global_threshold
+                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Global Histogram", label="Pixels")
-
-                    self.display_image(data=global_threshold, widget=self.img2_output)
 
                 elif selected_component == "transform to gray":
                     self.img2_output_histo.clear()
-                    gray_image = rgb_to_gray(data=self.imagesData[1])
-                    self.display_image(data=gray_image, widget=self.img2_output)
-                    histo, bins = get_histogram(data=gray_image, type="original", bins_num=255)
-                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=histo, width=0.6, brush='r',
+                    gray_image = cv2.cvtColor(self.imagesData[1], cv2.COLOR_RGB2GRAY)
+                    hist, bins = Histogram.histogram(data=gray_image, bins_num=255)
+                    output_hist_image = gray_image
+                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Gray Histogram", label="Pixels")
+
+                try:
+                    self.display_image(data=output_hist_image, widget=self.img2_output)
+                except:
+                    pass
+
 
             logger.info(f"Viewing {selected_component} Component Of Image{combo_id + 1}")
 
@@ -380,7 +395,10 @@ class ImageProcessor(m.Ui_MainWindow):
 
         :return:
         """
-        self.hybrid_image = mix_images(data1=self.imagesData[2], data2=self.imagesData[3], hpf_size=20, lpf_size=15)
+        image1_dft = FreqFilters.high_pass_filter(self.imagesData[2], size=20)
+        image2_dft = FreqFilters.low_pass_filter(self.imagesData[3], size=15)
+
+        self.hybrid_image = image1_dft + image2_dft
         self.display_image(widget=self.imgX_output, data=self.hybrid_image)
 
     def hough_transform(self):
@@ -389,14 +407,17 @@ class ImageProcessor(m.Ui_MainWindow):
         :return:
         """
 
+        circle_radius = self.text_radius.text()
+
         # choose hough transform type
         if (self.checkBox_lines.isChecked()):
-            self.hough_type = "lines"
+            self.hough_image = Hough.hough_lines(source=self.imagesData[4])
         elif (self.checkBox_circles.isChecked()):
-            self.hough_type = "circles"
 
-        circle_radius = self.text_radius.text()
-        self.hough_image = apply_hough(data=self.imagesData[4], type=self.hough_type, radius=circle_radius)
+            self.hough_image = Hough.hough_circles(source=self.imagesData[4], radius=circle_radius)
+        elif (self.checkBox_lines.isChecked() & self.checkBox_circles.isChecked()):
+            self.hough_image = Hough.hough_lines_and_circles(source=self.imagesData[4], radius=circle_radius)
+
         self.display_image(widget=self.img4_output, data=self.hough_image)
 
     def active_contour(self):
@@ -410,7 +431,7 @@ class ImageProcessor(m.Ui_MainWindow):
         beta = self.text_beta.text()
         gamma = self.text_gamma.text()
 
-        self.contour_image = apply_active_contour(data=self.imagesData[5], alpha=alpha, beta=beta, gamma=gamma)
+        self.contour_image = Contour.active_contour(source=self.imagesData[5], alpha=alpha, beta=beta, gamma=gamma)
         self.display_image(widget=self.img5_output, data=self.contour_image)
 
     def clear_anchors(self):
@@ -427,8 +448,6 @@ class ImageProcessor(m.Ui_MainWindow):
         :param val: int
         :return: none
         """
-        print(f"Slider {indx} With Value {val}")
-        # self.sliderValuesClicked[indx] = val / 10
         if indx == 0 or indx == 1:
             self.combo_box_changed(tab_id=self.tab_index, combo_id=0)
 
@@ -476,7 +495,7 @@ class ImageProcessor(m.Ui_MainWindow):
         vb.setAutoVisible(y=1.0)
         vb.enableAutoRange(axis='y', enable=True)
 
-    def draw_rgb_histogram(self, data: np.ndarray, widget):
+    def draw_rgb_histogram(self, data: np.ndarray, widget, title:str = "title", label:str = "label"):
         """
 
         :param data:
@@ -487,11 +506,15 @@ class ImageProcessor(m.Ui_MainWindow):
         pens = [pg.mkPen(color=(255, 0, 0)), pg.mkPen(color=(0, 255, 0)),
                 pg.mkPen(color=(0, 0, 255))]
 
+        widget.plotItem.setTitle(title)
+        widget.plotItem.showGrid(True, True, alpha=0.8)
+        widget.plotItem.setLabel("bottom", text=label)
+
         for i in range(data.shape[2]):
-            y, x = get_histogram(data=data[:, :, i], type="original", bins_num=255)
+            hist, bins = Histogram.histogram(data=data[:, :, i], bins_num=255)
 
             # setting pen=(i,3) automatically creates three different-colored pens
-            widget.plot(x, y[:-1], pen=pens[i])
+            widget.plot(bins, hist[:-1], pen=pens[i])
 
     def draw_gray_histogram(self, data: np.ndarray, widget, bins_num):
         """
@@ -501,8 +524,8 @@ class ImageProcessor(m.Ui_MainWindow):
         :param bins_num:
         :return:
         """
-        y, x = get_histogram(data=data, type="original", bins_num=bins_num)
-        widget.plot(x, y)
+        hist, bins = Histogram.histogram(data=data, bins_num=bins_num)
+        widget.plot(bins, hist)
 
     @staticmethod
     def show_message(header, message, button, icon):

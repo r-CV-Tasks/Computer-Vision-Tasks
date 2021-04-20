@@ -2,12 +2,11 @@
 #
 # Frequency Domain Filters
 #
-
+import cv2
 import numpy as np
-from imageModel import rgb_to_gray
 
 
-def SquareZeroPad(source: np.ndarray, size_x: int, size_y: int) -> np.ndarray:
+def square_zero_pad(source: np.ndarray, size_x: int, size_y: int) -> np.ndarray:
     """
         Pad Image/Array to Desired Output shape
     :param source: Input Array/Image
@@ -27,7 +26,7 @@ def SquareZeroPad(source: np.ndarray, size_x: int, size_y: int) -> np.ndarray:
     return np.pad(src, ((out_x, out_xx), (out_y, out_yy)), constant_values=0)
 
 
-def __FFilter(source: np.ndarray, kernel: np.ndarray) -> np.ndarray:
+def frequency_filter(source: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     """
         Application of a Filter in frequency domain
     :param source: Source Image
@@ -37,7 +36,7 @@ def __FFilter(source: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     src = np.copy(source)
 
     # Covert Image to gray scale
-    src = rgb_to_gray(src)
+    src = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
     # Convert Image to Frequency Domain
     # and decentralize the output
@@ -51,7 +50,7 @@ def __FFilter(source: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     return np.abs(out)
 
 
-def HighPass(source: np.ndarray, size: int) -> np.ndarray:
+def high_pass_filter(source: np.ndarray, size: int) -> np.ndarray:
     """
         Frequency Domain High Pass Filter
     :param source: Source Image
@@ -60,15 +59,15 @@ def HighPass(source: np.ndarray, size: int) -> np.ndarray:
     :return: Filtered Image
     """
     # Create a kernel with ones in the middle for high frequencies
-    kernel = SquareZeroPad(np.ones((size, size)), source.shape[0], source.shape[1])
+    kernel = square_zero_pad(np.ones((size, size)), source.shape[0], source.shape[1])
 
     # Apply Kernel
-    out = __FFilter(source, kernel)
+    out = frequency_filter(source, kernel)
 
     return out
 
 
-def LowPass(source: np.ndarray, size: int) -> np.ndarray:
+def low_pass_filter(source: np.ndarray, size: int) -> np.ndarray:
     """
             Frequency Domain Low Pass Filter
     :param source: Source Image
@@ -77,9 +76,9 @@ def LowPass(source: np.ndarray, size: int) -> np.ndarray:
     :return: Filtered Image
     """
     # Create Kernel with ones on the edges for low frequencies
-    kernel = 1 - SquareZeroPad(np.ones((size, size)), source.shape[0], source.shape[1])
+    kernel = 1 - square_zero_pad(np.ones((size, size)), source.shape[0], source.shape[1])
 
     # Apply Kernel
-    out = __FFilter(source, kernel)
+    out = frequency_filter(source, kernel)
 
     return out

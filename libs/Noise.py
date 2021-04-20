@@ -20,7 +20,7 @@ def clip(source: np.ndarray, high: [int, float], low: [int, float]) -> np.ndarra
     return out
 
 
-def UniformNoise(source: np.ndarray, snr: float) -> np.ndarray:
+def uniform_noise(source: np.ndarray, snr: float) -> np.ndarray:
     """
         Implementation of Uniform/Quantization Noise Filter
 
@@ -40,7 +40,7 @@ def UniformNoise(source: np.ndarray, snr: float) -> np.ndarray:
     return out.astype(int)
 
 
-def GaussianNoise(source: np.ndarray, sigma: [int, float], snr: float) -> np.ndarray:
+def gaussian_noise(source: np.ndarray, sigma: [int, float], snr: float) -> np.ndarray:
     """
         Implementation of Gaussian Noise Filter
 
@@ -59,7 +59,7 @@ def GaussianNoise(source: np.ndarray, sigma: [int, float], snr: float) -> np.nda
     return out.astype(int)
 
 
-def SaltPepperNoise(source: np.ndarray, snr: float) -> np.ndarray:
+def salt_pepper_noise(source: np.ndarray, snr: float) -> np.ndarray:
     """
         Implementation of the Salt and Pepper/Impulse Noise
     :param source: Image to add Noise to

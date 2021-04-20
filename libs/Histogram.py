@@ -21,17 +21,18 @@ def histogram(data: np.array, bins_num: int = 255):
     return hist, bins
 
 
-def equalize_histogram(data: np.ndarray, bins_num: int = 255):
+def equalize_histogram(source: np.ndarray, bins_num: int = 255):
     """
         Histogram Equalization Implementation
     :param source: Input Source Image
+    :param bins_num: number of bins
     :return: Equalized Image
     """
 
     bins = np.arange(0, bins_num)
 
     # Calculate the Occurrences of each pixel in the input
-    hist_array = np.bincount(data.flatten(), minlength=bins_num)
+    hist_array = np.bincount(source.flatten(), minlength=bins_num)
 
     # Normalize Resulted array
     px_count = np.sum(hist_array)
@@ -44,11 +45,11 @@ def equalize_histogram(data: np.ndarray, bins_num: int = 255):
     trans_map = np.floor(255 * hist_array)
 
     # Transform Mapping to Image
-    img1d = list(data.flatten())
+    img1d = list(source.flatten())
     map_img1d = [trans_map[px] for px in img1d]
 
     # Reshape Image
-    map_img2d = np.reshape(np.asarray(map_img1d), data.shape)
+    map_img2d = np.reshape(np.asarray(map_img1d), source.shape)
 
     return map_img2d, bins
 

@@ -8,7 +8,7 @@ from scipy.signal import convolve2d
 import scipy.stats as st
 
 
-def ZeroPadImage(source: np.ndarray, f: int) -> np.ndarray:
+def zero_pad_image(source: np.ndarray, f: int) -> np.ndarray:
     """
         Pad Image with p size calculated from filter size f
         to obtain a 'same' Convolution.
@@ -30,7 +30,7 @@ def ZeroPadImage(source: np.ndarray, f: int) -> np.ndarray:
         return out
 
 
-def CreateSquareKernel(size: int, mode: str, sigma: [int, float] = None) -> np.ndarray:
+def create_square_kernel(size: int, mode: str, sigma: [int, float] = None) -> np.ndarray:
     """
         Create/Calculate a square kernel for different low pass filter modes
 
@@ -48,7 +48,7 @@ def CreateSquareKernel(size: int, mode: str, sigma: [int, float] = None) -> np.n
         return kernel2d/kernel2d.sum()
 
 
-def ApplyKernel(source: np.ndarray, kernel: np.ndarray, mode: str) -> np.ndarray:
+def apply_kernel(source: np.ndarray, kernel: np.ndarray, mode: str) -> np.ndarray:
     """
         Calculate/Apply Convolution of two arrays, one being the kernel
         and the other is the image
@@ -73,7 +73,7 @@ def ApplyKernel(source: np.ndarray, kernel: np.ndarray, mode: str) -> np.ndarray
     return np.stack(out, -1)
 
 
-def AverageFilter(source: np.ndarray, shape: int = 3) -> np.ndarray:
+def average_filter(source: np.ndarray, shape: int = 3) -> np.ndarray:
     """
         Implementation of Average Low-pass Filter
     :param source: Image to apply Filter to
@@ -84,14 +84,14 @@ def AverageFilter(source: np.ndarray, shape: int = 3) -> np.ndarray:
     src = np.copy(source)
 
     # Create the Average Kernel
-    kernel = CreateSquareKernel(shape, 'ones') * (1/shape**2)
+    kernel = create_square_kernel(shape, 'ones') * (1 / shape ** 2)
 
     # Check for Grayscale Image
-    out = ApplyKernel(src, kernel, 'same')
+    out = apply_kernel(src, kernel, 'same')
     return out.astype('uint8')
 
 
-def GaussianFilter(source: np.ndarray, shape: int = 3, sigma: [int, float] = 64) -> np.ndarray:
+def gaussian_filter(source: np.ndarray, shape: int = 3, sigma: [int, float] = 64) -> np.ndarray:
     """
         Gaussian Low Pass Filter Implementation
     :param source: Image to Apply Filter to
@@ -103,14 +103,14 @@ def GaussianFilter(source: np.ndarray, shape: int = 3, sigma: [int, float] = 64)
     src = np.copy(source)
 
     # Create a Gaussian Kernel
-    kernel = CreateSquareKernel(shape, 'gaussian', sigma)
+    kernel = create_square_kernel(shape, 'gaussian', sigma)
 
     # Apply the Kernel
-    out = ApplyKernel(src, kernel, 'same')
+    out = apply_kernel(src, kernel, 'same')
     return out.astype('uint8')
 
 
-def MedianFilter(source: np.ndarray, shape: int) -> np.ndarray:
+def median_filter(source: np.ndarray, shape: int) -> np.ndarray:
     """
         Median Low Pass Filter Implementation
     :param source: Image to Apply Filter to
@@ -128,7 +128,7 @@ def MedianFilter(source: np.ndarray, shape: int) -> np.ndarray:
     result = np.zeros(src.shape)
 
     # Pad the Image to obtain a Same Convolution
-    src = ZeroPadImage(src, shape)
+    src = zero_pad_image(src, shape)
 
     for ix, iy, ic in np.ndindex(src.shape):
         # Looping the Image in the X and Y directions

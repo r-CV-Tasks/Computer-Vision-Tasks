@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 
 from UI import mainGUI as m
-from libs import EdgeDetection, Noise, LowPass, Histogram, FreqFilters, Hough, Contour
+from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, Hough, Contour
 
 # importing module
 import logging
@@ -55,8 +55,11 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img4_input, self.img4_output,
                              self.img5_input, self.img5_output]
 
-        # No Noisy Image Array yet
+        # Initial Variables
         self.currentNoiseImage = None
+        self.edged_image = None
+        self.filtered_image = None
+        self.output_hist_image = None
 
         self.imagesData = {1: ..., 2: ..., 3: ..., 4: ..., 5: ..., 6: ...}
         self.heights = [..., ..., ..., ..., ..., ...]
@@ -254,10 +257,6 @@ class ImageProcessor(m.Ui_MainWindow):
         :return:
         """
 
-        global edged_image
-        global filtered_image
-        global output_hist_image
-
         # If 1st tab is selected
         if tab_id == 0:
             # Get Values from combo box and sliders
@@ -301,36 +300,36 @@ class ImageProcessor(m.Ui_MainWindow):
                                       button=QMessageBox.Ok, icon=QMessageBox.Warning)
 
                 elif selected_component == "average filter":
-                    filtered_image = LowPass.average_filter(source=self.currentNoiseImage, shape=mask_size)
+                    self.filtered_image = LowPass.average_filter(source=self.currentNoiseImage, shape=mask_size)
 
                 elif selected_component == "gaussian filter":
                     self.sigma_slider_2.setEnabled(True)
-                    filtered_image = LowPass.gaussian_filter(source=self.currentNoiseImage, shape=mask_size,
+                    self.filtered_image = LowPass.gaussian_filter(source=self.currentNoiseImage, shape=mask_size,
                                                              sigma=filter_sigma)
 
                 elif selected_component == "median filter":
-                    filtered_image = LowPass.median_filter(source=self.currentNoiseImage, shape=mask_size)
+                    self.filtered_image = LowPass.median_filter(source=self.currentNoiseImage, shape=mask_size)
 
                 try:
-                    self.display_image(data=filtered_image, widget=self.filtersImages[combo_id])
+                    self.display_image(data=self.filtered_image, widget=self.filtersImages[combo_id])
                 except TypeError:
                     print("Cannot display Image")
 
             # Edge Detection Options
             if combo_id == 2:
                 if selected_component == "sobel mask":
-                    edged_image = EdgeDetection.sobel_edge(source=self.imagesData[0])
+                    self.edged_image = EdgeDetection.sobel_edge(source=self.imagesData[0])
 
                 elif selected_component == "roberts mask":
-                    edged_image = EdgeDetection.roberts_edge(source=self.imagesData[0])
+                    self.edged_image = EdgeDetection.roberts_edge(source=self.imagesData[0])
 
                 elif selected_component == "prewitt mask":
-                    edged_image = EdgeDetection.prewitt_edge(source=self.imagesData[0])
+                    self.edged_image = EdgeDetection.prewitt_edge(source=self.imagesData[0])
 
                 elif selected_component == "canny mask":
-                    edged_image = EdgeDetection.canny_edge(source=self.imagesData[0])
+                    self.edged_image = EdgeDetection.canny_edge(source=self.imagesData[0])
 
-                self.display_image(data=edged_image, widget=self.filtersImages[combo_id])
+                self.display_image(data=self.edged_image, widget=self.filtersImages[combo_id])
 
             logger.info(f"Viewing {selected_component} Of Image{combo_id + 1}")
 
@@ -343,7 +342,7 @@ class ImageProcessor(m.Ui_MainWindow):
                 if selected_component == "original histogram":
                     self.img2_input_histo.clear()
                     self.img2_output_histo.clear()
-                    output_hist_image = self.imagesData[1]
+                    self.output_hist_image = self.imagesData[1]
                     self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img2_input_histo,
                                             title="Original Histogram", label="Pixels")
                     self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img2_output_histo,
@@ -351,23 +350,23 @@ class ImageProcessor(m.Ui_MainWindow):
 
                 if selected_component == "equalized histogram":
                     self.img2_output_histo.clear()
-                    output_hist_image, bins = Histogram.equalize_histogram(source=self.imagesData[1], bins_num=255)
-                    self.draw_rgb_histogram(source=output_hist_image, widget=self.img2_output_histo,
+                    self.output_hist_image, bins = Histogram.equalize_histogram(source=self.imagesData[1], bins_num=255)
+                    self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img2_output_histo,
                                             title="Equalized Histogram", label="Pixels")
 
                 elif selected_component == "normalized histogram":
                     self.img2_output_histo.clear()
                     normalized_image, hist, bins = Histogram.normalize_histogram(source=self.imagesData[1],
                                                                                  bins_num=255)
-                    output_hist_image = normalized_image
-                    self.draw_rgb_histogram(source=output_hist_image, widget=self.img2_output_histo,
+                    self.output_hist_image = normalized_image
+                    self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img2_output_histo,
                                             title="Normalized Histogram", label="Pixels")
 
                 elif selected_component == "local thresholding":
                     self.img2_output_histo.clear()
                     local_threshold = Histogram.local_threshold(source=self.imagesData[1], divs=4)
                     hist, bins = Histogram.histogram(source=local_threshold, bins_num=2)
-                    output_hist_image = local_threshold
+                    self.output_hist_image = local_threshold
                     self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Local Histogram", label="Pixels")
 
@@ -375,7 +374,7 @@ class ImageProcessor(m.Ui_MainWindow):
                     self.img2_output_histo.clear()
                     global_threshold = Histogram.global_threshold(source=self.imagesData[1], threshold=128)
                     hist, bins = Histogram.histogram(source=global_threshold, bins_num=2)
-                    output_hist_image = global_threshold
+                    self.output_hist_image = global_threshold
                     self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Global Histogram", label="Pixels")
 
@@ -383,12 +382,12 @@ class ImageProcessor(m.Ui_MainWindow):
                     self.img2_output_histo.clear()
                     gray_image = cv2.cvtColor(self.imagesData[1], cv2.COLOR_RGB2GRAY)
                     hist, bins = Histogram.histogram(source=gray_image, bins_num=255)
-                    output_hist_image = gray_image
+                    self.output_hist_image = gray_image
                     self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Gray Histogram", label="Pixels")
 
                 try:
-                    self.display_image(data=output_hist_image, widget=self.img2_output)
+                    self.display_image(data=self.output_hist_image, widget=self.img2_output)
                 except TypeError:
                     print("Cannot display histogram image")
 
@@ -399,8 +398,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
         :return:
         """
-        image1_dft = FreqFilters.high_pass_filter(self.imagesData[2], size=20)
-        image2_dft = FreqFilters.low_pass_filter(self.imagesData[3], size=15)
+        image1_dft = FrequencyFilters.high_pass_filter(self.imagesData[2], size=20)
+        image2_dft = FrequencyFilters.low_pass_filter(self.imagesData[3], size=15)
 
         self.hybrid_image = image1_dft + image2_dft
         self.display_image(widget=self.imgX_output, data=self.hybrid_image)

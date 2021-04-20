@@ -42,8 +42,11 @@ class ImageProcessor(m.Ui_MainWindow):
         self.tabWidget_process.currentChanged.connect(self.tab_changed)
 
         # Images Lists
-        self.inputImages = [self.img1_input, self.img2_input, self.imgA_input, self.imgB_input, self.img4_input, self.img5_input]
+        self.inputImages = [self.img1_input, self.img2_input, self.imgA_input,
+                            self.imgB_input, self.img4_input, self.img5_input]
+
         self.filtersImages = [self.img1_noisy, self.img1_filtered, self.img1_edged]
+
         self.histoImages = [self.img2_input_histo, self.img2_output, self.img2_output_histo]
 
         self.imageWidgets = [self.img1_input, self.img1_noisy, self.img1_filtered, self.img1_edged,
@@ -55,7 +58,7 @@ class ImageProcessor(m.Ui_MainWindow):
         # No Noisy Image Array yet
         self.currentNoiseImage = None
 
-        self.imagesData = {1:..., 2:..., 3:..., 4:..., 5:..., 6:...}
+        self.imagesData = {1: ..., 2: ..., 3: ..., 4: ..., 5: ..., 6: ...}
         self.heights = [..., ..., ..., ..., ..., ...]
         self.weights = [..., ..., ..., ..., ..., ...]
 
@@ -149,8 +152,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
             bgr_img = cv2.imread(self.filename)
             rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
-            imgByte_RGB = cv2.transpose(rgb_img)
-            self.imagesData[img_id] = imgByte_RGB
+            imgbyte_rgb = cv2.transpose(rgb_img)
+            self.imagesData[img_id] = imgbyte_rgb
 
             # When Images in Tab1, Tab2 or Image A in Tab 3
             if img_id != 3:
@@ -207,8 +210,9 @@ class ImageProcessor(m.Ui_MainWindow):
         elif tab_id == 1:
             self.combo_histogram.setEnabled(True)
         elif tab_id == 2:
-            if type(self.imagesData[3]) != type(...):
+            if isinstance(self.imagesData[3], np.ndarray):
                 self.btn_hybrid.setEnabled(True)
+            # if type(self.imagesData[3]) != type(...):
 
         # in Hough Tab
         elif tab_id == 4:
@@ -261,8 +265,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
             # Adjust Sliders Values
             noise_snr = self.snr_slider_1.value() / 10
-            noise_sigma = self.sigma_slider_1.value()                        # This value from 0 -> 4 so we need to map to another range
-            noise_sigma = np.round(np.interp(noise_sigma, [0, 4], [0, 255])) # This value from 0 -> 255
+            noise_sigma = self.sigma_slider_1.value()  # This value from 0 -> 4 so we need to map to another range
+            noise_sigma = np.round(np.interp(noise_sigma, [0, 4], [0, 255]))  # This value from 0 -> 255
 
             filter_sigma = self.sigma_slider_2.value()
             filter_sigma = np.round(np.interp(filter_sigma, [0, 4], [0, 255]))
@@ -309,22 +313,22 @@ class ImageProcessor(m.Ui_MainWindow):
 
                 try:
                     self.display_image(data=filtered_image, widget=self.filtersImages[combo_id])
-                except:
-                    pass
+                except TypeError:
+                    print("Cannot display Image")
 
             # Edge Detection Options
             if combo_id == 2:
                 if selected_component == "sobel mask":
-                    edged_image = EdgeDetection.sobel_edge(image=self.imagesData[0])
+                    edged_image = EdgeDetection.sobel_edge(source=self.imagesData[0])
 
                 elif selected_component == "roberts mask":
-                    edged_image = EdgeDetection.roberts_edge(image=self.imagesData[0])
+                    edged_image = EdgeDetection.roberts_edge(source=self.imagesData[0])
 
                 elif selected_component == "prewitt mask":
-                    edged_image = EdgeDetection.prewitt_edge(image=self.imagesData[0])
+                    edged_image = EdgeDetection.prewitt_edge(source=self.imagesData[0])
 
                 elif selected_component == "canny mask":
-                    edged_image = EdgeDetection.canny_edge(image=self.imagesData[0])
+                    edged_image = EdgeDetection.canny_edge(source=self.imagesData[0])
 
                 self.display_image(data=edged_image, widget=self.filtersImages[combo_id])
 
@@ -340,36 +344,37 @@ class ImageProcessor(m.Ui_MainWindow):
                     self.img2_input_histo.clear()
                     self.img2_output_histo.clear()
                     output_hist_image = self.imagesData[1]
-                    self.draw_rgb_histogram(data=self.imagesData[1], widget=self.img2_input_histo,
+                    self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img2_input_histo,
                                             title="Original Histogram", label="Pixels")
-                    self.draw_rgb_histogram(data=self.imagesData[1], widget=self.img2_output_histo,
+                    self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img2_output_histo,
                                             title="Original Histogram", label="Pixels")
 
                 if selected_component == "equalized histogram":
                     self.img2_output_histo.clear()
-                    output_hist_image, bins = Histogram.equalize_histogram(data=self.imagesData[1], bins_num=255)
-                    self.draw_rgb_histogram(data=output_hist_image, widget=self.img2_output_histo,
+                    output_hist_image, bins = Histogram.equalize_histogram(source=self.imagesData[1], bins_num=255)
+                    self.draw_rgb_histogram(source=output_hist_image, widget=self.img2_output_histo,
                                             title="Equalized Histogram", label="Pixels")
 
                 elif selected_component == "normalized histogram":
                     self.img2_output_histo.clear()
-                    normalized_image, hist, bins = Histogram.normalize_histogram(data=self.imagesData[1], bins_num=255)
+                    normalized_image, hist, bins = Histogram.normalize_histogram(source=self.imagesData[1],
+                                                                                 bins_num=255)
                     output_hist_image = normalized_image
-                    self.draw_rgb_histogram(data=output_hist_image, widget=self.img2_output_histo,
+                    self.draw_rgb_histogram(source=output_hist_image, widget=self.img2_output_histo,
                                             title="Normalized Histogram", label="Pixels")
 
                 elif selected_component == "local thresholding":
                     self.img2_output_histo.clear()
-                    local_threshold = Histogram.local_threshold(data=self.imagesData[1], divs=4)
-                    hist, bins = Histogram.histogram(data=local_threshold, bins_num=2)
+                    local_threshold = Histogram.local_threshold(source=self.imagesData[1], divs=4)
+                    hist, bins = Histogram.histogram(source=local_threshold, bins_num=2)
                     output_hist_image = local_threshold
                     self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Local Histogram", label="Pixels")
 
                 elif selected_component == "global thresholding":
                     self.img2_output_histo.clear()
-                    global_threshold = Histogram.global_threshold(data=self.imagesData[1], threshold=128)
-                    hist, bins = Histogram.histogram(data=global_threshold, bins_num=2)
+                    global_threshold = Histogram.global_threshold(source=self.imagesData[1], threshold=128)
+                    hist, bins = Histogram.histogram(source=global_threshold, bins_num=2)
                     output_hist_image = global_threshold
                     self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Global Histogram", label="Pixels")
@@ -377,16 +382,15 @@ class ImageProcessor(m.Ui_MainWindow):
                 elif selected_component == "transform to gray":
                     self.img2_output_histo.clear()
                     gray_image = cv2.cvtColor(self.imagesData[1], cv2.COLOR_RGB2GRAY)
-                    hist, bins = Histogram.histogram(data=gray_image, bins_num=255)
+                    hist, bins = Histogram.histogram(source=gray_image, bins_num=255)
                     output_hist_image = gray_image
                     self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Gray Histogram", label="Pixels")
 
                 try:
                     self.display_image(data=output_hist_image, widget=self.img2_output)
-                except:
-                    pass
-
+                except TypeError:
+                    print("Cannot display histogram image")
 
             logger.info(f"Viewing {selected_component} Component Of Image{combo_id + 1}")
 
@@ -410,12 +414,12 @@ class ImageProcessor(m.Ui_MainWindow):
         circle_radius = self.text_radius.text()
 
         # choose hough transform type
-        if (self.checkBox_lines.isChecked()):
+        if self.checkBox_lines.isChecked():
             self.hough_image = Hough.hough_lines(source=self.imagesData[4])
-        elif (self.checkBox_circles.isChecked()):
+        elif self.checkBox_circles.isChecked():
 
             self.hough_image = Hough.hough_circles(source=self.imagesData[4], radius=circle_radius)
-        elif (self.checkBox_lines.isChecked() & self.checkBox_circles.isChecked()):
+        elif self.checkBox_lines.isChecked() & self.checkBox_circles.isChecked():
             self.hough_image = Hough.hough_lines_and_circles(source=self.imagesData[4], radius=circle_radius)
 
         self.display_image(widget=self.img4_output, data=self.hough_image)
@@ -440,12 +444,11 @@ class ImageProcessor(m.Ui_MainWindow):
     def reset_contour(self):
         print("resetting contour")
 
-    def slider_changed(self, indx, val):
+    def slider_changed(self, indx):
         """
         detects the changes in the sliders using the indx given by ith slider
         and the slider value
         :param indx: int
-        :param val: int
         :return: none
         """
         if indx == 0 or indx == 1:
@@ -458,7 +461,8 @@ class ImageProcessor(m.Ui_MainWindow):
         elif indx == 2 or indx == 3:
             self.combo_box_changed(tab_id=self.tab_index, combo_id=1)
 
-    def display_image(self, data, widget):
+    @staticmethod
+    def display_image(data, widget):
         """
         Display the given data
         :param data: 2d numpy array
@@ -470,14 +474,17 @@ class ImageProcessor(m.Ui_MainWindow):
                              padding=0)
         widget.ui.roiPlot.hide()
 
-    def display_bar_graph(self, widget, x, y, width, brush, title, label):
+    @staticmethod
+    def display_bar_graph(widget, x, y, width, brush, title, label):
         """
 
+        :param widget:
         :param x:
         :param y:
         :param width:
         :param brush:
-        :param widget:
+        :param title:
+        :param label:
         :return:
         """
 
@@ -495,11 +502,14 @@ class ImageProcessor(m.Ui_MainWindow):
         vb.setAutoVisible(y=1.0)
         vb.enableAutoRange(axis='y', enable=True)
 
-    def draw_rgb_histogram(self, data: np.ndarray, widget, title:str = "title", label:str = "label"):
+    @staticmethod
+    def draw_rgb_histogram(source: np.ndarray, widget, title: str = "title", label: str = "label"):
         """
 
-        :param data:
+        :param source:
         :param widget:
+        :param title:
+        :param label:
         :return:
         """
 
@@ -510,21 +520,22 @@ class ImageProcessor(m.Ui_MainWindow):
         widget.plotItem.showGrid(True, True, alpha=0.8)
         widget.plotItem.setLabel("bottom", text=label)
 
-        for i in range(data.shape[2]):
-            hist, bins = Histogram.histogram(data=data[:, :, i], bins_num=255)
+        for i in range(source.shape[2]):
+            hist, bins = Histogram.histogram(source=source[:, :, i], bins_num=255)
 
             # setting pen=(i,3) automatically creates three different-colored pens
             widget.plot(bins, hist[:-1], pen=pens[i])
 
-    def draw_gray_histogram(self, data: np.ndarray, widget, bins_num):
+    @staticmethod
+    def draw_gray_histogram(source: np.ndarray, widget, bins_num):
         """
 
-        :param data:
+        :param source:
         :param widget:
         :param bins_num:
         :return:
         """
-        hist, bins = Histogram.histogram(data=data, bins_num=bins_num)
+        hist, bins = Histogram.histogram(source=source, bins_num=bins_num)
         widget.plot(bins, hist)
 
     @staticmethod

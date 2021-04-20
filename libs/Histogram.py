@@ -5,17 +5,17 @@
 import numpy as np
 
 
-def histogram(data: np.array, bins_num: int = 255):
+def histogram(source: np.array, bins_num: int = 255):
     """
 
-    :param data:
+    :param source:
     :param bins_num:
     :return:
     """
     if bins_num == 2:
-        new_data = data
+        new_data = source
     else:
-        new_data = np.round(np.interp(data, (data.min(), data.max()), (0, bins_num))).astype('uint8')
+        new_data = np.round(np.interp(source, (source.min(), source.max()), (0, bins_num))).astype('uint8')
     bins = np.arange(0, bins_num)
     hist = np.bincount(new_data.ravel(), minlength=bins_num)
     return hist, bins
@@ -54,36 +54,36 @@ def equalize_histogram(source: np.ndarray, bins_num: int = 255):
     return map_img2d, bins
 
 
-def normalize_histogram(data: np.array, bins_num: int = 255):
-    mn = np.min(data)
-    mx = np.max(data)
-    norm = (data - mn) * (1.0 / (mx - mn))
+def normalize_histogram(source: np.array, bins_num: int = 255):
+    mn = np.min(source)
+    mx = np.max(source)
+    norm = (source - mn) * (1.0 / (mx - mn))
     histo, bins = histogram(norm, bins_num=bins_num)
     return norm, histo, bins
 
 
-def global_threshold(data: np.ndarray, threshold: int):
-    src = np.copy(data)
+def global_threshold(source: np.ndarray, threshold: int):
+    src = np.copy(source)
     if len(src.shape) > 2:
-        src = rgb_to_gray(data)
+        src = rgb_to_gray(source)
     return (src > threshold).astype(int)
 
 
-def rgb_to_gray(data: np.ndarray):
-    return np.dot(data[..., :3], [0.299, 0.587, 0.114]).astype('uint8')
+def rgb_to_gray(source: np.ndarray):
+    return np.dot(source[..., :3], [0.299, 0.587, 0.114]).astype('uint8')
 
 
-def local_threshold(data: np.ndarray, divs: int) -> np.ndarray:
+def local_threshold(source: np.ndarray, divs: int) -> np.ndarray:
     """
         Global Thresholding Implementation using mean
-    :param data: Input Source Image
+    :param source: Input Source Image
     :param divs: Number of Regions
     :return: Threshold-ed image
     """
     # Vertical Split of the Image
-    src = np.copy(data)
+    src = np.copy(source)
     if len(src.shape) > 2:
-        src = rgb_to_gray(data)
+        src = rgb_to_gray(source)
 
     s = np.sqrt(divs)
     v_splits = np.split(src, s)

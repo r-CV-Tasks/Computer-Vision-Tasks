@@ -39,8 +39,8 @@ def hough_peaks(H, num_peaks, threshold=0, nhood_size=3):
             max_y = idx_y + (nhood_size / 2) + 1
 
         # bound each index by the neighborhood size and set all values to 0
-        for x in range(min_x, max_x):
-            for y in range(min_y, max_y):
+        for x in range(int(min_x), int(max_x)):
+            for y in range(int(min_y), int(max_y)):
                 # remove neighborhoods in H1
                 H1[y, x] = 0
 
@@ -106,10 +106,10 @@ def line_detection(source: np.ndarray):
 
     return accumulator, rhos, thetas
 
-def hough_lines(source: np.ndarray) -> np.ndarray:
+def hough_lines(source: np.ndarray, num_peaks: int = 10) -> np.ndarray:
 
     H, rhos, thetas = line_detection(source)
-    indicies, H = hough_peaks(H, 3, nhood_size=11) # find peaks
+    indicies, H = hough_peaks(H, num_peaks, nhood_size=20) # find peaks
     hough_lines_draw(source, indicies, rhos, thetas)
 
     return source

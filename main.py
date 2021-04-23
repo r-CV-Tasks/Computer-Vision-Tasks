@@ -413,10 +413,13 @@ class ImageProcessor(m.Ui_MainWindow):
         """
 
         circle_radius = self.text_radius.text()
+        num_votes = int(self.text_votes.text())
+
+        self.img4_output.clear()
 
         # choose hough transform type
         if self.checkBox_lines.isChecked():
-            self.hough_image = Hough.hough_lines(source=self.imagesData[4])
+            self.hough_image = Hough.hough_lines(source=self.imagesData[4], num_peaks=num_votes)
         elif self.checkBox_circles.isChecked():
 
             self.hough_image = Hough.hough_circles(source=self.imagesData[4], radius=circle_radius)

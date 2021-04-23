@@ -416,7 +416,7 @@
                </layout>
               </item>
               <item>
-               <widget class="mySlider" name="snr_slider_1">
+               <widget class="MySlider" name="snr_slider_1">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -557,7 +557,7 @@
                </layout>
               </item>
               <item>
-               <widget class="mySlider" name="sigma_slider_1">
+               <widget class="MySlider" name="sigma_slider_1">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -824,7 +824,7 @@
                </layout>
               </item>
               <item>
-               <widget class="mySlider" name="mask_size_1">
+               <widget class="MySlider" name="mask_size_1">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -996,7 +996,7 @@
                </layout>
               </item>
               <item>
-               <widget class="mySlider" name="sigma_slider_2">
+               <widget class="MySlider" name="sigma_slider_2">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -2844,7 +2844,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>20</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
@@ -2874,7 +2874,7 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>mySlider</class>
+   <class>MySlider</class>
    <extends>QSlider</extends>
    <header>mySliderClass</header>
   </customwidget>

@@ -4,6 +4,8 @@ import cv2
 import numpy as np
 
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt, QPoint, QRect
+from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 

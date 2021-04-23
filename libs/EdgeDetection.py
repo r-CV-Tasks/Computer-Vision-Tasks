@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 from scipy.signal import convolve2d
-
 from LowPass import gaussian_filter
 
 

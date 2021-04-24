@@ -10,9 +10,11 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
     # TODO Apply Active Contour algorithm
 
     contour_x, contour_y, = create_initial_contour(source, 65)
-
     ext_energy = external_energy(source)
-    # print(ext_energy)
+
+    # TODO Add loops for greedy algorithm from "ZhangK Paper"
+
+    
 
 
 def create_initial_contour(source, num_points):
@@ -47,7 +49,7 @@ def compute_total_energy():
     pass
 
 
-def internal_energy(alpha: int, beta: int):
+def internal_energy(flattened_pts, alpha: int, beta: int):
     """
     The internal energy is responsible for:
         1. Forcing the contour to be continuous (E_cont)
@@ -88,7 +90,22 @@ def internal_energy(alpha: int, beta: int):
     :return:
     """
 
-    pass
+    pts = np.reshape(flattened_pts, (int(len(flattened_pts) / 2), 2))
+
+    # spacing energy (favors equi-distant points)
+    prev_pts = np.roll(pts, 1, axis=0)
+    next_pts = np.roll(pts, -1, axis=0)
+    displacements = pts - prev_pts
+    point_distances = np.sqrt(displacements[:, 0] ** 2 + displacements[:, 1] ** 2)
+    mean_dist = np.mean(point_distances)
+    spacing_energy = np.sum((point_distances - mean_dist) ** 2)
+
+    # curvature energy (favors smooth curves)
+    curvature_1d = prev_pts - 2 * pts + next_pts
+    curvature = (curvature_1d[:, 0] ** 2 + curvature_1d[:, 1] ** 2)
+    curvature_energy = np.sum(curvature)
+
+    return  alpha * spacing_energy + beta * curvature_energy
 
 
 def external_energy(source):
@@ -121,6 +138,7 @@ def external_energy(source):
     :return:
     """
 
+    # Calculate E_edge
     # Convert to gray Scale
     # gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
 
@@ -130,8 +148,14 @@ def external_energy(source):
     # Get Gradient Magnitude & Direction
     gradient_magnitude, gradient_direction = sobel_edge(filtered_image, True)
     gradient_magnitude *= 255.0 / gradient_magnitude.max()
+    e_edge = gradient_magnitude
 
-    return gradient_magnitude
+    # TODO Calculate E_line
+
+    # TODO return E_external = w_line * E_line + w_edge * E_edge
+    e_external = None
+
+    return e_external
 
 
 def main():

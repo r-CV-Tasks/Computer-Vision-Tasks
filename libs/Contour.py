@@ -45,11 +45,8 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
     ax.plot(np.r_[contour_x, contour_x[0]],
             np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
 
-<<<<<<< Updated upstream
     plt.show()
-=======
 
->>>>>>> Stashed changes
 
 
 def create_initial_contour(source, num_points):
@@ -208,3 +205,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

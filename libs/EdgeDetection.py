@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from scipy.signal import convolve2d
+
 from LowPass import gaussian_filter
 
 
@@ -57,11 +58,11 @@ def sobel_edge(source: np.ndarray, GetDirection: bool = False):
     # horizontal = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
     horizontal = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
     vertical = np.flip(horizontal.T)
-    mag, horizontal_edge, vertical_edge = apply_kernel(source, horizontal, vertical, True)
+    mag, HorizontalEdge, VerticalEdge = apply_kernel(source, horizontal, vertical, True)
 
     if GetDirection:
-        direction = np.arctan2(vertical_edge, horizontal_edge)
-        return mag, direction
+        Direction = np.arctan2(VerticalEdge, HorizontalEdge)
+        return mag, Direction
     return mag
 
 
@@ -86,122 +87,115 @@ def canny_edge(source: np.ndarray):
     :param source: Image to detect edges in
     :return: edges image
     """
-    # Convert to gray Scale
-    gray = cv2.cvtColor(source, cv2.COLOR_RGB2GRAY)
+    # Convert to Gray Scale
+    Gray = cv2.cvtColor(source, cv2.COLOR_RGB2GRAY)
 
     # Apply Gaussian Filter
-    filtered_image = gaussian_filter(gray, 3, 9)
+    FilteredImage = gaussian_filter(Gray, 3, 9)
 
     # Get Gradient Magnitude & Direction
-    gradient_magnitude, gradient_direction = sobel_edge(filtered_image, True)
-    gradient_magnitude *= 255.0 / gradient_magnitude.max()
+    GradientMagnitude, GradientDirection = sobel_edge(FilteredImage, True)
+    GradientMagnitude *= 255.0 / GradientMagnitude.max()
 
     # Apply Non-Maximum Suppression
-    suppressed_image = non_maximum_suppression(gradient_magnitude, gradient_direction)
+    SuppressedImage = NonMaximumSuppression(GradientMagnitude, GradientDirection)
 
     # Apply Double Thresholding
-    thresholded_image = double_threshold(suppressed_image, 0.05, 0.09, 70)
+    ThresholdedImage = DoubleThreshold(SuppressedImage, 0.05, 0.09, 70)
 
     # Apply Hysteresis
-    canny_edges = hysteresis(thresholded_image, 70, 255)
+    CannyEdges = Hysteresis(ThresholdedImage, 70, 255)
 
-    return canny_edges
+    return CannyEdges
 
 
-def non_maximum_suppression(gradient_magnitude: np.ndarray, gradient_direction: np.ndarray):
+def NonMaximumSuppression(GradientMagnitude: np.ndarray, GradientDirection: np.ndarray):
     """
     Applies Non-Maximum Suppressed Gradient Image To Thin Out The Edges
-    :param gradient_magnitude: Gradient Image To A Thin Out It's Edges
-    :param gradient_direction: Direction of The Image's Edges
+    :param GradientMagnitude: Gradient Image To Thin Out It's Edges
+    :param GradientDirection: Direction of The Image's Edges
     :return Non-Maximum Suppressed Image:
     """
-    m, n = gradient_magnitude.shape
-    suppressed_image = np.zeros(gradient_magnitude.shape)
+    M, N = GradientMagnitude.shape
+    SuppressedImage = np.zeros(GradientMagnitude.shape)
 
     # Convert Rad Directions To Degree
-    gradient_direction = np.rad2deg(gradient_direction)
-    gradient_direction += 180
-    pi = 180
+    GradientDirection = np.rad2deg(GradientDirection)
+    GradientDirection += 180
+    PI = 180
 
-    for row in range(1, m - 1):
-        for col in range(1, n - 1):
+    for row in range(1, M - 1):
+        for col in range(1, N - 1):
             try:
-                direction = gradient_direction[row, col]
+                direction = GradientDirection[row, col]
                 # 0°
-                if (0 <= direction < pi / 8) or (15 * pi / 8 <= direction <= 2 * pi):
-                    before_pixel = gradient_magnitude[row, col - 1]
-                    after_pixel = gradient_magnitude[row, col + 1]
+                if (0 <= direction < PI / 8) or (15 * PI / 8 <= direction <= 2 * PI):
+                    before_pixel = GradientMagnitude[row, col - 1]
+                    after_pixel = GradientMagnitude[row, col + 1]
                 # 45°
-                elif (pi / 8 <= direction < 3 * pi / 8) or (9 * pi / 8 <= direction < 11 * pi / 8):
-                    before_pixel = gradient_magnitude[row + 1, col - 1]
-                    after_pixel = gradient_magnitude[row - 1, col + 1]
+                elif (PI / 8 <= direction < 3 * PI / 8) or (9 * PI / 8 <= direction < 11 * PI / 8):
+                    before_pixel = GradientMagnitude[row + 1, col - 1]
+                    after_pixel = GradientMagnitude[row - 1, col + 1]
                 # 90°
-                elif (3 * pi / 8 <= direction < 5 * pi / 8) or (11 * pi / 8 <= direction < 13 * pi / 8):
-                    before_pixel = gradient_magnitude[row - 1, col]
-                    after_pixel = gradient_magnitude[row + 1, col]
+                elif (3 * PI / 8 <= direction < 5 * PI / 8) or (11 * PI / 8 <= direction < 13 * PI / 8):
+                    before_pixel = GradientMagnitude[row - 1, col]
+                    after_pixel = GradientMagnitude[row + 1, col]
                 # 135°
                 else:
-                    before_pixel = gradient_magnitude[row - 1, col - 1]
-                    after_pixel = gradient_magnitude[row + 1, col + 1]
+                    before_pixel = GradientMagnitude[row - 1, col - 1]
+                    after_pixel = GradientMagnitude[row + 1, col + 1]
 
-                if gradient_magnitude[row, col] >= before_pixel and gradient_magnitude[row, col] >= after_pixel:
-                    suppressed_image[row, col] = gradient_magnitude[row, col]
+                if GradientMagnitude[row, col] >= before_pixel and GradientMagnitude[row, col] >= after_pixel:
+                    SuppressedImage[row, col] = GradientMagnitude[row, col]
             except IndexError as e:
-                raise e
+                pass
 
-    return suppressed_image
+    return SuppressedImage
 
 
-def double_threshold(source, low_ratio, high_ratio, weak):
+def DoubleThreshold(Image, LowRatio, HighRatio, Weak):
     """
        Apply Double Thresholding To Image
-       :param source: Image to Threshold
-       :param low_ratio: low Threshold Ratio, Used to Get Lowest Allowed Value
-       :param high_ratio: high Threshold Ratio, Used to Get Minimum Value To Be Boosted
-       :param weak: Pixel Value For Pixels Between The Two Thresholds
+       :param Image: Image to Threshold
+       :param LowRatio: Low Threshold Ratio, Used to Get Lowest Allowed Value
+       :param HighRatio: High Threshold Ratio, Used to Get Minimum Value To Be Boosted
+       :param Weak: Pixel Value For Pixels Between The Two Thresholds
        :return: Thresholded Image
        """
 
     # Get Threshold Values
-    high = source.max() * high_ratio
-    low = source.max() * low_ratio
+    High = Image.max() * HighRatio
+    Low = Image.max() * LowRatio
 
     # Create Empty Array
-    thresholded_image = np.zeros(source.shape)
+    ThresholdedImage = np.zeros(Image.shape)
 
-    strong = 255
-    # Find Position of strong & Weak Pixels
-    strong_row, strong_col = np.where(source >= high)
-    weak_row, weak_col = np.where((source <= high) & (source >= low))
+    Strong = 255
+    # Find Position of Strong & Weak Pixels
+    StrongRow, StrongCol = np.where(Image >= High)
+    WeakRow, WeakCol = np.where((Image <= High) & (Image >= Low))
 
     # Apply Thresholding
-    thresholded_image[strong_row, strong_col] = strong
-    thresholded_image[weak_row, weak_col] = weak
+    ThresholdedImage[StrongRow, StrongCol] = Strong
+    ThresholdedImage[WeakRow, WeakCol] = Weak
 
-    return thresholded_image
+    return ThresholdedImage
 
 
-def hysteresis(source, weak=70, strong=255):
-    """
-
-    :param source:
-    :param weak:
-    :param strong:
-    :return:
-    """
-    m, n = source.shape
-    for i in range(1, m - 1):
-        for j in range(1, n - 1):
-            if source[i, j] == weak:
+def Hysteresis(Image, Weak=70, Strong=255):
+    M, N = Image.shape
+    for i in range(1, M - 1):
+        for j in range(1, N - 1):
+            if Image[i, j] == Weak:
                 try:
-                    if ((source[i + 1, j - 1] == strong) or (source[i + 1, j] == strong) or (
-                            source[i + 1, j + 1] == strong)
-                            or (source[i, j - 1] == strong) or (source[i, j + 1] == strong)
-                            or (source[i - 1, j - 1] == strong) or (source[i - 1, j] == strong) or (
-                                    source[i - 1, j + 1] == strong)):
-                        source[i, j] = strong
+                    if ((Image[i + 1, j - 1] == Strong) or (Image[i + 1, j] == Strong) or (
+                            Image[i + 1, j + 1] == Strong)
+                            or (Image[i, j - 1] == Strong) or (Image[i, j + 1] == Strong)
+                            or (Image[i - 1, j - 1] == Strong) or (Image[i - 1, j] == Strong) or (
+                                    Image[i - 1, j + 1] == Strong)):
+                        Image[i, j] = Strong
                     else:
-                        source[i, j] = 0
+                        Image[i, j] = 0
                 except IndexError as e:
-                    raise e
-    return source
+                    pass
+    return Image

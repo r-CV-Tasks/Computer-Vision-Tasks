@@ -1,20 +1,51 @@
 import cv2
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 from EdgeDetection import sobel_edge
 from LowPass import gaussian_filter
 
 
-def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, num_iterations: int,
+def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, WLine, WEdge, num_iterations: int,
                    num_points: int = 12) -> np.ndarray:
-    # TODO Apply Active Contour algorithm
-
     contour_x, contour_y, = create_initial_contour(source, 65)
-    ext_energy = external_energy(source)
+    ExternalEnergy = gamma * external_energy(source, WLine, WEdge)
+    WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1]]
+    # TODO Fix The Code
 
-    # TODO Add loops for greedy algorithm from "ZhangK Paper"
+    for n in range(num_iterations):
+        for i in range(len(contour_x)):
+            MinEnergy = None
+            NewX = None
+            NewY = None
+            for k in WindowCoordinates:
+                CurrentX, CurrentY = contour_x, contour_y
+                CurrentX[i] = CurrentX[i] + k[0] if CurrentX[i] < 511 else 511
+                CurrentY[i] = CurrentY[i] + k[1] if CurrentY[i] < 511 else 511
+                TotalEnergy = - ExternalEnergy[contour_x[i], contour_y[i]] + internal_energy(CurrentX, CurrentY, alpha,
+                                                                                             beta)
+                if MinEnergy is None:
+                    MinEnergy = TotalEnergy
+                    NewX = CurrentX[i] if CurrentX[i] < 512 else 511
+                    NewY = CurrentY[i] if CurrentY[i] < 512 else 511
+                if TotalEnergy < MinEnergy:
+                    MinEnergy = TotalEnergy
+                    NewX = CurrentX[i] if CurrentX[i] < 512 else 511
+                    NewY = CurrentY[i] if CurrentY[i] < 512 else 511
+            contour_x[i] = NewX
+            contour_y[i] = NewY
 
-    
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.imshow(source, cmap='gray')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xlim(0, source.shape[1])
+    ax.set_ylim(source.shape[0], 0)
+    ax.plot(np.r_[contour_x, contour_x[0]],
+            np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
+
+    plt.show()
 
 
 def create_initial_contour(source, num_points):
@@ -26,10 +57,11 @@ def create_initial_contour(source, num_points):
     :return:
     """
 
-    t = np.arange(0, num_points/10, 0.1)
+    t = np.arange(0, num_points / 10, 0.1)
     contour_x = (source.shape[0] // 2) + 160 * np.cos(t)
     contour_y = (source.shape[1] // 2) + 245 * np.sin(t)
-
+    contour_x = contour_x.astype(int)
+    contour_y = contour_y.astype(int)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.imshow(source, cmap='gray')
@@ -49,7 +81,7 @@ def compute_total_energy():
     pass
 
 
-def internal_energy(flattened_pts, alpha: int, beta: int):
+def internal_energy(CurrentX, CurrentY, alpha: float, beta: float):
     """
     The internal energy is responsible for:
         1. Forcing the contour to be continuous (E_cont)
@@ -89,26 +121,26 @@ def internal_energy(flattened_pts, alpha: int, beta: int):
 
     :return:
     """
+    JoinedXY = np.array((CurrentX, CurrentY))
+    Points = JoinedXY.T
 
-    pts = np.reshape(flattened_pts, (int(len(flattened_pts) / 2), 2))
+    # Continuous  Energy
+    PrevPoints = np.roll(Points, 1, axis=0)
+    NextPoints = np.roll(Points, -1, axis=0)
+    Displacements = Points - PrevPoints
+    PointDistances = np.sqrt(Displacements[:, 0] ** 2 + Displacements[:, 1] ** 2)
+    MeanDistance = np.mean(PointDistances)
+    ContinuousEnergy = np.sum((PointDistances - MeanDistance) ** 2)
 
-    # spacing energy (favors equi-distant points)
-    prev_pts = np.roll(pts, 1, axis=0)
-    next_pts = np.roll(pts, -1, axis=0)
-    displacements = pts - prev_pts
-    point_distances = np.sqrt(displacements[:, 0] ** 2 + displacements[:, 1] ** 2)
-    mean_dist = np.mean(point_distances)
-    spacing_energy = np.sum((point_distances - mean_dist) ** 2)
+    # Curvature Energy
+    CurvatureSeparated = PrevPoints - 2 * Points + NextPoints
+    Curvature = (CurvatureSeparated[:, 0] ** 2 + CurvatureSeparated[:, 1] ** 2)
+    CurvatureEnergy = np.sum(Curvature)
 
-    # curvature energy (favors smooth curves)
-    curvature_1d = prev_pts - 2 * pts + next_pts
-    curvature = (curvature_1d[:, 0] ** 2 + curvature_1d[:, 1] ** 2)
-    curvature_energy = np.sum(curvature)
-
-    return  alpha * spacing_energy + beta * curvature_energy
+    return alpha * ContinuousEnergy + beta * CurvatureEnergy
 
 
-def external_energy(source):
+def external_energy(source, WLine, WEdge):
     """
     The External Energy is responsible for:
         1. Attracts the contour towards the closest image edge with dependence on the energy map.
@@ -143,19 +175,14 @@ def external_energy(source):
     # gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
 
     # Apply Gaussian Filter to smooth the image
-    filtered_image = gaussian_filter(source, 3, 9)
+    ELine = gaussian_filter(source, 3, 9)
 
     # Get Gradient Magnitude & Direction
-    gradient_magnitude, gradient_direction = sobel_edge(filtered_image, True)
-    gradient_magnitude *= 255.0 / gradient_magnitude.max()
-    e_edge = gradient_magnitude
-
-    # TODO Calculate E_line
-
-    # TODO return E_external = w_line * E_line + w_edge * E_edge
-    e_external = None
-
-    return e_external
+    EEdge, gradient_direction = sobel_edge(ELine, True)
+    # EEdge *= 255.0 / EEdge.max()
+    print(f"ELine Shape {ELine.shape}")
+    print(f"EEdge Shape {EEdge.shape}")
+    return WLine * ELine + WEdge * EEdge[1:-1, 1:-1]
 
 
 def main():
@@ -164,13 +191,15 @@ def main():
     :return:
     """
 
-    alpha = 0.001
+    alpha = 0.5
     beta = 0.4
-    gamma = 100
+    gamma = 1.5
     iterations = 50
+    WLine = 0
+    WEdge = 5
 
     img = cv2.imread("../src/Images/pepsi_can.png", 0)
-    active_contour(img, alpha, beta, gamma, iterations)
+    active_contour(img, alpha, beta, gamma, WLine, WEdge, iterations)
 
 
 if __name__ == "__main__":

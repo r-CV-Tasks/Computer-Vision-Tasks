@@ -412,7 +412,8 @@ class ImageProcessor(m.Ui_MainWindow):
         :return:
         """
 
-        circle_radius = self.text_radius.text()
+        min_radius = int(self.text_min_radius.text())
+        max_radius = int(self.text_max_radius.text())
         num_votes = int(self.text_votes.text())
 
         self.img4_output.clear()
@@ -422,9 +423,9 @@ class ImageProcessor(m.Ui_MainWindow):
             self.hough_image = Hough.hough_lines(source=self.imagesData[4], num_peaks=num_votes)
         elif self.checkBox_circles.isChecked():
 
-            self.hough_image = Hough.hough_circles(source=self.imagesData[4], radius=circle_radius)
+            self.hough_image = Hough.hough_circles(source=self.imagesData[4], min_radius=min_radius, max_radius=max_radius)
         elif self.checkBox_lines.isChecked() & self.checkBox_circles.isChecked():
-            self.hough_image = Hough.hough_lines_and_circles(source=self.imagesData[4], radius=circle_radius)
+            self.hough_image = Hough.hough_lines_and_circles(source=self.imagesData[4], min_radius=min_radius, max_radius=max_radius)
 
         self.display_image(widget=self.img4_output, data=self.hough_image)
 

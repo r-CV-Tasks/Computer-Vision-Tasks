@@ -2214,7 +2214,7 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>50</width>
+                         <width>75</width>
                          <height>0</height>
                         </size>
                        </property>
@@ -2225,12 +2225,54 @@
                         </size>
                        </property>
                        <property name="text">
-                        <string>Radius:</string>
+                        <string>Min Radius</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_radius">
+                      <widget class="QLineEdit" name="text_min_radius">
+                       <property name="maximumSize">
+                        <size>
+                         <width>210</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>20</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_19">
+                     <item>
+                      <widget class="QLabel" name="label_24">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>75</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>210</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Max Radius</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="text_max_radius">
                        <property name="maximumSize">
                         <size>
                          <width>210</width>
@@ -2274,7 +2316,7 @@
                      </property>
                      <property name="minimumSize">
                       <size>
-                       <width>50</width>
+                       <width>75</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2366,7 +2408,7 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>500</width>
+                  <width>750</width>
                   <height>16777215</height>
                  </size>
                 </property>
@@ -2390,7 +2432,7 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>500</width>
+                  <width>750</width>
                   <height>16777215</height>
                  </size>
                 </property>

@@ -108,11 +108,12 @@ def line_detection(source: np.ndarray):
 
 def hough_lines(source: np.ndarray, num_peaks: int = 10) -> np.ndarray:
 
-    H, rhos, thetas = line_detection(source)
+    src = np.copy(source)
+    H, rhos, thetas = line_detection(src)
     indicies, H = hough_peaks(H, num_peaks, nhood_size=20) # find peaks
-    hough_lines_draw(source, indicies, rhos, thetas)
+    hough_lines_draw(src, indicies, rhos, thetas)
 
-    return source
+    return src
 
 
 def detectCircles(img,threshold,region,radius = None):
@@ -169,14 +170,23 @@ def detectCircles(img,threshold,region,radius = None):
 def displayCircles(A, img): 
     circleCoordinates = np.argwhere(A)                                          #Extracting the circle information
     for r,x,y in circleCoordinates:
-        cv2.circle(img,(y, x), r, color=(0,255,0), fill=False)
+        cv2.circle(img,(y, x), r, color=(0,255,0), thickness=2)
     return img
 
 def hough_circles(source: np.ndarray, min_radius: int = 20, max_radius: int = 50) -> np.ndarray:
-    circles = detectCircles(source, threshold=8, region=15,radius=[max_radius, min_radius])
-    return displayCircles(circles, source)
+    """
+
+    :param source:
+    :param min_radius:
+    :param max_radius:
+    :return:
+    """
+
+    src = np.copy(source)
+    circles = detectCircles(src, threshold=8, region=15,radius=[max_radius, min_radius])
+    return displayCircles(circles, src)
 
 
-def hough_lines_and_circles(source: np.ndarray, radius: int = 25) -> np.ndarray:
+def hough_lines_and_circles(source: np.ndarray, min_radius: int = 20, max_radius: int = 50) -> np.ndarray:
     # TODO Apply hough lines & circles detection algorithm
     pass

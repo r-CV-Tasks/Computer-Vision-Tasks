@@ -59,6 +59,7 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
     plt.show()
 
 
+
 def create_initial_contour(source, num_points):
     """
         Represent the snake with a set of n points
@@ -215,3 +216,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

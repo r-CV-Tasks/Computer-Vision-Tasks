@@ -55,7 +55,7 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img2_input, self.img2_output,
                              self.imgA_input, self.imgB_input, self.imgX_output,
                              self.img4_input, self.img4_output,
-                             self.img5_input, self.img5_output]
+                             self.img5_input, self.img5_processed, self.img5_output]
 
         # Initial Variables
         self.currentNoiseImage = None

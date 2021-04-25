@@ -9,21 +9,32 @@ from LowPass import gaussian_filter
 def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, WLine, WEdge, num_iterations: int,
                    num_points: int = 12) -> np.ndarray:
     contour_x, contour_y, = create_initial_contour(source, 65)
+    Grad = external_energy(source, WLine, WEdge)
     ExternalEnergy = gamma * external_energy(source, WLine, WEdge)
     WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1]]
     # TODO Fix The Code
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.imshow(Grad, cmap='gray')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xlim(0, Grad.shape[1])
+    ax.set_ylim(Grad.shape[0], 0)
+    ax.plot(np.r_[contour_x, contour_x[0]],
+            np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
 
+    plt.show()
     for n in range(num_iterations):
         for i in range(len(contour_x)):
             MinEnergy = None
             NewX = None
             NewY = None
             for k in WindowCoordinates:
-                CurrentX, CurrentY = contour_x, contour_y
+                CurrentX, CurrentY = np.copy(contour_x), np.copy(contour_y)
                 CurrentX[i] = CurrentX[i] + k[0] if CurrentX[i] < 511 else 511
                 CurrentY[i] = CurrentY[i] + k[1] if CurrentY[i] < 511 else 511
-                TotalEnergy = - ExternalEnergy[contour_x[i], contour_y[i]] + internal_energy(CurrentX, CurrentY, alpha,
-                                                                                             beta)
+                TotalEnergy = - ExternalEnergy[CurrentX[i], CurrentY[i]] + internal_energy(CurrentX, CurrentY, alpha,
+                                                                                           beta)
                 if MinEnergy is None:
                     MinEnergy = TotalEnergy
                     NewX = CurrentX[i] if CurrentX[i] < 512 else 511
@@ -175,13 +186,13 @@ def external_energy(source, WLine, WEdge):
     # gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
 
     # Apply Gaussian Filter to smooth the image
-    ELine = gaussian_filter(source, 3, 9)
+    ELine = gaussian_filter(source, 5, 25)
 
     # Get Gradient Magnitude & Direction
     EEdge, gradient_direction = sobel_edge(ELine, True)
-    # EEdge *= 255.0 / EEdge.max()
-    print(f"ELine Shape {ELine.shape}")
-    print(f"EEdge Shape {EEdge.shape}")
+    # EEdge *= 255 / EEdge.max()
+    # EEdge = EEdge.astype("int16")
+
     return WLine * ELine + WEdge * EEdge[1:-1, 1:-1]
 
 
@@ -191,12 +202,12 @@ def main():
     :return:
     """
 
-    alpha = 0.5
-    beta = 0.4
-    gamma = 1.5
+    alpha = 0.06
+    beta = 0.7
+    gamma = 30
     iterations = 50
     WLine = 0
-    WEdge = 5
+    WEdge = 4
 
     img = cv2.imread("../src/Images/pepsi_can.png", 0)
     active_contour(img, alpha, beta, gamma, WLine, WEdge, iterations)

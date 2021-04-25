@@ -4,7 +4,6 @@ from typing import Tuple
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy import ndimage
 
 from EdgeDetection import sobel_edge
 from LowPass import gaussian_filter
@@ -15,25 +14,9 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
     contour_x, contour_y, = create_initial_contour(source, 65)
     Grad = external_energy(source, WLine, WEdge)
     ExternalEnergy = gamma * external_energy(source, WLine, WEdge)
-<<<<<<< Updated upstream
     # WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1], [2, 2]]
     WindowCoordinates = GenerateWindowCoordinates(5)
     contour_points = len(contour_x)
-=======
-    print(f"External Energy:\n", ExternalEnergy)
-    print(f"External Energy Shape:\n", ExternalEnergy.shape)
-    WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1]]
-    # TODO Fix The Code
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.imshow(Grad, cmap='gray')
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_xlim(0, Grad.shape[1])
-    ax.set_ylim(Grad.shape[0], 0)
-    ax.plot(np.r_[contour_x, contour_x[0]],
-            np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
->>>>>>> Stashed changes
 
     for Iteration in range(num_iterations):
         for Point in range(contour_points):
@@ -197,12 +180,14 @@ def external_energy(source, WLine, WEdge):
     :return:
     """
 
-    # Calculate E_edge
-    # Convert to gray Scale
-    # gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
+    # convert to gray scale if not already
+    if len(source.shape) > 2:
+        gray = cv2.cvtColor(source, cv2.COLOR_RGB2GRAY)
+    else:
+        gray = source
 
     # Apply Gaussian Filter to smooth the image
-    ELine = gaussian_filter(source, 7, 7 * 7)
+    ELine = gaussian_filter(gray, 7, 7 * 7)
 
     # Get Gradient Magnitude & Direction
     EEdge, gradient_direction = sobel_edge(ELine, True)

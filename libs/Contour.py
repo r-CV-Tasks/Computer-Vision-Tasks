@@ -1,3 +1,6 @@
+import itertools
+from typing import Tuple
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,66 +10,52 @@ from LowPass import gaussian_filter
 
 
 def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, WLine, WEdge, num_iterations: int,
-                   num_points: int = 12) -> np.ndarray:
+                   num_points: int = 12) -> Tuple[np.ndarray, np.ndarray]:
     contour_x, contour_y, = create_initial_contour(source, 65)
     Grad = external_energy(source, WLine, WEdge)
     ExternalEnergy = gamma * external_energy(source, WLine, WEdge)
-    WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1]]
-    # TODO Fix The Code
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.imshow(Grad, cmap='gray')
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_xlim(0, Grad.shape[1])
-    ax.set_ylim(Grad.shape[0], 0)
-    ax.plot(np.r_[contour_x, contour_x[0]],
-            np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
+    # WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1], [2, 2]]
+    WindowCoordinates = GenerateWindowCoordinates(5)
+    contour_points = len(contour_x)
 
-    plt.show()
-    for n in range(num_iterations):
-        for i in range(len(contour_x)):
+    for Iteration in range(num_iterations):
+        for Point in range(contour_points):
             MinEnergy = np.inf
             NewX = None
             NewY = None
-            for k in WindowCoordinates:
+            for Window in WindowCoordinates:
+                # Create Temporary Contours With Point Shifted To A Coordinate
                 CurrentX, CurrentY = np.copy(contour_x), np.copy(contour_y)
-                CurrentX[i] = CurrentX[i] + k[0] if CurrentX[i] < 511 else 511
-                CurrentY[i] = CurrentY[i] + k[1] if CurrentY[i] < 511 else 511
-                TotalEnergy = - ExternalEnergy[CurrentX[i], CurrentY[i]] + internal_energy(CurrentX, CurrentY, alpha,
-                                                                                           beta)
+                CurrentX[Point] = CurrentX[Point] + Window[0] if CurrentX[Point] < source.shape[1] else source.shape[
+                                                                                                            1] - 1
+                CurrentY[Point] = CurrentY[Point] + Window[1] if CurrentY[Point] < source.shape[0] else source.shape[
+                                                                                                            0] - 1
+                # Calculate Energy At The New Point
+                TotalEnergy = - ExternalEnergy[CurrentY[Point], CurrentX[Point]] + internal_energy(CurrentX, CurrentY,
+                                                                                                   alpha, beta)
+                # Save The Point If It Has The Lowest Energy In The Window
                 if TotalEnergy < MinEnergy:
                     MinEnergy = TotalEnergy
-                    NewX = CurrentX[i] if CurrentX[i] < 512 else 511
-                    NewY = CurrentY[i] if CurrentY[i] < 512 else 511
-            contour_x[i] = NewX
-            contour_y[i] = NewY
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.imshow(source, cmap='gray')
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_xlim(0, source.shape[1])
-    ax.set_ylim(source.shape[0], 0)
-    ax.plot(np.r_[contour_x, contour_x[0]],
-            np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
-
-    plt.show()
+                    NewX = CurrentX[Point] if CurrentX[Point] < source.shape[1] else source.shape[1] - 1
+                    NewY = CurrentY[Point] if CurrentY[Point] < source.shape[0] else source.shape[0] - 1
+            # Shift The Point In The Contour To It's New Location With The Lowest Energy
+            contour_x[Point] = NewX
+            contour_y[Point] = NewY
+    return contour_x, contour_y
 
 
 def create_initial_contour(source, num_points):
     """
         Represent the snake with a set of n points
         Vi = (Xi, Yi) , where i = 0, 1, ... n-1
-
+    :param source: Image Source
     :param num_points:
     :return:
     """
 
     t = np.arange(0, num_points / 10, 0.1)
-    contour_x = (source.shape[0] // 2) + 160 * np.cos(t)
-    contour_y = (source.shape[1] // 2) + 245 * np.sin(t)
+    contour_x = (source.shape[1] // 2) + 110 * np.cos(t) - 100
+    contour_y = (source.shape[0] // 2) + 110 * np.sin(t) + 50
     contour_x = contour_x.astype(int)
     contour_y = contour_y.astype(int)
     fig = plt.figure()
@@ -86,6 +75,20 @@ def create_initial_contour(source, num_points):
 
 def compute_total_energy():
     pass
+
+
+def GenerateWindowCoordinates(Size: int):
+    """
+    Generates A List of All Possible Coordinates Inside A Window of Size "Size"
+    :param Size: Size of The Window
+    :return Coordinates: List of All Possible Coordinates
+    """
+    # Generate List of All Possible Point Values Based on Size
+    Points = list(range(-Size // 2 + 1, Size // 2 + 1))
+    PointsList = [Points, Points]
+    # Generates All Possible Coordinates Inside The Window
+    Coordinates = list(itertools.product(*PointsList))
+    return Coordinates
 
 
 def internal_energy(CurrentX, CurrentY, alpha: float, beta: float):
@@ -182,7 +185,7 @@ def external_energy(source, WLine, WEdge):
     # gray = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
 
     # Apply Gaussian Filter to smooth the image
-    ELine = gaussian_filter(source, 5, 25)
+    ELine = gaussian_filter(source, 7, 7 * 7)
 
     # Get Gradient Magnitude & Direction
     EEdge, gradient_direction = sobel_edge(ELine, True)
@@ -197,15 +200,16 @@ def main():
     the application startup functions
     :return:
     """
-
-    alpha = 0.06
-    beta = 0.7
-    gamma = 30
+    # Continuous
+    alpha = 19.86
+    # Curvature
+    beta = 30.7
+    gamma = 50
     iterations = 50
-    WLine = 0
-    WEdge = 4
+    WLine = 1
+    WEdge = 1
 
-    img = cv2.imread("../src/Images/pepsi_can.png", 0)
+    img = cv2.imread("../src/Images/circles_v2.png", 0)
     active_contour(img, alpha, beta, gamma, WLine, WEdge, iterations)
 
 

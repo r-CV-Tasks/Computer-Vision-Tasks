@@ -26,7 +26,7 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
     plt.show()
     for n in range(num_iterations):
         for i in range(len(contour_x)):
-            MinEnergy = None
+            MinEnergy = np.inf
             NewX = None
             NewY = None
             for k in WindowCoordinates:
@@ -35,10 +35,6 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
                 CurrentY[i] = CurrentY[i] + k[1] if CurrentY[i] < 511 else 511
                 TotalEnergy = - ExternalEnergy[CurrentX[i], CurrentY[i]] + internal_energy(CurrentX, CurrentY, alpha,
                                                                                            beta)
-                if MinEnergy is None:
-                    MinEnergy = TotalEnergy
-                    NewX = CurrentX[i] if CurrentX[i] < 512 else 511
-                    NewY = CurrentY[i] if CurrentY[i] < 512 else 511
                 if TotalEnergy < MinEnergy:
                     MinEnergy = TotalEnergy
                     NewX = CurrentX[i] if CurrentX[i] < 512 else 511
@@ -57,7 +53,6 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
             np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
 
     plt.show()
-
 
 
 def create_initial_contour(source, num_points):
@@ -216,4 +211,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -2652,7 +2652,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_alpha"/>
+                      <widget class="QLineEdit" name="text_alpha">
+                       <property name="text">
+                        <string>20</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -2678,7 +2682,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_beta"/>
+                      <widget class="QLineEdit" name="text_beta">
+                       <property name="text">
+                        <string>30</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -2704,7 +2712,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_gamma"/>
+                      <widget class="QLineEdit" name="text_gamma">
+                       <property name="text">
+                        <string>50</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>

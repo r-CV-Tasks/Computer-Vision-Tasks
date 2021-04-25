@@ -9,14 +9,29 @@ from EdgeDetection import sobel_edge
 from LowPass import gaussian_filter
 
 
-def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, WLine, WEdge, num_iterations: int,
-                   num_points: int = 12) -> Tuple[np.ndarray, np.ndarray]:
-    contour_x, contour_y, = create_initial_contour(source, 65)
-    Grad = external_energy(source, WLine, WEdge)
-    ExternalEnergy = gamma * external_energy(source, WLine, WEdge)
+def active_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndarray,
+                   alpha: float, beta: float, gamma: float,
+                   w_line, w_dge, num_iterations: int) -> Tuple[np.ndarray, np.ndarray]:
+    """
+
+    :param source:
+    :param alpha:
+    :param beta:
+    :param gamma:
+    :param w_line:
+    :param w_dge:
+    :param num_iterations:
+    :param num_points:
+    :return:
+    """
+
+    cont_x = np.copy(contour_x)
+    cont_y = np.copy(contour_y)
+
+    ExternalEnergy = gamma * external_energy(source, w_line, w_dge)
     # WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1], [2, 2]]
     WindowCoordinates = GenerateWindowCoordinates(5)
-    contour_points = len(contour_x)
+    contour_points = len(cont_x)
 
     for Iteration in range(num_iterations):
         for Point in range(contour_points):
@@ -25,7 +40,7 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
             NewY = None
             for Window in WindowCoordinates:
                 # Create Temporary Contours With Point Shifted To A Coordinate
-                CurrentX, CurrentY = np.copy(contour_x), np.copy(contour_y)
+                CurrentX, CurrentY = np.copy(cont_x), np.copy(cont_y)
                 CurrentX[Point] = CurrentX[Point] + Window[0] if CurrentX[Point] < source.shape[1] else source.shape[
                                                                                                             1] - 1
                 CurrentY[Point] = CurrentY[Point] + Window[1] if CurrentY[Point] < source.shape[0] else source.shape[
@@ -38,10 +53,12 @@ def active_contour(source: np.ndarray, alpha: float, beta: float, gamma: float, 
                     MinEnergy = TotalEnergy
                     NewX = CurrentX[Point] if CurrentX[Point] < source.shape[1] else source.shape[1] - 1
                     NewY = CurrentY[Point] if CurrentY[Point] < source.shape[0] else source.shape[0] - 1
+
             # Shift The Point In The Contour To It's New Location With The Lowest Energy
-            contour_x[Point] = NewX
-            contour_y[Point] = NewY
-    return contour_x, contour_y
+            cont_x[Point] = NewX
+            cont_y[Point] = NewY
+
+    return cont_x, cont_y
 
 
 def create_initial_contour(source, num_points):
@@ -71,11 +88,6 @@ def create_initial_contour(source, num_points):
     plt.show()
 
     return contour_x, contour_y
-
-
-def compute_total_energy():
-    pass
-
 
 def GenerateWindowCoordinates(Size: int):
     """
@@ -212,8 +224,25 @@ def main():
     WEdge = 1
 
     img = cv2.imread("../src/Images/circles_v2.png", 0)
-    active_contour(img, alpha, beta, gamma, WLine, WEdge, iterations)
+    contour_x, contour_y = create_initial_contour(source=img, num_points=65)
+    cont_x, cont_y = active_contour(source=img, contour_x=contour_x, contour_y=contour_y,
+                                            alpha=alpha, beta=beta, gamma=gamma, w_line=WLine,
+                                            w_dge=WEdge, num_iterations=iterations)
 
+    # active_contour(img, alpha, beta, gamma, WLine, WEdge, iterations, )
+
+    # Plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.imshow(img, cmap='gray')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xlim(0, img.shape[1])
+    ax.set_ylim(img.shape[0], 0)
+    ax.plot(np.r_[cont_x, cont_x[0]],
+            np.r_[cont_y, cont_y[0]], c=(0, 1, 0), lw=2)
+
+    plt.show()
 
 if __name__ == "__main__":
     main()

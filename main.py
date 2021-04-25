@@ -170,7 +170,7 @@ class ImageProcessor(m.Ui_MainWindow):
                     self.clear_results(tab_id=self.tab_index)
 
                 # Create and Display Original Image
-                self.display_image(data=self.imagesData[img_id], widget=self.inputImages[img_id])
+                self.display_image(source=self.imagesData[img_id], widget=self.inputImages[img_id])
 
                 # Enable the combo box and parameters input
                 self.enable_gui(tab_id=img_id)
@@ -290,7 +290,7 @@ class ImageProcessor(m.Ui_MainWindow):
                 elif selected_component == "salt & pepper noise":
                     self.currentNoiseImage = Noise.salt_pepper_noise(source=self.imagesData[0], snr=noise_snr)
 
-                self.display_image(data=self.currentNoiseImage, widget=self.filtersImages[combo_id])
+                self.display_image(source=self.currentNoiseImage, widget=self.filtersImages[combo_id])
 
             # Filters Options
             if combo_id == 1:
@@ -313,7 +313,7 @@ class ImageProcessor(m.Ui_MainWindow):
                     self.filtered_image = LowPass.median_filter(source=self.currentNoiseImage, shape=mask_size)
 
                 try:
-                    self.display_image(data=self.filtered_image, widget=self.filtersImages[combo_id])
+                    self.display_image(source=self.filtered_image, widget=self.filtersImages[combo_id])
                 except TypeError:
                     print("Cannot display Image")
 
@@ -331,7 +331,7 @@ class ImageProcessor(m.Ui_MainWindow):
                 elif selected_component == "canny mask":
                     self.edged_image = EdgeDetection.canny_edge(source=self.imagesData[0])
 
-                self.display_image(data=self.edged_image, widget=self.filtersImages[combo_id])
+                self.display_image(source=self.edged_image, widget=self.filtersImages[combo_id])
 
             logger.info(f"Viewing {selected_component} Of Image{combo_id + 1}")
 
@@ -389,7 +389,7 @@ class ImageProcessor(m.Ui_MainWindow):
                                            title="Gray Histogram", label="Pixels")
 
                 try:
-                    self.display_image(data=self.output_hist_image, widget=self.img2_output)
+                    self.display_image(source=self.output_hist_image, widget=self.img2_output)
                 except TypeError:
                     print("Cannot display histogram image")
 
@@ -404,13 +404,15 @@ class ImageProcessor(m.Ui_MainWindow):
         image2_dft = FrequencyFilters.low_pass_filter(self.imagesData[3], size=15)
 
         self.hybrid_image = image1_dft + image2_dft
-        self.display_image(widget=self.imgX_output, data=self.hybrid_image)
+        self.display_image(source=self.hybrid_image, widget=self.imgX_output)
 
     def hough_transform(self):
         """
 
         :return:
         """
+
+        self.hough_image = None
 
         min_radius = int(self.text_min_radius.text())
         max_radius = int(self.text_max_radius.text())
@@ -419,15 +421,19 @@ class ImageProcessor(m.Ui_MainWindow):
         self.img4_output.clear()
 
         # choose hough transform type
-        if self.checkBox_lines.isChecked():
+        if self.checkBox_lines.isChecked() & (self.checkBox_circles.isChecked() == False):
             self.hough_image = Hough.hough_lines(source=self.imagesData[4], num_peaks=num_votes)
-        elif self.checkBox_circles.isChecked():
-
+        elif self.checkBox_circles.isChecked() & (self.checkBox_lines.isChecked() == False):
             self.hough_image = Hough.hough_circles(source=self.imagesData[4], min_radius=min_radius, max_radius=max_radius)
         elif self.checkBox_lines.isChecked() & self.checkBox_circles.isChecked():
-            self.hough_image = Hough.hough_lines_and_circles(source=self.imagesData[4], min_radius=min_radius, max_radius=max_radius)
+            self.show_message("Warning!!", "Choose one type only",
+                              QMessageBox.Ok, QMessageBox.Warning)
+            # self.hough_image = Hough.hough_lines_and_circles(source=self.imagesData[4], min_radius=min_radius, max_radius=max_radius)
 
-        self.display_image(widget=self.img4_output, data=self.hough_image)
+        try:
+            self.display_image(source=self.hough_image, widget=self.img4_output)
+        except:
+            pass
 
     def active_contour(self):
         """
@@ -436,12 +442,36 @@ class ImageProcessor(m.Ui_MainWindow):
         """
 
         # Get Contour Parameters
-        alpha = self.text_alpha.text()
-        beta = self.text_beta.text()
-        gamma = self.text_gamma.text()
+        alpha = int(self.text_alpha.text())
+        beta = int(self.text_beta.text())
+        gamma = int(self.text_gamma.text())
 
-        self.contour_image = Contour.active_contour(source=self.imagesData[5], alpha=alpha, beta=beta, gamma=gamma)
-        self.display_image(widget=self.img5_output, data=self.contour_image)
+        iterations = 50
+        w_line = 1
+        w_edge = 1
+
+        # Transpose the image for proper calculations in the contour
+        src = np.copy(cv2.transpose(self.imagesData[5]))
+        img = np.copy(cv2.transpose(self.imagesData[5]))
+        img_copy = np.copy(cv2.transpose(self.imagesData[5]))
+
+        # Create Initial Contour and display it on the GUI
+        contour_x, contour_y = Contour.create_initial_contour(source=img, num_points=65)
+        self.processed_image = self.draw_contour(img, contour_x, contour_y)
+        self.processed_image = cv2.transpose(self.processed_image)
+        self.display_image(source=self.processed_image, widget=self.img5_processed)
+
+        # Start Applying Active Contour Algorithm
+        cont_x, cont_y = Contour.active_contour(source=img_copy, contour_x=contour_x, contour_y=contour_y,
+                                                alpha=alpha, beta=beta, gamma=gamma, w_line=w_line,
+                                                w_dge=w_edge, num_iterations=iterations)
+
+        self.contour_image = self.draw_contour(src, cont_x, cont_y)
+
+        # Transpose the image to be viewed correctly in the GUI
+        self.contour_image = cv2.transpose(self.contour_image)
+
+        self.display_image(source=self.contour_image, widget=self.img5_output)
 
     def clear_anchors(self):
         print("Clearing anchors")
@@ -467,15 +497,36 @@ class ImageProcessor(m.Ui_MainWindow):
             self.combo_box_changed(tab_id=self.tab_index, combo_id=1)
 
     @staticmethod
-    def display_image(data, widget):
+    def draw_contour(source, points_x, points_y):
+        """
+
+        :param self:
+        :param points_x:
+        :param points_y:
+        :return:
+        """
+
+        points = []
+        for px, py in zip(points_x, points_y):
+            points.append([px, py])
+
+        points = np.array(points, np.int32)
+        points = points.reshape((-1, 1, 2))
+
+        image = cv2.polylines(source, [points], isClosed=True, color=(0, 255, 0), thickness=2)
+
+        return image
+
+    @staticmethod
+    def display_image(source, widget):
         """
         Display the given data
-        :param data: 2d numpy array
+        :param source: 2d numpy array
         :param widget: ImageView object
         :return:
         """
-        widget.setImage(data)
-        widget.view.setRange(xRange=[0, data.shape[0]], yRange=[0, data.shape[1]],
+        widget.setImage(source)
+        widget.view.setRange(xRange=[0, source.shape[0]], yRange=[0, source.shape[1]],
                              padding=0)
         widget.ui.roiPlot.hide()
 

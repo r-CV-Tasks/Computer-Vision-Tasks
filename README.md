@@ -44,6 +44,19 @@ Active contour is one of the active models in segmentation techniques, which mak
 
 Active contour defines a separate boundary or curvature for the regions of target object for segmentation.
 
-#### Result of applying the algorithm on the big circle
-<img src="src/results/task2/active_contour_result.png" alt="Active Contour Model">
+#### Result of applying the algorithm on hand image
+<img src="src/results/task2/active_contour_result1.png" alt="Active Contour Model" width="700" height="400">
+
+##### This GIF shows the process in a better way
+<img src="src/results/task2/Active_Contour_Hand_Result.gif" alt="Active Contour Model" width="700" height="400">
+
+<div style="page-break-after: always;"></div>
+
+
+#### Result of applying the algorithm on hand image
+<img src="src/results/task2/active_contour_result2.png" alt="Active Contour Model" width="700" height="400">
+
+##### This GIF shows the process in a better way
+<img src="src/results/task2/Active_Contour_Circles_Result.gif" alt="Active Contour Model" width="700" height="400">
+
 <div style="page-break-after: always;"></div>

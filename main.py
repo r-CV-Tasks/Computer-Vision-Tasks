@@ -470,12 +470,14 @@ class ImageProcessor(m.Ui_MainWindow):
         alpha = int(self.text_alpha.text())
         beta = int(self.text_beta.text())
         gamma = int(self.text_gamma.text())
-        num_iterations = int(self.text_num_iterations.text())
-
         w_line = 1
         w_edge = 1
+        num_iterations = int(self.text_num_iterations.text())
 
-        # Greedy Algorithm
+        # Flag to check if initial contour is displayed 1 time only
+        initial_image = False
+
+        #### Greedy Algorithm ####
 
         # Transpose and copy the image for proper calculations in the contour
         image_src = np.copy(cv2.transpose(self.imagesData[5]))
@@ -486,37 +488,33 @@ class ImageProcessor(m.Ui_MainWindow):
         # Calculate External Energy which will be used in each iteration of greedy algorithm
         ExternalEnergy = gamma * Contour.external_energy(image_src, w_line, w_edge)
 
+        # Copy the coordinates to update them in the main loop
         cont_x, cont_y = np.copy(contour_x), np.copy(contour_y)
 
-        self.timer.start(200)
-
+        # main loop of the greedy algorithm
         for iteration in range(num_iterations):
-            # Check Timer Status to display the image
-            if self.timer.isActive():
-                print("Timer is already active")
-            else:
-                print("Activating Timer")
-                self.timer.start(200)
-
             # Start Applying Active Contour Algorithm
             cont_x, cont_y = Contour.iterate_contour(source=image_src, contour_x=cont_x, contour_y=cont_y,
                                                      external_energy=ExternalEnergy,
                                                      window_coordinates=WindowCoordinates,
                                                      alpha=alpha, beta=beta)
+
+            # Display the new contour above the image
             src_copy = np.copy(image_src)
             processed_image = self.draw_contour_on_image(src_copy, cont_x, cont_y)
             processed_image = cv2.transpose(processed_image)
             self.updated_image = np.copy(processed_image)
 
-            # self.display_image(source=processed_image, widget=self.img5_processed)
-            # self.timer.start(300)
-            print(f"Iteration {iteration} done")
+            # Display Initial Image once then update the output after that
+            if initial_image is False:
+                self.display_image(source=self.updated_image, widget=self.img5_input)
+                initial_image = True
+            else:
+                self.display_image(source=self.updated_image, widget=self.img5_output)
 
-        contour_image = self.draw_contour_on_image(image_src, cont_x, cont_y)
+            # Used to allow the GUI to update ImageView Object without lagging
+            QtWidgets.QApplication.processEvents()
 
-        # Transpose the image to be viewed correctly in the GUI
-        contour_image = cv2.transpose(contour_image)
-        self.display_image(source=contour_image, widget=self.img5_output)
 
     @staticmethod
     def clear_anchors():

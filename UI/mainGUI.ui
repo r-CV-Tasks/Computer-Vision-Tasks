@@ -2899,7 +2899,7 @@
                  </size>
                 </property>
                 <property name="title">
-                 <string>Output Image</string>
+                 <string>Processed Image</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_55">
                  <item row="0" column="0">
@@ -2936,7 +2936,7 @@
                  </size>
                 </property>
                 <property name="title">
-                 <string>Processed Image</string>
+                 <string>Initial Image</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_56">
                  <item row="0" column="0">

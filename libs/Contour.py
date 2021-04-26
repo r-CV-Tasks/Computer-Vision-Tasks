@@ -74,18 +74,6 @@ def create_initial_contour(source, num_points):
     # Create neighborhood window
     WindowCoordinates = GenerateWindowCoordinates(5)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.imshow(source, cmap='gray')
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_xlim(0, source.shape[1])
-    ax.set_ylim(source.shape[0], 0)
-    ax.plot(np.r_[contour_x, contour_x[0]],
-            np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
-
-    plt.show()
-
     return contour_x, contour_y, WindowCoordinates
 
 def GenerateWindowCoordinates(Size: int):
@@ -240,6 +228,18 @@ def main():
     # Calculate External Energy which will be used in each iteration of greedy algorithm
     ExternalEnergy = gamma * external_energy(image_src, w_line, w_edge)
 
+    # Draw the Initial Contour on the image
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.imshow(image_src, cmap='gray')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xlim(0, image_src.shape[1])
+    ax.set_ylim(image_src.shape[0], 0)
+    ax.plot(np.r_[contour_x, contour_x[0]],
+            np.r_[contour_y, contour_y[0]], c=(0, 1, 0), lw=2)
+    plt.show()
+
     cont_x, cont_y = np.copy(contour_x), np.copy(contour_y)
 
     for iteration in range(num_iterations):
@@ -258,7 +258,6 @@ def main():
     ax.set_ylim(img.shape[0], 0)
     ax.plot(np.r_[cont_x, cont_x[0]],
             np.r_[cont_y, cont_y[0]], c=(0, 1, 0), lw=2)
-
     plt.show()
 
 if __name__ == "__main__":

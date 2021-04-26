@@ -55,7 +55,7 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img2_input, self.img2_output,
                              self.imgA_input, self.imgB_input, self.imgX_output,
                              self.img4_input, self.img4_output,
-                             self.img5_input, self.img5_processed, self.img5_output]
+                             self.img5_input, self.img5_output]
 
         # Initial Variables
         self.currentNoiseImage = None
@@ -115,14 +115,6 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_reset_contour.clicked.connect(self.reset_contour)
 
         self.setup_images_view()
-
-        # Timer Configuration for displaying Active Contour
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.display_processed_contour)
-
-        self.timer2 = QTimer()
-        self.timer2.timeout.connect(self.test_time)
-        # self.timer2.start(300)
 
     def tab_changed(self):
         """
@@ -470,9 +462,9 @@ class ImageProcessor(m.Ui_MainWindow):
         alpha = int(self.text_alpha.text())
         beta = int(self.text_beta.text())
         gamma = int(self.text_gamma.text())
+        num_iterations = int(self.text_num_iterations.text())
         w_line = 1
         w_edge = 1
-        num_iterations = int(self.text_num_iterations.text())
 
         # Flag to check if initial contour is displayed 1 time only
         initial_image = False
@@ -565,21 +557,6 @@ class ImageProcessor(m.Ui_MainWindow):
         image = cv2.polylines(src, [points], isClosed=True, color=(0, 255, 0), thickness=2)
 
         return image
-
-    def display_processed_contour(self):
-        """
-
-        :return:
-        """
-        print("Displaying Processed Contour")
-        try:
-            self.display_image(source=self.updated_image, widget=self.img5_processed)
-        except TypeError:
-            print("Cannot display Image")
-        self.timer.stop()
-
-    def test_time(self):
-        print("Timeout")
 
     @staticmethod
     def display_image(source, widget):

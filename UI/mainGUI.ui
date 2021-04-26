@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>750</height>
+    <width>1051</width>
+    <height>818</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>1000</width>
-    <height>750</height>
+    <height>780</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -2720,7 +2720,7 @@
                      <item>
                       <widget class="QLineEdit" name="text_num_iterations">
                        <property name="text">
-                        <string>50</string>
+                        <string>40</string>
                        </property>
                       </widget>
                      </item>
@@ -2922,28 +2922,17 @@
                </spacer>
               </item>
               <item row="0" column="1">
-               <widget class="QGroupBox" name="groupBox_27">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+               <spacer name="horizontalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
-                <property name="maximumSize">
+                <property name="sizeHint" stdset="0">
                  <size>
-                  <width>500</width>
-                  <height>16777215</height>
+                  <width>40</width>
+                  <height>20</height>
                  </size>
                 </property>
-                <property name="title">
-                 <string>Initial Image</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_56">
-                 <item row="0" column="0">
-                  <widget class="ImageView" name="img5_processed" native="true"/>
-                 </item>
-                </layout>
-               </widget>
+               </spacer>
               </item>
              </layout>
             </item>
@@ -2962,7 +2951,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1051</width>
      <height>26</height>
     </rect>
    </property>

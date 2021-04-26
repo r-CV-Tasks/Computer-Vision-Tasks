@@ -2965,7 +2965,7 @@
   <customwidget>
    <class>MySlider</class>
    <extends>QSlider</extends>
-   <header>mySliderClass</header>
+   <header location="global">UI/mySliderClass</header>
   </customwidget>
  </customwidgets>
  <resources/>

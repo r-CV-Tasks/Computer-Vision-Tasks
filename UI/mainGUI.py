@@ -1364,7 +1364,7 @@ class Ui_MainWindow(object):
         self.actionImage_2.setObjectName("actionImage_2")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget_process.setCurrentIndex(3)
+        self.tabWidget_process.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -1485,5 +1485,5 @@ class Ui_MainWindow(object):
         self.tabWidget_process.setTabText(self.tabWidget_process.indexOf(self.Active_Contour_Tab), _translate("MainWindow", "Active Contour"))
         self.actionImage_1.setText(_translate("MainWindow", "Image 1"))
         self.actionImage_2.setText(_translate("MainWindow", "Image 2"))
-from mySliderClass import MySlider
+from UI.mySliderClass import MySlider
 from pyqtgraph import ImageView, PlotWidget

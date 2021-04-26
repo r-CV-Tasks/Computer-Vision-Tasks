@@ -238,9 +238,17 @@ class ImageProcessor(m.Ui_MainWindow):
             # Clear Images Widgets
             for i in range(len(self.filtersImages)):
                 self.filtersImages[i].clear()
+
+            # Reset combo boxes choices
+            self.combo_noise.setCurrentIndex(0)
+            self.combo_filter.setCurrentIndex(0)
+            self.combo_edges.setCurrentIndex(0)
         elif tab_id == 1:
             for widget in self.histoImages:
                 widget.clear()
+
+            # Reset combo box choices
+            self.combo_histogram.setCurrentIndex(0)
 
         elif tab_id == 2:
             self.imgX_output.clear()
@@ -254,8 +262,8 @@ class ImageProcessor(m.Ui_MainWindow):
     def combo_box_changed(self, tab_id, combo_id):
         """
 
-        :param tab_id:
-        :param combo_id:
+        :param tab_id: id of the current tab
+        :param combo_id: id of the chosen combo box
         :return:
         """
 
@@ -290,7 +298,10 @@ class ImageProcessor(m.Ui_MainWindow):
                 elif selected_component == "salt & pepper noise":
                     self.currentNoiseImage = Noise.salt_pepper_noise(source=self.imagesData[0], snr=noise_snr)
 
-                self.display_image(source=self.currentNoiseImage, widget=self.filtersImages[combo_id])
+                try:
+                    self.display_image(source=self.currentNoiseImage, widget=self.filtersImages[combo_id])
+                except TypeError:
+                    print("Cannot display Image")
 
             # Filters Options
             if combo_id == 1:
@@ -307,7 +318,7 @@ class ImageProcessor(m.Ui_MainWindow):
                 elif selected_component == "gaussian filter":
                     self.sigma_slider_2.setEnabled(True)
                     self.filtered_image = LowPass.gaussian_filter(source=self.currentNoiseImage, shape=mask_size,
-                                                             sigma=filter_sigma)
+                                                                  sigma=filter_sigma)
 
                 elif selected_component == "median filter":
                     self.filtered_image = LowPass.median_filter(source=self.currentNoiseImage, shape=mask_size)
@@ -331,20 +342,28 @@ class ImageProcessor(m.Ui_MainWindow):
                 elif selected_component == "canny mask":
                     self.edged_image = EdgeDetection.canny_edge(source=self.imagesData[0])
 
-                self.display_image(source=self.edged_image, widget=self.filtersImages[combo_id])
+                try:
+                    self.display_image(source=self.edged_image, widget=self.filtersImages[combo_id])
+                except TypeError:
+                    print("Cannot display Image")
 
-            logger.info(f"Viewing {selected_component} Of Image{combo_id + 1}")
+            logger.info(f"Viewing {selected_component} Of Image{tab_id}")
 
         # If 2nd tab is selected
         elif tab_id == 1:
+
+            # Get Values from combo box
             selected_component = self.combo_histogram.currentText().lower()
 
             # Histograms Options
             if combo_id == 3:
                 if selected_component == "original histogram":
+                    # Clear old results
                     self.img2_input_histo.clear()
                     self.img2_output_histo.clear()
-                    self.output_hist_image = self.imagesData[1]
+                    self.output_hist_image = np.copy(self.imagesData[1])
+
+                    # Draw the histograms of the input image
                     self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img2_input_histo,
                                             title="Original Histogram", label="Pixels")
                     self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img2_output_histo,
@@ -393,11 +412,12 @@ class ImageProcessor(m.Ui_MainWindow):
                 except TypeError:
                     print("Cannot display histogram image")
 
-            logger.info(f"Viewing {selected_component} Component Of Image{combo_id + 1}")
+            logger.info(f"Viewing {selected_component} Component Of Image{tab_id}")
 
     def hybrid_image(self):
         """
-
+        Create a hybrid image by applying a high pass filter to one of the images
+        and a low pass filter to the other image
         :return:
         """
         image1_dft = FrequencyFilters.high_pass_filter(self.imagesData[2], size=20)
@@ -408,36 +428,31 @@ class ImageProcessor(m.Ui_MainWindow):
 
     def hough_transform(self):
         """
-
+        Apply a hough transformation to detect lines or circles in the given image
         :return:
         """
 
         self.hough_image = None
 
+        # Get Parameters Values from the user
         min_radius = int(self.text_min_radius.text())
         max_radius = int(self.text_max_radius.text())
         num_votes = int(self.text_votes.text())
 
-        self.img4_output.clear()
-
-        # choose hough transform type
-        if self.checkBox_lines.isChecked() & (self.checkBox_circles.isChecked() == False):
+        if self.radioButton_lines.isChecked():
             self.hough_image = Hough.hough_lines(source=self.imagesData[4], num_peaks=num_votes)
-        elif self.checkBox_circles.isChecked() & (self.checkBox_lines.isChecked() == False):
+        elif self.radioButton_circles.isChecked():
             self.hough_image = Hough.hough_circles(source=self.imagesData[4], min_radius=min_radius, max_radius=max_radius)
-        elif self.checkBox_lines.isChecked() & self.checkBox_circles.isChecked():
-            self.show_message("Warning!!", "Choose one type only",
-                              QMessageBox.Ok, QMessageBox.Warning)
-            # self.hough_image = Hough.hough_lines_and_circles(source=self.imagesData[4], min_radius=min_radius, max_radius=max_radius)
 
         try:
             self.display_image(source=self.hough_image, widget=self.img4_output)
-        except:
-            pass
+        except TypeError:
+            print("Cannot display Image")
 
     def active_contour(self):
         """
-
+        Apply Active Contour Model (Snake) to the given image on a certain shape.
+        This algorithm is applied based on Greedy Algorithm
         :return:
         """
 
@@ -450,23 +465,21 @@ class ImageProcessor(m.Ui_MainWindow):
         w_line = 1
         w_edge = 1
 
-        # Transpose the image for proper calculations in the contour
-        src = np.copy(cv2.transpose(self.imagesData[5]))
-        img = np.copy(cv2.transpose(self.imagesData[5]))
-        img_copy = np.copy(cv2.transpose(self.imagesData[5]))
+        # Transpose and copy the image for proper calculations in the contour
+        image_src = np.copy(cv2.transpose(self.imagesData[5]))
 
         # Create Initial Contour and display it on the GUI
-        contour_x, contour_y = Contour.create_initial_contour(source=img, num_points=65)
-        self.processed_image = self.draw_contour(img, contour_x, contour_y)
+        contour_x, contour_y = Contour.create_initial_contour(source=image_src, num_points=65)
+        self.processed_image = self.draw_contour_on_image(image_src, contour_x, contour_y)
         self.processed_image = cv2.transpose(self.processed_image)
         self.display_image(source=self.processed_image, widget=self.img5_processed)
 
         # Start Applying Active Contour Algorithm
-        cont_x, cont_y = Contour.active_contour(source=img_copy, contour_x=contour_x, contour_y=contour_y,
+        cont_x, cont_y = Contour.active_contour(source=image_src, contour_x=contour_x, contour_y=contour_y,
                                                 alpha=alpha, beta=beta, gamma=gamma, w_line=w_line,
                                                 w_dge=w_edge, num_iterations=iterations)
 
-        self.contour_image = self.draw_contour(src, cont_x, cont_y)
+        self.contour_image = self.draw_contour_on_image(image_src, cont_x, cont_y)
 
         # Transpose the image to be viewed correctly in the GUI
         self.contour_image = cv2.transpose(self.contour_image)
@@ -497,14 +510,18 @@ class ImageProcessor(m.Ui_MainWindow):
             self.combo_box_changed(tab_id=self.tab_index, combo_id=1)
 
     @staticmethod
-    def draw_contour(source, points_x, points_y):
+    def draw_contour_on_image(source, points_x, points_y):
         """
+        This function draws a given contour coordinates on the given image
 
-        :param self:
-        :param points_x:
-        :param points_y:
+        :param source: image source to draw the contour above it
+        :param points_x: list of indices of the contour in x-direction
+        :param points_y: list of indices of the contour in y-direction
         :return:
         """
+
+        # Copy the image source to prevent modifying the original image
+        src = np.copy(source)
 
         points = []
         for px, py in zip(points_x, points_y):
@@ -513,7 +530,7 @@ class ImageProcessor(m.Ui_MainWindow):
         points = np.array(points, np.int32)
         points = points.reshape((-1, 1, 2))
 
-        image = cv2.polylines(source, [points], isClosed=True, color=(0, 255, 0), thickness=2)
+        image = cv2.polylines(src, [points], isClosed=True, color=(0, 255, 0), thickness=2)
 
         return image
 
@@ -534,13 +551,13 @@ class ImageProcessor(m.Ui_MainWindow):
     def display_bar_graph(widget, x, y, width, brush, title, label):
         """
 
-        :param widget:
-        :param x:
-        :param y:
-        :param width:
-        :param brush:
-        :param title:
-        :param label:
+        :param widget: widget object to draw the graph on it
+        :param x: list of numbers in the x-direction
+        :param y: list of numbers in the y-direction
+        :param width: width of the bar
+        :param brush: color of the bar
+        :param title: title of the window
+        :param label: bottom label of the window
         :return:
         """
 
@@ -548,6 +565,7 @@ class ImageProcessor(m.Ui_MainWindow):
         bg = pg.BarGraphItem(x=x, height=y, width=width, brush=brush)
         widget.addItem(bg)
 
+        # Adjust Widget
         widget.plotItem.setTitle(title)
         widget.plotItem.showGrid(True, True, alpha=0.8)
         widget.plotItem.setLabel("bottom", text=label)
@@ -562,16 +580,18 @@ class ImageProcessor(m.Ui_MainWindow):
     def draw_rgb_histogram(source: np.ndarray, widget, title: str = "title", label: str = "label"):
         """
 
-        :param source:
-        :param widget:
-        :param title:
-        :param label:
+        :param source: image source
+        :param widget: widget object to draw the histogram in
+        :param title: title of the window
+        :param label: bottom label of the window
         :return:
         """
 
+        # Create pens list with red, green and blue
         pens = [pg.mkPen(color=(255, 0, 0)), pg.mkPen(color=(0, 255, 0)),
                 pg.mkPen(color=(0, 0, 255))]
 
+        # Adjust Widget
         widget.plotItem.setTitle(title)
         widget.plotItem.showGrid(True, True, alpha=0.8)
         widget.plotItem.setLabel("bottom", text=label)
@@ -586,16 +606,27 @@ class ImageProcessor(m.Ui_MainWindow):
     def draw_gray_histogram(source: np.ndarray, widget, bins_num):
         """
 
-        :param source:
-        :param widget:
-        :param bins_num:
+        :param source: image source
+        :param widget: widget object to draw the graph on it
+        :param bins_num: number of bins to split the histogram into
         :return:
         """
+
+        # Create histogram and plot it
         hist, bins = Histogram.histogram(source=source, bins_num=bins_num)
         widget.plot(bins, hist)
 
     @staticmethod
     def show_message(header, message, button, icon):
+        """
+        Show a pop-up window with a message
+        :param header: message header of the pop-up window
+        :param message: main message content
+        :param button: button type
+        :param icon: icon type
+        :return:
+        """
+
         msg = QMessageBox()
         msg.setWindowTitle(header)
         msg.setText(message)

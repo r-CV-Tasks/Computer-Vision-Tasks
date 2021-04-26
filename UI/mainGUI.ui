@@ -2604,7 +2604,7 @@
                  <string>Contour Settings</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_26">
-                 <item row="0" column="0">
+                 <item row="2" column="0">
                   <layout class="QGridLayout" name="gridLayout_28">
                    <item row="0" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout_13">
@@ -2660,7 +2660,7 @@
                      <item>
                       <widget class="QLineEdit" name="text_beta">
                        <property name="text">
-                        <string>30</string>
+                        <string>0.01</string>
                        </property>
                       </widget>
                      </item>
@@ -2690,7 +2690,7 @@
                      <item>
                       <widget class="QLineEdit" name="text_gamma">
                        <property name="text">
-                        <string>50</string>
+                        <string>2</string>
                        </property>
                       </widget>
                      </item>
@@ -2720,13 +2720,30 @@
                      <item>
                       <widget class="QLineEdit" name="text_num_iterations">
                        <property name="text">
-                        <string>40</string>
+                        <string>60</string>
                        </property>
                       </widget>
                      </item>
                     </layout>
                    </item>
                   </layout>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QRadioButton" name="radioButton_square_contour">
+                   <property name="text">
+                    <string>Square Contour</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QRadioButton" name="radioButton_circle_contour">
+                   <property name="text">
+                    <string>Circle Contour</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>

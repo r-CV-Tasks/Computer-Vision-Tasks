@@ -1,12 +1,13 @@
 import itertools
 from typing import Tuple
-
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
 from EdgeDetection import sobel_edge
 from LowPass import gaussian_filter
+from FrequencyFilters import square_pad
+
 
 
 def iterate_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndarray,
@@ -32,6 +33,7 @@ def iterate_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.nda
 
     for Point in range(contour_points):
         MinEnergy = np.inf
+        TotalEnergy = 0
         NewX = None
         NewY = None
         for Window in window_coordinates:
@@ -41,8 +43,14 @@ def iterate_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.nda
             CurrentY[Point] = CurrentY[Point] + Window[1] if CurrentY[Point] < src.shape[0] else src.shape[0] - 1
 
             # Calculate Energy At The New Point
-            TotalEnergy = - external_energy[CurrentY[Point], CurrentX[Point]] + internal_energy(CurrentX, CurrentY,
-                                                                                               alpha, beta)
+            try:
+                TotalEnergy = - external_energy[CurrentY[Point], CurrentX[Point]] + calculate_internal_energy(CurrentX,
+                                                                                                              CurrentY,
+                                                                                                              alpha,
+                                                                                                              beta)
+            except:
+                pass
+
             # Save The Point If It Has The Lowest Energy In The Window
             if TotalEnergy < MinEnergy:
                 MinEnergy = TotalEnergy
@@ -55,19 +63,62 @@ def iterate_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.nda
 
     return cont_x, cont_y
 
-def create_initial_contour(source, num_points):
+
+def create_square_contour(source, num_xpoints, num_ypoints):
+    """
+    Create a square shape to be the initial contour
+    :param source: image source
+    :param num_points: number of points in the contour
+    :return: list of x points coordinates, list of y points coordinates and list of window coordinates
+    """
+    step = 5
+
+    # Create x points lists
+    t1_x = np.arange(0, num_xpoints, step)
+    t2_x = np.repeat((num_xpoints)-step, num_xpoints//step)
+    t3_x = np.flip(t1_x)
+    t4_x = np.repeat(0, num_xpoints//step)
+
+    # Create y points list
+    t1_y = np.repeat(0, num_ypoints//step)
+    t2_y = np.arange(0, num_ypoints, step)
+    t3_y = np.repeat(num_ypoints-step, num_ypoints//step)
+    t4_y = np.flip(t2_y)
+
+    # Concatenate all the lists in one array
+    contour_x = np.array([t1_x, t2_x, t3_x, t4_x]).ravel()
+    contour_y = np.array([t1_y, t2_y, t3_y, t4_y]).ravel()
+
+    # Shift the shape to a specific location in the image
+    # contour_x = contour_x + (source.shape[1] // 2) - 85
+    contour_x = contour_x + (source.shape[1] // 2) - 95
+    contour_y = contour_y + (source.shape[0] // 2) - 40
+
+    # Create neighborhood window
+    WindowCoordinates = GenerateWindowCoordinates(5)
+
+    return contour_x, contour_y, WindowCoordinates
+
+def create_elipse_contour(source, num_points):
     """
         Represent the snake with a set of n points
         Vi = (Xi, Yi) , where i = 0, 1, ... n-1
     :param source: Image Source
     :param num_points: number of points to create the contour with
-    :return: list of x coordinates, list of y coordinates and list window coordinates
+    :return: list of x coordinates, list of y coordinates and list of window coordinates
     """
 
     # Create x and y lists coordinates to initialize the contour
     t = np.arange(0, num_points / 10, 0.1)
-    contour_x = (source.shape[1] // 2) + 115 * np.cos(t) - 100
-    contour_y = (source.shape[0] // 2) + 115 * np.sin(t) + 50
+
+    # Coordinates for Circles_v2.png image
+    contour_x = (source.shape[1] // 2) + 117 * np.cos(t) - 100
+    contour_y = (source.shape[0] // 2) + 117 * np.sin(t) + 50
+
+    # Coordinates for fish.png image
+    # contour_x = (source.shape[1] // 2) + 215 * np.cos(t)
+    # contour_y = (source.shape[0] // 2) + 115 * np.sin(t) - 10
+
     contour_x = contour_x.astype(int)
     contour_y = contour_y.astype(int)
 
@@ -95,7 +146,7 @@ def GenerateWindowCoordinates(Size: int):
     return Coordinates
 
 
-def internal_energy(CurrentX, CurrentY, alpha: float, beta: float):
+def calculate_internal_energy(CurrentX, CurrentY, alpha: float, beta: float):
     """
     The internal energy is responsible for:
         1. Forcing the contour to be continuous (E_cont)
@@ -154,7 +205,7 @@ def internal_energy(CurrentX, CurrentY, alpha: float, beta: float):
     return alpha * ContinuousEnergy + beta * CurvatureEnergy
 
 
-def external_energy(source, WLine, WEdge):
+def calculate_external_energy(source, WLine, WEdge):
     """
     The External Energy is responsible for:
         1. Attracts the contour towards the closest image edge with dependence on the energy map.
@@ -210,23 +261,42 @@ def main():
     the application startup functions
     :return:
     """
-    # Continuous
-    alpha = 20
-    # Curvature
-    beta = 30
-    gamma = 50
-    num_iterations = 50
-    w_line = 1
-    w_edge = 1
 
-    img = cv2.imread("../src/Images/circles_v2.png", 0)
+    # Parameters For fish.png image
+    # alpha = 4             # Continuous
+    # beta = 0.5            # Curvature
+    # gamma = 10            # External
+    # w_line = 5            # E_line
+    # w_edge = 5            # E_edge
+    # num_iterations = 75
+
+    # Parameters For hand_256.png image
+    alpha = 20          # Continuous
+    beta = 0.01         # Curvature
+    gamma = 2           # External
+    w_line = 1          # E_line
+    w_edge = 8          # E_edge
+    num_points_circle = 65
+    num_xpoints = 180
+    num_ypoints = 180
+    num_iterations = 60
+
+
+    # img = cv2.imread("../src/Images/circles_v2.png", 0)
+    # img = cv2.imread("../src/Images/fish.png", 0)
+    img = cv2.imread("../src/Images/hand_256.png", 0)
+    # img = square_pad(source=img, size_x=512, size_y=512, pad_value=0)
+    # print(f"new shape {img.shape}")
+
     image_src = np.copy(img)
 
     # Create Initial Contour and display it on the GUI
-    contour_x, contour_y, WindowCoordinates = create_initial_contour(source=image_src, num_points=65)
+    # contour_x, contour_y, WindowCoordinates = create_initial_contour(source=image_src, num_points=65)
+    contour_x, contour_y, WindowCoordinates = create_square_contour(source=image_src,
+                                                                    num_xpoints=num_xpoints, num_ypoints=num_ypoints)
 
     # Calculate External Energy which will be used in each iteration of greedy algorithm
-    ExternalEnergy = gamma * external_energy(image_src, w_line, w_edge)
+    ExternalEnergy = gamma * compute_external_energy(image_src, w_line, w_edge)
 
     # Draw the Initial Contour on the image
     fig = plt.figure()

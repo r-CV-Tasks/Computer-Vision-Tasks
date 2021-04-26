@@ -6,12 +6,13 @@ import cv2
 import numpy as np
 
 
-def square_zero_pad(source: np.ndarray, size_x: int, size_y: int) -> np.ndarray:
+def square_pad(source: np.ndarray, size_x: int, size_y: int, pad_value: int) -> np.ndarray:
     """
         Pad Image/Array to Desired Output shape
     :param source: Input Array/Image
     :param size_x: Desired width size
     :param size_y: Desired height
+    :param pad_value: value to be added as a padding
     :return: Padded Square Array
     """
     src = np.copy(source)
@@ -23,7 +24,7 @@ def square_zero_pad(source: np.ndarray, size_x: int, size_y: int) -> np.ndarray:
     out_y = (size_y-y) // 2
     out_yy = size_y - out_y - y
 
-    return np.pad(src, ((out_x, out_xx), (out_y, out_yy)), constant_values=0)
+    return np.pad(src, ((out_x, out_xx), (out_y, out_yy)), constant_values=pad_value)
 
 
 def frequency_filter(source: np.ndarray, kernel: np.ndarray) -> np.ndarray:
@@ -59,7 +60,7 @@ def high_pass_filter(source: np.ndarray, size: int) -> np.ndarray:
     :return: Filtered Image
     """
     # Create a kernel with ones in the middle for high frequencies
-    kernel = square_zero_pad(np.ones((size, size)), source.shape[0], source.shape[1])
+    kernel = square_pad(np.ones((size, size)), source.shape[0], source.shape[1], 0)
 
     # Apply Kernel
     out = frequency_filter(source, kernel)
@@ -76,7 +77,7 @@ def low_pass_filter(source: np.ndarray, size: int) -> np.ndarray:
     :return: Filtered Image
     """
     # Create Kernel with ones on the edges for low frequencies
-    kernel = 1 - square_zero_pad(np.ones((size, size)), source.shape[0], source.shape[1])
+    kernel = 1 - square_pad(np.ones((size, size)), source.shape[0], source.shape[1], 0)
 
     # Apply Kernel
     out = frequency_filter(source, kernel)

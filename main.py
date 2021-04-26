@@ -2,10 +2,8 @@
 import sys
 import cv2
 import numpy as np
-import time
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 
@@ -459,26 +457,57 @@ class ImageProcessor(m.Ui_MainWindow):
         """
 
         # Get Contour Parameters
-        alpha = int(self.text_alpha.text())
-        beta = int(self.text_beta.text())
-        gamma = int(self.text_gamma.text())
+        alpha = float(self.text_alpha.text())
+        beta = float(self.text_beta.text())
+        gamma = float(self.text_gamma.text())
         num_iterations = int(self.text_num_iterations.text())
+        num_points_circle = 65
+        num_xpoints = 180
+        num_ypoints = 180
         w_line = 1
-        w_edge = 1
+        w_edge = 8
+
+        # Initial variables
+        contour_x, contour_y, window_coordinates = None, None, None
 
         # Flag to check if initial contour is displayed 1 time only
         initial_image = False
 
-        #### Greedy Algorithm ####
+        # Greedy Algorithm
 
         # Transpose and copy the image for proper calculations in the contour
         image_src = np.copy(cv2.transpose(self.imagesData[5]))
 
         # Create Initial Contour and display it on the GUI
-        contour_x, contour_y, WindowCoordinates = Contour.create_initial_contour(source=image_src, num_points=65)
+        if self.radioButton_square_contour.isChecked():
+            contour_x, contour_y, window_coordinates = Contour.create_square_contour(source=image_src,
+                                                                                     num_xpoints=num_xpoints,
+                                                                                     num_ypoints=num_ypoints)
+            # Set parameters with pre-tested values for good performance
+            alpha = 20
+            beta = 0.01
+            gamma = 2
+            num_iterations = 60
+            self.text_alpha.setText(str(alpha))
+            self.text_beta.setText(str(beta))
+            self.text_gamma.setText(str(gamma))
+            self.text_num_iterations.setText(str(num_iterations))
+
+        elif self.radioButton_circle_contour.isChecked():
+            contour_x, contour_y, window_coordinates = Contour.create_elipse_contour(source=image_src,
+                                                                                     num_points=num_points_circle)
+            # Set parameters with pre-tested values for good performance
+            alpha = 0.01
+            beta = 0.01
+            gamma = 2
+            num_iterations = 50
+            self.text_alpha.setText(str(alpha))
+            self.text_beta.setText(str(beta))
+            self.text_gamma.setText(str(gamma))
+            self.text_num_iterations.setText(str(num_iterations))
 
         # Calculate External Energy which will be used in each iteration of greedy algorithm
-        ExternalEnergy = gamma * Contour.external_energy(image_src, w_line, w_edge)
+        external_energy = gamma * Contour.calculate_external_energy(image_src, w_line, w_edge)
 
         # Copy the coordinates to update them in the main loop
         cont_x, cont_y = np.copy(contour_x), np.copy(contour_y)
@@ -487,11 +516,11 @@ class ImageProcessor(m.Ui_MainWindow):
         for iteration in range(num_iterations):
             # Start Applying Active Contour Algorithm
             cont_x, cont_y = Contour.iterate_contour(source=image_src, contour_x=cont_x, contour_y=cont_y,
-                                                     external_energy=ExternalEnergy,
-                                                     window_coordinates=WindowCoordinates,
+                                                     external_energy=external_energy,
+                                                     window_coordinates=window_coordinates,
                                                      alpha=alpha, beta=beta)
 
-            # Display the new contour above the image
+            # Display the new contour after each iteration
             src_copy = np.copy(image_src)
             processed_image = self.draw_contour_on_image(src_copy, cont_x, cont_y)
             processed_image = cv2.transpose(processed_image)
@@ -507,14 +536,14 @@ class ImageProcessor(m.Ui_MainWindow):
             # Used to allow the GUI to update ImageView Object without lagging
             QtWidgets.QApplication.processEvents()
 
-
-    @staticmethod
-    def clear_anchors():
+    def clear_anchors(self):
         print("Clearing anchors")
+        self.clear_results(tab_id=self.tab_index + 1)
+        self.display_image(source=self.imagesData[5], widget=self.img5_input)
 
-    @staticmethod
-    def reset_contour():
+    def reset_contour(self):
         print("resetting contour")
+        self.clear_results(tab_id=self.tab_index + 1)
 
     def slider_changed(self, indx):
         """

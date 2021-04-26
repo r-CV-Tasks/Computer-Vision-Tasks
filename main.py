@@ -2,10 +2,10 @@
 import sys
 import cv2
 import numpy as np
+import time
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QPoint, QRect
-from PyQt5.QtGui import QPainter, QPixmap
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 
@@ -62,6 +62,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.edged_image = None
         self.filtered_image = None
         self.output_hist_image = None
+        self.updated_image = None
 
         self.imagesData = {1: ..., 2: ..., 3: ..., 4: ..., 5: ..., 6: ...}
         self.heights = [..., ..., ..., ..., ..., ...]
@@ -115,6 +116,14 @@ class ImageProcessor(m.Ui_MainWindow):
 
         self.setup_images_view()
 
+        # Timer Configuration for displaying Active Contour
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.display_processed_contour)
+
+        self.timer2 = QTimer()
+        self.timer2.timeout.connect(self.test_time)
+        # self.timer2.start(300)
+
     def tab_changed(self):
         """
         Updates the current tab index
@@ -146,16 +155,16 @@ class ImageProcessor(m.Ui_MainWindow):
         # Open File & Check if it was loaded correctly
         logger.info("Browsing the files...")
         repo_path = "./src/Images"
-        self.filename, self.format = QtWidgets.QFileDialog.getOpenFileName(None, "Load Image", repo_path,
-                                                                           "*;;" "*.jpg;;" "*.jpeg;;" "*.png;;")
-        img_name = self.filename.split('/')[-1]
-        if self.filename == "":
+        filename, file_format = QtWidgets.QFileDialog.getOpenFileName(None, "Load Image", repo_path,
+                                                                      "*;;" "*.jpg;;" "*.jpeg;;" "*.png;;")
+        img_name = filename.split('/')[-1]
+        if filename == "":
             pass
         else:
-            image = cv2.imread(self.filename, flags=cv2.IMREAD_GRAYSCALE).T
+            image = cv2.imread(filename, flags=cv2.IMREAD_GRAYSCALE).T
             self.heights[img_id], self.weights[img_id] = image.shape
 
-            bgr_img = cv2.imread(self.filename)
+            bgr_img = cv2.imread(filename)
             rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
             imgbyte_rgb = cv2.transpose(rgb_img)
             self.imagesData[img_id] = imgbyte_rgb
@@ -423,8 +432,8 @@ class ImageProcessor(m.Ui_MainWindow):
         image1_dft = FrequencyFilters.high_pass_filter(self.imagesData[2], size=20)
         image2_dft = FrequencyFilters.low_pass_filter(self.imagesData[3], size=15)
 
-        self.hybrid_image = image1_dft + image2_dft
-        self.display_image(source=self.hybrid_image, widget=self.imgX_output)
+        hybrid_image = image1_dft + image2_dft
+        self.display_image(source=hybrid_image, widget=self.imgX_output)
 
     def hough_transform(self):
         """
@@ -432,7 +441,7 @@ class ImageProcessor(m.Ui_MainWindow):
         :return:
         """
 
-        self.hough_image = None
+        hough_image = None
 
         # Get Parameters Values from the user
         min_radius = int(self.text_min_radius.text())
@@ -440,12 +449,13 @@ class ImageProcessor(m.Ui_MainWindow):
         num_votes = int(self.text_votes.text())
 
         if self.radioButton_lines.isChecked():
-            self.hough_image = Hough.hough_lines(source=self.imagesData[4], num_peaks=num_votes)
+            hough_image = Hough.hough_lines(source=self.imagesData[4], num_peaks=num_votes)
         elif self.radioButton_circles.isChecked():
-            self.hough_image = Hough.hough_circles(source=self.imagesData[4], min_radius=min_radius, max_radius=max_radius)
+            hough_image = Hough.hough_circles(source=self.imagesData[4], min_radius=min_radius,
+                                              max_radius=max_radius)
 
         try:
-            self.display_image(source=self.hough_image, widget=self.img4_output)
+            self.display_image(source=hough_image, widget=self.img4_output)
         except TypeError:
             print("Cannot display Image")
 
@@ -460,36 +470,60 @@ class ImageProcessor(m.Ui_MainWindow):
         alpha = int(self.text_alpha.text())
         beta = int(self.text_beta.text())
         gamma = int(self.text_gamma.text())
+        num_iterations = int(self.text_num_iterations.text())
 
-        iterations = 50
         w_line = 1
         w_edge = 1
+
+        # Greedy Algorithm
 
         # Transpose and copy the image for proper calculations in the contour
         image_src = np.copy(cv2.transpose(self.imagesData[5]))
 
         # Create Initial Contour and display it on the GUI
-        contour_x, contour_y = Contour.create_initial_contour(source=image_src, num_points=65)
-        self.processed_image = self.draw_contour_on_image(image_src, contour_x, contour_y)
-        self.processed_image = cv2.transpose(self.processed_image)
-        self.display_image(source=self.processed_image, widget=self.img5_processed)
+        contour_x, contour_y, WindowCoordinates = Contour.create_initial_contour(source=image_src, num_points=65)
 
-        # Start Applying Active Contour Algorithm
-        cont_x, cont_y = Contour.active_contour(source=image_src, contour_x=contour_x, contour_y=contour_y,
-                                                alpha=alpha, beta=beta, gamma=gamma, w_line=w_line,
-                                                w_dge=w_edge, num_iterations=iterations)
+        # Calculate External Energy which will be used in each iteration of greedy algorithm
+        ExternalEnergy = gamma * Contour.external_energy(image_src, w_line, w_edge)
 
-        self.contour_image = self.draw_contour_on_image(image_src, cont_x, cont_y)
+        cont_x, cont_y = np.copy(contour_x), np.copy(contour_y)
+
+        self.timer.start(200)
+
+        for iteration in range(num_iterations):
+            # Check Timer Status to display the image
+            if self.timer.isActive():
+                print("Timer is already active")
+            else:
+                print("Activating Timer")
+                self.timer.start(200)
+
+            # Start Applying Active Contour Algorithm
+            cont_x, cont_y = Contour.iterate_contour(source=image_src, contour_x=cont_x, contour_y=cont_y,
+                                                     external_energy=ExternalEnergy,
+                                                     window_coordinates=WindowCoordinates,
+                                                     alpha=alpha, beta=beta)
+            src_copy = np.copy(image_src)
+            processed_image = self.draw_contour_on_image(src_copy, cont_x, cont_y)
+            processed_image = cv2.transpose(processed_image)
+            self.updated_image = np.copy(processed_image)
+
+            # self.display_image(source=processed_image, widget=self.img5_processed)
+            # self.timer.start(300)
+            print(f"Iteration {iteration} done")
+
+        contour_image = self.draw_contour_on_image(image_src, cont_x, cont_y)
 
         # Transpose the image to be viewed correctly in the GUI
-        self.contour_image = cv2.transpose(self.contour_image)
+        contour_image = cv2.transpose(contour_image)
+        self.display_image(source=contour_image, widget=self.img5_output)
 
-        self.display_image(source=self.contour_image, widget=self.img5_output)
-
-    def clear_anchors(self):
+    @staticmethod
+    def clear_anchors():
         print("Clearing anchors")
 
-    def reset_contour(self):
+    @staticmethod
+    def reset_contour():
         print("resetting contour")
 
     def slider_changed(self, indx):
@@ -533,6 +567,21 @@ class ImageProcessor(m.Ui_MainWindow):
         image = cv2.polylines(src, [points], isClosed=True, color=(0, 255, 0), thickness=2)
 
         return image
+
+    def display_processed_contour(self):
+        """
+
+        :return:
+        """
+        print("Displaying Processed Contour")
+        try:
+            self.display_image(source=self.updated_image, widget=self.img5_processed)
+        except TypeError:
+            print("Cannot display Image")
+        self.timer.stop()
+
+    def test_time(self):
+        print("Timeout")
 
     @staticmethod
     def display_image(source, widget):

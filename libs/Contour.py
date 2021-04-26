@@ -9,19 +9,18 @@ from EdgeDetection import sobel_edge
 from LowPass import gaussian_filter
 
 
-def active_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndarray,
-                   alpha: float, beta: float, gamma: float,
-                   w_line, w_dge, num_iterations: int) -> Tuple[np.ndarray, np.ndarray]:
-    """
+def iterate_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndarray,
+                    external_energy: np.ndarray, window_coordinates: list,
+                    alpha: float, beta: float) -> Tuple[np.ndarray, np.ndarray]:
 
-    :param source:
-    :param alpha:
-    :param beta:
-    :param gamma:
-    :param w_line:
-    :param w_dge:
-    :param num_iterations:
-    :param num_points:
+    """
+    :param source: image source
+    :param contour_x: list of x coordinates of the contour
+    :param contour_y: list of y coordinates of the contour
+    :param alpha: factor multiplied to E_cont term in internal energy
+    :param beta: factor multiplied to E_curv term in internal energy
+    :param external_energy: Image Energy (E_line + E_edge)
+    :param window_coordinates: array of window coordinates for each pixel
     :return:
     """
 
@@ -29,53 +28,52 @@ def active_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndar
     cont_x = np.copy(contour_x)
     cont_y = np.copy(contour_y)
 
-    ExternalEnergy = gamma * external_energy(src, w_line, w_dge)
-    # WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1], [2, 2]]
-    WindowCoordinates = GenerateWindowCoordinates(5)
     contour_points = len(cont_x)
 
-    for Iteration in range(num_iterations):
-        for Point in range(contour_points):
-            MinEnergy = np.inf
-            NewX = None
-            NewY = None
-            for Window in WindowCoordinates:
-                # Create Temporary Contours With Point Shifted To A Coordinate
-                CurrentX, CurrentY = np.copy(cont_x), np.copy(cont_y)
-                CurrentX[Point] = CurrentX[Point] + Window[0] if CurrentX[Point] < src.shape[1] else src.shape[
-                                                                                                            1] - 1
-                CurrentY[Point] = CurrentY[Point] + Window[1] if CurrentY[Point] < src.shape[0] else src.shape[
-                                                                                                            0] - 1
-                # Calculate Energy At The New Point
-                TotalEnergy = - ExternalEnergy[CurrentY[Point], CurrentX[Point]] + internal_energy(CurrentX, CurrentY,
-                                                                                                   alpha, beta)
-                # Save The Point If It Has The Lowest Energy In The Window
-                if TotalEnergy < MinEnergy:
-                    MinEnergy = TotalEnergy
-                    NewX = CurrentX[Point] if CurrentX[Point] < src.shape[1] else src.shape[1] - 1
-                    NewY = CurrentY[Point] if CurrentY[Point] < src.shape[0] else src.shape[0] - 1
+    for Point in range(contour_points):
+        MinEnergy = np.inf
+        NewX = None
+        NewY = None
+        for Window in window_coordinates:
+            # Create Temporary Contours With Point Shifted To A Coordinate
+            CurrentX, CurrentY = np.copy(cont_x), np.copy(cont_y)
+            CurrentX[Point] = CurrentX[Point] + Window[0] if CurrentX[Point] < src.shape[1] else src.shape[1] - 1
+            CurrentY[Point] = CurrentY[Point] + Window[1] if CurrentY[Point] < src.shape[0] else src.shape[0] - 1
 
-            # Shift The Point In The Contour To It's New Location With The Lowest Energy
-            cont_x[Point] = NewX
-            cont_y[Point] = NewY
+            # Calculate Energy At The New Point
+            TotalEnergy = - external_energy[CurrentY[Point], CurrentX[Point]] + internal_energy(CurrentX, CurrentY,
+                                                                                               alpha, beta)
+            # Save The Point If It Has The Lowest Energy In The Window
+            if TotalEnergy < MinEnergy:
+                MinEnergy = TotalEnergy
+                NewX = CurrentX[Point] if CurrentX[Point] < src.shape[1] else src.shape[1] - 1
+                NewY = CurrentY[Point] if CurrentY[Point] < src.shape[0] else src.shape[0] - 1
+
+        # Shift The Point In The Contour To It's New Location With The Lowest Energy
+        cont_x[Point] = NewX
+        cont_y[Point] = NewY
 
     return cont_x, cont_y
-
 
 def create_initial_contour(source, num_points):
     """
         Represent the snake with a set of n points
         Vi = (Xi, Yi) , where i = 0, 1, ... n-1
     :param source: Image Source
-    :param num_points:
-    :return:
+    :param num_points: number of points to create the contour with
+    :return: list of x coordinates, list of y coordinates and list window coordinates
     """
 
+    # Create x and y lists coordinates to initialize the contour
     t = np.arange(0, num_points / 10, 0.1)
     contour_x = (source.shape[1] // 2) + 115 * np.cos(t) - 100
     contour_y = (source.shape[0] // 2) + 115 * np.sin(t) + 50
     contour_x = contour_x.astype(int)
     contour_y = contour_y.astype(int)
+
+    # Create neighborhood window
+    WindowCoordinates = GenerateWindowCoordinates(5)
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.imshow(source, cmap='gray')
@@ -88,11 +86,14 @@ def create_initial_contour(source, num_points):
 
     plt.show()
 
-    return contour_x, contour_y
+    return contour_x, contour_y, WindowCoordinates
 
 def GenerateWindowCoordinates(Size: int):
     """
     Generates A List of All Possible Coordinates Inside A Window of Size "Size"
+    if size == 3 then the output is like this:
+    WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1], [2, 2]]
+
     :param Size: Size of The Window
     :return Coordinates: List of All Possible Coordinates
     """
@@ -197,11 +198,13 @@ def external_energy(source, WLine, WEdge):
     :return:
     """
 
+    src = np.copy(source)
+
     # convert to gray scale if not already
-    if len(source.shape) > 2:
-        gray = cv2.cvtColor(source, cv2.COLOR_RGB2GRAY)
+    if len(src.shape) > 2:
+        gray = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
     else:
-        gray = source
+        gray = src
 
     # Apply Gaussian Filter to smooth the image
     ELine = gaussian_filter(gray, 7, 7 * 7)
@@ -220,21 +223,30 @@ def main():
     :return:
     """
     # Continuous
-    alpha = 19.86
+    alpha = 20
     # Curvature
-    beta = 30.7
+    beta = 30
     gamma = 50
-    iterations = 50
-    WLine = 1
-    WEdge = 1
+    num_iterations = 50
+    w_line = 1
+    w_edge = 1
 
     img = cv2.imread("../src/Images/circles_v2.png", 0)
-    contour_x, contour_y = create_initial_contour(source=img, num_points=65)
-    cont_x, cont_y = active_contour(source=img, contour_x=contour_x, contour_y=contour_y,
-                                            alpha=alpha, beta=beta, gamma=gamma, w_line=WLine,
-                                            w_dge=WEdge, num_iterations=iterations)
+    image_src = np.copy(img)
 
-    # active_contour(img, alpha, beta, gamma, WLine, WEdge, iterations, )
+    # Create Initial Contour and display it on the GUI
+    contour_x, contour_y, WindowCoordinates = create_initial_contour(source=image_src, num_points=65)
+
+    # Calculate External Energy which will be used in each iteration of greedy algorithm
+    ExternalEnergy = gamma * external_energy(image_src, w_line, w_edge)
+
+    cont_x, cont_y = np.copy(contour_x), np.copy(contour_y)
+
+    for iteration in range(num_iterations):
+        # Start Applying Active Contour Algorithm
+        cont_x, cont_y = iterate_contour(source=image_src, contour_x=cont_x, contour_y=cont_y,
+                                         external_energy=ExternalEnergy, window_coordinates=WindowCoordinates,
+                                         alpha=alpha, beta=beta)
 
     # Plot
     fig = plt.figure()

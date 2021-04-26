@@ -25,10 +25,11 @@ def active_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndar
     :return:
     """
 
+    src = np.copy(source)
     cont_x = np.copy(contour_x)
     cont_y = np.copy(contour_y)
 
-    ExternalEnergy = gamma * external_energy(source, w_line, w_dge)
+    ExternalEnergy = gamma * external_energy(src, w_line, w_dge)
     # WindowCoordinates = [[1, 1], [1, 0], [1, -1], [0, 1], [0, 0], [0, -1], [-1, 1], [-1, 0], [-1, 1], [2, 2]]
     WindowCoordinates = GenerateWindowCoordinates(5)
     contour_points = len(cont_x)
@@ -41,9 +42,9 @@ def active_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndar
             for Window in WindowCoordinates:
                 # Create Temporary Contours With Point Shifted To A Coordinate
                 CurrentX, CurrentY = np.copy(cont_x), np.copy(cont_y)
-                CurrentX[Point] = CurrentX[Point] + Window[0] if CurrentX[Point] < source.shape[1] else source.shape[
+                CurrentX[Point] = CurrentX[Point] + Window[0] if CurrentX[Point] < src.shape[1] else src.shape[
                                                                                                             1] - 1
-                CurrentY[Point] = CurrentY[Point] + Window[1] if CurrentY[Point] < source.shape[0] else source.shape[
+                CurrentY[Point] = CurrentY[Point] + Window[1] if CurrentY[Point] < src.shape[0] else src.shape[
                                                                                                             0] - 1
                 # Calculate Energy At The New Point
                 TotalEnergy = - ExternalEnergy[CurrentY[Point], CurrentX[Point]] + internal_energy(CurrentX, CurrentY,
@@ -51,8 +52,8 @@ def active_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndar
                 # Save The Point If It Has The Lowest Energy In The Window
                 if TotalEnergy < MinEnergy:
                     MinEnergy = TotalEnergy
-                    NewX = CurrentX[Point] if CurrentX[Point] < source.shape[1] else source.shape[1] - 1
-                    NewY = CurrentY[Point] if CurrentY[Point] < source.shape[0] else source.shape[0] - 1
+                    NewX = CurrentX[Point] if CurrentX[Point] < src.shape[1] else src.shape[1] - 1
+                    NewY = CurrentY[Point] if CurrentY[Point] < src.shape[0] else src.shape[0] - 1
 
             # Shift The Point In The Contour To It's New Location With The Lowest Energy
             cont_x[Point] = NewX
@@ -71,8 +72,8 @@ def create_initial_contour(source, num_points):
     """
 
     t = np.arange(0, num_points / 10, 0.1)
-    contour_x = (source.shape[1] // 2) + 110 * np.cos(t) - 100
-    contour_y = (source.shape[0] // 2) + 110 * np.sin(t) + 50
+    contour_x = (source.shape[1] // 2) + 115 * np.cos(t) - 100
+    contour_y = (source.shape[0] // 2) + 115 * np.sin(t) + 50
     contour_x = contour_x.astype(int)
     contour_y = contour_y.astype(int)
     fig = plt.figure()
@@ -95,9 +96,11 @@ def GenerateWindowCoordinates(Size: int):
     :param Size: Size of The Window
     :return Coordinates: List of All Possible Coordinates
     """
+
     # Generate List of All Possible Point Values Based on Size
     Points = list(range(-Size // 2 + 1, Size // 2 + 1))
     PointsList = [Points, Points]
+
     # Generates All Possible Coordinates Inside The Window
     Coordinates = list(itertools.product(*PointsList))
     return Coordinates
@@ -179,7 +182,7 @@ def external_energy(source, WLine, WEdge):
 
     E_line
         I(x, y)
-
+        Smoothing filter could be applied to I(x, y) to remove noise
         Depending on the sign of w_line the snake will be attracted either to bright lines or dark lines
 
 
@@ -189,6 +192,8 @@ def external_energy(source, WLine, WEdge):
     ==============================
 
     :param source: Image source
+    :param WLine: weight of E_line term
+    :param WEdge: weight of E_edge term
     :return:
     """
 

@@ -3,20 +3,27 @@ import numpy as np
 import math
 
 
-def hough_peaks(H, num_peaks, threshold=0, nhood_size=3):
-    """A function that returns the indicies of the accumulator array H that
+def hough_peaks(H, num_peaks, nhood_size=3):
+    """
+    A function that returns the indices of the accumulator array H that
     correspond to a local maxima.  If threshold is active all values less
     than this value will be ignored, if neighborhood_size is greater than
-    (1, 1) this number of indicies around the maximum will be surpessed."""
+    (1, 1) this number of indices around the maximum will be surpassed.
+    :param H:
+    :param num_peaks:
+    :param nhood_size:
+    :return:
+    """
+
     # loop through number of peaks to identify
-    indicies = []
+    indices = []
     H1 = np.copy(H)
     for i in range(num_peaks):
         idx = np.argmax(H1)  # find argmax in flattened array
         H1_idx = np.unravel_index(idx, H1.shape)  # remap to shape of H
-        indicies.append(H1_idx)
+        indices.append(H1_idx)
 
-        # surpess indicies in neighborhood
+        # surpass indices in neighborhood
         idx_y, idx_x = H1_idx  # first separate x, y indexes from argmax(H)
         # if idx_x is too close to the edges choose appropriate values
         if (idx_x - (nhood_size / 2)) < 0:
@@ -50,17 +57,24 @@ def hough_peaks(H, num_peaks, threshold=0, nhood_size=3):
                 if y == min_y or y == (max_y - 1):
                     H[y, x] = 255
 
-    # return the indicies and the original Hough space with selected points
-    return indicies, H
+    # return the indices and the original Hough space with selected points
+    return indices, H
 
 
-def hough_lines_draw(img, indicies, rhos, thetas):
-    """A function that takes indicies a rhos table and thetas table and draws
-    lines on the input images that correspond to these values."""
-    for i in range(len(indicies)):
+def hough_lines_draw(img, indices, rhos, thetas):
+    """
+    A function that takes indices a rhos table and thetas table and draws
+    lines on the input images that correspond to these values.
+    :param img:
+    :param indices:
+    :param rhos:
+    :param thetas:
+    :return:
+    """
+    for i in range(len(indices)):
         # reverse engineer lines from rhos and thetas
-        rho = rhos[indicies[i][0]]
-        theta = thetas[indicies[i][1]]
+        rho = rhos[indices[i][0]]
+        theta = thetas[indices[i][1]]
         a = np.cos(theta)
         b = np.sin(theta)
         x0 = a * rho
@@ -74,7 +88,11 @@ def hough_lines_draw(img, indicies, rhos, thetas):
         cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
 def line_detection(source: np.ndarray):
+    """
 
+    :param source:
+    :return:
+    """
     img = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
     img = cv2.GaussianBlur(img, (5, 5), 1.5)
     img = cv2.Canny(img, 100, 200)
@@ -107,7 +125,12 @@ def line_detection(source: np.ndarray):
     return accumulator, rhos, thetas
 
 def hough_lines(source: np.ndarray, num_peaks: int = 10) -> np.ndarray:
+    """
 
+    :param source:
+    :param num_peaks:
+    :return:
+    """
     src = np.copy(source)
     H, rhos, thetas = line_detection(src)
     indicies, H = hough_peaks(H, num_peaks, nhood_size=20) # find peaks
@@ -116,8 +139,15 @@ def hough_lines(source: np.ndarray, num_peaks: int = 10) -> np.ndarray:
     return src
 
 
-def detectCircles(img,threshold,region,radius = None):
-    
+def detectCircles(img, threshold, region, radius = None):
+    """
+
+    :param img:
+    :param threshold:
+    :param region:
+    :param radius:
+    :return:
+    """
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = cv2.GaussianBlur(img, (5, 5), 1.5)
     img = cv2.Canny(img, 100, 200)
@@ -167,7 +197,13 @@ def detectCircles(img,threshold,region,radius = None):
 
     return B[:,R_max:-R_max,R_max:-R_max]
 
-def displayCircles(A, img): 
+def displayCircles(A, img):
+    """
+
+    :param A:
+    :param img:
+    :return:
+    """
     circleCoordinates = np.argwhere(A)                                          #Extracting the circle information
     for r,x,y in circleCoordinates:
         cv2.circle(img,(y, x), r, color=(0,255,0), thickness=2)
@@ -185,8 +221,3 @@ def hough_circles(source: np.ndarray, min_radius: int = 20, max_radius: int = 50
     src = np.copy(source)
     circles = detectCircles(src, threshold=8, region=15,radius=[max_radius, min_radius])
     return displayCircles(circles, src)
-
-
-def hough_lines_and_circles(source: np.ndarray, min_radius: int = 20, max_radius: int = 50) -> np.ndarray:
-    # TODO Apply hough lines & circles detection algorithm
-    pass

@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -2618,7 +2618,7 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>45</width>
+                         <width>55</width>
                          <height>0</height>
                         </size>
                        </property>
@@ -2648,7 +2648,7 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>45</width>
+                         <width>55</width>
                          <height>0</height>
                         </size>
                        </property>
@@ -2678,7 +2678,7 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>45</width>
+                         <width>55</width>
                          <height>0</height>
                         </size>
                        </property>
@@ -2689,6 +2689,36 @@
                      </item>
                      <item>
                       <widget class="QLineEdit" name="text_gamma">
+                       <property name="text">
+                        <string>50</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="3" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_24">
+                     <item>
+                      <widget class="QLabel" name="label_26">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>55</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Iterations</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="text_num_iterations">
                        <property name="text">
                         <string>50</string>
                        </property>

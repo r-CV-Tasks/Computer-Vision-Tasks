@@ -144,7 +144,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Open File & Check if it was loaded correctly
         logger.info("Browsing the files...")
-        repo_path = "./src/Images"
+        repo_path = "resources/Images"
         filename, file_format = QtWidgets.QFileDialog.getOpenFileName(None, "Load Image", repo_path,
                                                                       "*;;" "*.jpg;;" "*.jpeg;;" "*.png;;")
         img_name = filename.split('/')[-1]

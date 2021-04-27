@@ -282,9 +282,9 @@ def main():
     num_iterations = 60
 
 
-    # img = cv2.imread("../src/Images/circles_v2.png", 0)
-    # img = cv2.imread("../src/Images/fish.png", 0)
-    img = cv2.imread("../src/Images/hand_256.png", 0)
+    # img = cv2.imread("../resources/Images/circles_v2.png", 0)
+    # img = cv2.imread("../resources/Images/fish.png", 0)
+    img = cv2.imread("../resources/Images/hand_256.png", 0)
     # img = square_pad(source=img, size_x=512, size_y=512, pad_value=0)
     # print(f"new shape {img.shape}")
 

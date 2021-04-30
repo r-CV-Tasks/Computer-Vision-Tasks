@@ -38,14 +38,15 @@ class ImageProcessor(m.Ui_MainWindow):
         super(ImageProcessor, self).setupUi(starter_window)
 
         # Setup Tab Widget Connections
-        self.tabWidget_process.setCurrentIndex(0)
-        self.tab_index = self.tabWidget_process.currentIndex()
-        self.tabWidget_process.currentChanged.connect(self.tab_changed)
+        self.Main_TabWidget.setCurrentIndex(0)
+        self.tab_index = self.Main_TabWidget.currentIndex()
+        self.Main_TabWidget.currentChanged.connect(self.tab_changed)
 
         # Images Lists
         self.inputImages = [self.img1_input, self.img2_input, self.imgA_input,
                             self.imgB_input, self.img4_input, self.img5_input,
-                            self.img6_input]
+                            self.img6_input, self.img7_input, self.img8_input,
+                            self.img9_input, self.img10_input]
 
         self.filtersImages = [self.img1_noisy, self.img1_filtered, self.img1_edged]
 
@@ -56,7 +57,9 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.imgA_input, self.imgB_input, self.imgX_output,
                              self.img4_input, self.img4_output,
                              self.img5_input, self.img5_output,
-                             self.img6_input, self.img6_output]
+                             self.img6_input, self.img6_output,
+                             self.img7_input, self.img8_input, self.img7_output,
+                             self.img9_input, self.img10_input, self.img9_output, self.img10_output]
 
         # Initial Variables
         self.currentNoiseImage = None
@@ -65,20 +68,24 @@ class ImageProcessor(m.Ui_MainWindow):
         self.output_hist_image = None
         self.updated_image = None
 
-        self.imagesData = {1: ..., 2: ..., 3: ..., 4: ..., 5: ..., 6: ..., 7: ...}
-        self.heights = [..., ..., ..., ..., ..., ..., ...]
-        self.weights = [..., ..., ..., ..., ..., ..., ...]
+        self.imagesData = {1: ..., 2: ..., 3: ..., 4: ..., 5: ..., 6: ..., 7: ..., 8: ..., 9: ..., 10: ..., 11: ...}
+        self.heights = [..., ..., ..., ..., ..., ..., ..., ..., ..., ..., ...]
+        self.weights = [..., ..., ..., ..., ..., ..., ..., ..., ..., ..., ...]
 
         # Images Labels and Sizes
-        self.imagesLabels = {1: [self.label_imgName_1], 2: [self.label_imgName_2],
-                             3: [self.label_imgName_3], 4: [self.label_imgName_4],
-                             5: [self.label_imgName_5], 6: [self.label_imgName_6],
-                             7: [self.label_imgName_6]}
+        self.imagesLabels = {1:  [self.label_imgName_1], 2:  [self.label_imgName_2],
+                             3:  [self.label_imgName_3], 4:  [self.label_imgName_4],
+                             5:  [self.label_imgName_5], 6:  [self.label_imgName_6],
+                             7:  [self.label_imgName_7], 8:  [self.label_imgName_8],
+                             9:  [self.label_imgName_9], 10: [self.label_imgName_10],
+                             11: [self.label_imgName_11]}
 
-        self.imagesSizes = {1: [self.label_imgSize_1], 2: [self.label_imgSize_2],
-                            3: [self.label_imgSize_3], 4: [self.label_imgSize_4],
-                            5: [self.label_imgSize_5], 6: [self.label_imgSize_6],
-                            7: [self.label_imgSize_6]}
+        self.imagesSizes = {1:  [self.label_imgSize_1], 2:  [self.label_imgSize_2],
+                            3:  [self.label_imgSize_3], 4:  [self.label_imgSize_4],
+                            5:  [self.label_imgSize_5], 6:  [self.label_imgSize_6],
+                            7:  [self.label_imgSize_7], 8:  [self.label_imgSize_8],
+                            9:  [self.label_imgSize_9], 10: [self.label_imgSize_10],
+                            11: [self.label_imgSize_11]}
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
@@ -100,6 +107,10 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_load_5.clicked.connect(lambda: self.load_file(self.tab_index + 1))
         self.btn_load_6.clicked.connect(lambda: self.load_file(self.tab_index + 1))
         self.btn_load_7.clicked.connect(lambda: self.load_file(self.tab_index + 1))
+        self.btn_load_8.clicked.connect(lambda: self.load_file(self.tab_index + 1))
+        self.btn_load_9.clicked.connect(lambda: self.load_file(self.tab_index + 1))
+        self.btn_load_10.clicked.connect(lambda: self.load_file(self.tab_index + 1))
+        self.btn_load_11.clicked.connect(lambda: self.load_file(self.tab_index + 1))
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(self.tab_index, 0))
@@ -121,6 +132,12 @@ class ImageProcessor(m.Ui_MainWindow):
         # Setup Harris Operator Button
         self.btn_apply_harris.clicked.connect(self.harris_operator)
 
+        # Setup SIFT Button
+        self.btn_match_sift.clicked.connect(self.sift)
+
+        # Setup Template Matching Button
+        self.btn_match_template.clicked.connect(self.template_matching)
+
         self.setup_images_view()
 
     def tab_changed(self):
@@ -128,7 +145,7 @@ class ImageProcessor(m.Ui_MainWindow):
         Updates the current tab index
         :return:
         """
-        self.tab_index = self.tabWidget_process.currentIndex()
+        self.tab_index = self.Main_TabWidget.currentIndex()
 
     def setup_images_view(self):
         """
@@ -574,6 +591,16 @@ class ImageProcessor(m.Ui_MainWindow):
         harris_output = Harris.apply_harris_operator(source=self.imagesData[6])
         self.display_image(source=harris_output, widget=self.img6_output)
         print("Applying harris operator")
+
+    def sift(self):
+        sift_output = Harris.apply_harris_operator(source=self.imagesData[7])
+        self.display_image(source=sift_output, widget=self.img6_output)
+        print("Applying SIFT Matching")
+
+    def template_matching(self):
+        matching_output = Harris.apply_harris_operator(source=self.imagesData[6])
+        self.display_image(source=matching_output, widget=self.img6_output)
+        print("Applying Template Matching")
 
     def slider_changed(self, indx):
         """

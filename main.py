@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 
 from UI import mainGUI as m
-from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, Hough, Contour
+from libs import EdgeDetection, Noise, LowPass, Histogram,\
+                 FrequencyFilters, Hough, Contour, Harris
 
 # importing module
 import logging
@@ -43,7 +44,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Images Lists
         self.inputImages = [self.img1_input, self.img2_input, self.imgA_input,
-                            self.imgB_input, self.img4_input, self.img5_input]
+                            self.imgB_input, self.img4_input, self.img5_input,
+                            self.img6_input]
 
         self.filtersImages = [self.img1_noisy, self.img1_filtered, self.img1_edged]
 
@@ -53,7 +55,8 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img2_input, self.img2_output,
                              self.imgA_input, self.imgB_input, self.imgX_output,
                              self.img4_input, self.img4_output,
-                             self.img5_input, self.img5_output]
+                             self.img5_input, self.img5_output,
+                             self.img6_input, self.img6_output]
 
         # Initial Variables
         self.currentNoiseImage = None
@@ -62,18 +65,20 @@ class ImageProcessor(m.Ui_MainWindow):
         self.output_hist_image = None
         self.updated_image = None
 
-        self.imagesData = {1: ..., 2: ..., 3: ..., 4: ..., 5: ..., 6: ...}
-        self.heights = [..., ..., ..., ..., ..., ...]
-        self.weights = [..., ..., ..., ..., ..., ...]
+        self.imagesData = {1: ..., 2: ..., 3: ..., 4: ..., 5: ..., 6: ..., 7: ...}
+        self.heights = [..., ..., ..., ..., ..., ..., ...]
+        self.weights = [..., ..., ..., ..., ..., ..., ...]
 
         # Images Labels and Sizes
         self.imagesLabels = {1: [self.label_imgName_1], 2: [self.label_imgName_2],
                              3: [self.label_imgName_3], 4: [self.label_imgName_4],
-                             5: [self.label_imgName_5], 6: [self.label_imgName_6]}
+                             5: [self.label_imgName_5], 6: [self.label_imgName_6],
+                             7: [self.label_imgName_6]}
 
         self.imagesSizes = {1: [self.label_imgSize_1], 2: [self.label_imgSize_2],
                             3: [self.label_imgSize_3], 4: [self.label_imgSize_4],
-                            5: [self.label_imgSize_5], 6: [self.label_imgSize_6]}
+                            5: [self.label_imgSize_5], 6: [self.label_imgSize_6],
+                            7: [self.label_imgSize_6]}
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
@@ -94,6 +99,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_load_4.clicked.connect(lambda: self.load_file(self.tab_index + 1))
         self.btn_load_5.clicked.connect(lambda: self.load_file(self.tab_index + 1))
         self.btn_load_6.clicked.connect(lambda: self.load_file(self.tab_index + 1))
+        self.btn_load_7.clicked.connect(lambda: self.load_file(self.tab_index + 1))
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(self.tab_index, 0))
@@ -111,6 +117,9 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_apply_contour.clicked.connect(self.active_contour)
         self.btn_clear_anchors.clicked.connect(self.clear_anchors)
         self.btn_reset_contour.clicked.connect(self.reset_contour)
+
+        # Setup Harris Operator Button
+        self.btn_apply_harris.clicked.connect(self.harris_operator)
 
         self.setup_images_view()
 
@@ -231,6 +240,11 @@ class ImageProcessor(m.Ui_MainWindow):
             self.btn_apply_contour.setEnabled(True)
             self.btn_reset_contour.setEnabled(True)
 
+        # in Harris Operator Tab
+        elif tab_id == 6:
+            self.harris_settings_layout.setEnabled(True)
+            self.btn_apply_harris.setEnabled(True)
+
     def clear_results(self, tab_id):
         # Reset previous outputs
         if tab_id == 0:
@@ -242,6 +256,7 @@ class ImageProcessor(m.Ui_MainWindow):
             self.combo_noise.setCurrentIndex(0)
             self.combo_filter.setCurrentIndex(0)
             self.combo_edges.setCurrentIndex(0)
+
         elif tab_id == 1:
             for widget in self.histoImages:
                 widget.clear()
@@ -257,6 +272,9 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif tab_id == 5:
             self.img5_output.clear()
+
+        elif tab_id == 6:
+            self.img6_output.clear()
 
     def combo_box_changed(self, tab_id, combo_id):
         """
@@ -537,13 +555,25 @@ class ImageProcessor(m.Ui_MainWindow):
             QtWidgets.QApplication.processEvents()
 
     def clear_anchors(self):
+        """
+
+        """
         print("Clearing anchors")
         self.clear_results(tab_id=self.tab_index + 1)
         self.display_image(source=self.imagesData[5], widget=self.img5_input)
 
     def reset_contour(self):
+        """
+
+        """
         print("resetting contour")
         self.clear_results(tab_id=self.tab_index + 1)
+
+    def harris_operator(self):
+
+        harris_output = Harris.apply_harris_operator(source=self.imagesData[6])
+        self.display_image(source=harris_output, widget=self.img6_output)
+        print("Applying harris operator")
 
     def slider_changed(self, indx):
         """

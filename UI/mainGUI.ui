@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>6</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -3950,7 +3950,7 @@
                 </property>
                 <layout class="QGridLayout" name="gridLayout_34">
                  <item row="0" column="0">
-                  <widget class="ImageView" name="img9_input" native="true">
+                  <widget class="ImageView" name="img8_input" native="true">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                      <horstretch>0</horstretch>
@@ -3987,7 +3987,7 @@
                 </property>
                 <layout class="QGridLayout" name="gridLayout_35">
                  <item row="0" column="0">
-                  <widget class="ImageView" name="img8_input" native="true">
+                  <widget class="ImageView" name="img7_input" native="true">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                      <horstretch>0</horstretch>
@@ -4044,7 +4044,7 @@
                 </property>
                 <layout class="QGridLayout" name="gridLayout_42">
                  <item row="0" column="0">
-                  <widget class="ImageView" name="img8_output" native="true">
+                  <widget class="ImageView" name="img7_output" native="true">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                      <horstretch>0</horstretch>
@@ -4172,7 +4172,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_imgSize_0">
+               <widget class="QLabel" name="label_imgSize_10">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -4489,7 +4489,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="btn_match_sift_3">
+             <widget class="QPushButton" name="btn_match_template">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -4604,7 +4604,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_59">
                <item row="0" column="0">
-                <widget class="ImageView" name="img10_input" native="true">
+                <widget class="ImageView" name="img9_input" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -4635,7 +4635,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_60">
                <item row="0" column="0">
-                <widget class="ImageView" name="img11_output" native="true">
+                <widget class="ImageView" name="img10_output" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -4666,7 +4666,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_66">
                <item row="0" column="0">
-                <widget class="ImageView" name="img10_output" native="true">
+                <widget class="ImageView" name="img9_output" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -4697,7 +4697,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_67">
                <item row="0" column="1">
-                <widget class="ImageView" name="img11_input" native="true">
+                <widget class="ImageView" name="img10_input" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>

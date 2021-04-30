@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>7</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -4325,7 +4325,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QGroupBox" name="template_matching_settings_layout_3">
+             <widget class="QGroupBox" name="template_matching_settings_layout">
               <property name="enabled">
                <bool>false</bool>
               </property>

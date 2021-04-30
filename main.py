@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 
 from UI import mainGUI as m
-from libs import EdgeDetection, Noise, LowPass, Histogram,\
-                 FrequencyFilters, Hough, Contour, Harris, SIFT, TemplateMatching
+from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters,\
+                 Hough, Contour, Harris, SIFT, TemplateMatching
 
 # importing module
 import logging
@@ -589,9 +589,6 @@ class ImageProcessor(m.Ui_MainWindow):
             QtWidgets.QApplication.processEvents()
 
     def clear_anchors(self):
-        """
-
-        """
         print("Clearing anchors")
         self.clear_results(tab_id=self.tab_index + 1)
         self.display_image(source=self.imagesData[5], widget=self.img5_input)
@@ -615,7 +612,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
     def template_matching(self):
         print("Applying Template Matching")
-        matching_output = TemplateMatching.apply_template_matching(source=self.imagesData[9], template=self.imagesData[10])
+        matching_output = TemplateMatching.apply_template_matching(source=self.imagesData[9],
+                                                                   template=self.imagesData[10])
         self.display_image(source=matching_output, widget=self.img9_output)
 
     def slider_changed(self, indx):

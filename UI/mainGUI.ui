@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>7</number>
+       <number>5</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -3269,6 +3269,61 @@
              </layout>
             </item>
             <item>
+             <spacer name="verticalSpacer_38">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_63">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetFixedSize</enum>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_71">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Elapsed Time</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_elapsed_time_harris">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>210</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>0.0 seconds</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <spacer name="verticalSpacer_37">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -3803,6 +3858,61 @@
              </widget>
             </item>
             <item>
+             <spacer name="verticalSpacer_21">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_62">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetFixedSize</enum>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_70">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Elapsed Time</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_elapsed_time_sift">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>210</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>0.0 seconds</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <spacer name="verticalSpacer_17">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -3983,7 +4093,7 @@
           <item row="0" column="0">
            <layout class="QVBoxLayout" name="verticalLayout_13">
             <item>
-             <widget class="QPushButton" name="btn_load_12">
+             <widget class="QPushButton" name="btn_load_10">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -4026,7 +4136,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_imgName_12">
+               <widget class="QLabel" name="label_imgName_10">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -4062,7 +4172,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_imgSize_12">
+               <widget class="QLabel" name="label_imgSize_0">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -4099,7 +4209,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="btn_load_13">
+             <widget class="QPushButton" name="btn_load_11">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -4142,7 +4252,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_imgName_13">
+               <widget class="QLabel" name="label_imgName_11">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -4178,7 +4288,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_imgSize_13">
+               <widget class="QLabel" name="label_imgSize_11">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -4215,7 +4325,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QGroupBox" name="sift_settings_layout_3">
+             <widget class="QGroupBox" name="template_matching_settings_layout_3">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -4407,6 +4517,61 @@
              </widget>
             </item>
             <item>
+             <spacer name="verticalSpacer_28">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_61">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetFixedSize</enum>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_69">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Elapsed Time</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_elapsed_time_matching">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>210</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>0.0 seconds</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <spacer name="verticalSpacer_27">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -4435,11 +4600,11 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Input Image</string>
+               <string>Input Image A</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_59">
                <item row="0" column="0">
-                <widget class="ImageView" name="img1_input_2" native="true">
+                <widget class="ImageView" name="img10_input" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -4466,11 +4631,11 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Edge Detection Image</string>
+               <string>Detected Patterns</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_60">
                <item row="0" column="0">
-                <widget class="ImageView" name="img1_edged_2" native="true">
+                <widget class="ImageView" name="img11_output" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -4497,11 +4662,11 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Filtered Image</string>
+               <string>Matching Space</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_66">
                <item row="0" column="0">
-                <widget class="ImageView" name="img1_filtered_2" native="true">
+                <widget class="ImageView" name="img10_output" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -4528,11 +4693,11 @@
                </sizepolicy>
               </property>
               <property name="title">
-               <string>Noisy Image</string>
+               <string>Input Image B</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_67">
                <item row="0" column="1">
-                <widget class="ImageView" name="img1_noisy_2" native="true">
+                <widget class="ImageView" name="img11_input" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>

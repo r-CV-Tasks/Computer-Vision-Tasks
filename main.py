@@ -9,7 +9,7 @@ import pyqtgraph as pg
 
 from UI import mainGUI as m
 from libs import EdgeDetection, Noise, LowPass, Histogram,\
-                 FrequencyFilters, Hough, Contour, Harris
+                 FrequencyFilters, Hough, Contour, Harris, SIFT, TemplateMatching
 
 # importing module
 import logging
@@ -262,6 +262,16 @@ class ImageProcessor(m.Ui_MainWindow):
             self.harris_settings_layout.setEnabled(True)
             self.btn_apply_harris.setEnabled(True)
 
+        # in SIFT Tab
+        elif tab_id == 7:
+            self.sift_settings_layout.setEnabled(True)
+            self.btn_match_sift.setEnabled(True)
+
+        # in Template Matching  Tab
+        elif tab_id == 8:
+            self.template_matching_settings_layout.setEnabled(True)
+            self.btn_match_template.setEnabled(True)
+
     def clear_results(self, tab_id):
         # Reset previous outputs
         if tab_id == 0:
@@ -292,6 +302,13 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif tab_id == 6:
             self.img6_output.clear()
+
+        elif tab_id == 7:
+            self.img7_output.clear()
+
+        elif tab_id == 8:
+            self.img9_output.clear()
+            self.img10_output.clear()
 
     def combo_box_changed(self, tab_id, combo_id):
         """
@@ -587,20 +604,19 @@ class ImageProcessor(m.Ui_MainWindow):
         self.clear_results(tab_id=self.tab_index + 1)
 
     def harris_operator(self):
-
+        print("Applying harris operator")
         harris_output = Harris.apply_harris_operator(source=self.imagesData[6])
         self.display_image(source=harris_output, widget=self.img6_output)
-        print("Applying harris operator")
 
     def sift(self):
-        sift_output = Harris.apply_harris_operator(source=self.imagesData[7])
-        self.display_image(source=sift_output, widget=self.img6_output)
         print("Applying SIFT Matching")
+        sift_output = SIFT.apply_sift(source=self.imagesData[7], source2=self.imagesData[8])
+        self.display_image(source=sift_output, widget=self.img7_output)
 
     def template_matching(self):
-        matching_output = Harris.apply_harris_operator(source=self.imagesData[6])
-        self.display_image(source=matching_output, widget=self.img6_output)
         print("Applying Template Matching")
+        matching_output = TemplateMatching.apply_template_matching(source=self.imagesData[9], template=self.imagesData[10])
+        self.display_image(source=matching_output, widget=self.img9_output)
 
     def slider_changed(self, indx):
         """

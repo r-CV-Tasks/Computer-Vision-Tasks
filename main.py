@@ -1,9 +1,12 @@
 # Importing Packages
 import sys
+import time
+
 import cv2
 import numpy as np
+import pyqtgraph
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 
@@ -37,7 +40,7 @@ class ImageProcessor(m.Ui_MainWindow):
         """
         super(ImageProcessor, self).setupUi(starter_window)
 
-        # Setup Tab Widget Connections
+        # Setup Main_TabWidget Connections
         self.Main_TabWidget.setCurrentIndex(0)
         self.tab_index = self.Main_TabWidget.currentIndex()
         self.Main_TabWidget.currentChanged.connect(self.tab_changed)
@@ -68,9 +71,9 @@ class ImageProcessor(m.Ui_MainWindow):
         self.output_hist_image = None
         self.updated_image = None
 
-        self.imagesData = {1: ..., 2: ..., 3: ..., 4: ..., 5: ..., 6: ..., 7: ..., 8: ..., 9: ..., 10: ..., 11: ...}
-        self.heights = [..., ..., ..., ..., ..., ..., ..., ..., ..., ..., ...]
-        self.weights = [..., ..., ..., ..., ..., ..., ..., ..., ..., ..., ...]
+        self.imagesData = {}
+        self.heights = {}
+        self.weights = {}
 
         # Images Labels and Sizes
         self.imagesLabels = {1:  [self.label_imgName_1], 2:  [self.label_imgName_2],
@@ -143,16 +146,22 @@ class ImageProcessor(m.Ui_MainWindow):
     def tab_changed(self):
         """
         Updates the current tab index
-        :return:
+
+        :return: void
         """
+
         self.tab_index = self.Main_TabWidget.currentIndex()
+        print(f"Current Tab index: {self.tab_index}")
 
     def setup_images_view(self):
         """
-        Adjust the shape and scales of the widgets
-        Remove unnecessary options
-        :return:
+        This function is responsible for:
+            - Adjusting the shape and scales of the widgets
+            - Remove unnecessary options
+
+        :return: void
         """
+
         for widget in self.imageWidgets:
             widget.ui.histogram.hide()
             widget.ui.roiBtn.hide()
@@ -161,51 +170,59 @@ class ImageProcessor(m.Ui_MainWindow):
             widget.getView().setAspectLocked(False)
             widget.view.setAspectLocked(False)
 
-    def load_file(self, img_id):
+    def load_file(self, tab_id):
         """
         Load the File from User
-        :param img_id: 0, 1, 2, 3 or 4
+
+        :param tab_id: 0, 1, 2, 3 or 4
         :return:
         """
 
-        # Open File & Check if it was loaded correctly
+        # Open File Browser
         logger.info("Browsing the files...")
         repo_path = "resources/Images"
         filename, file_format = QtWidgets.QFileDialog.getOpenFileName(None, "Load Image", repo_path,
                                                                       "*;;" "*.jpg;;" "*.jpeg;;" "*.png;;")
+
+        # Take last part of the filename string
         img_name = filename.split('/')[-1]
+
+        # Check if the file was loaded correctly
         if filename == "":
-            pass
+            self.show_message(header="Warning!!", message="You didn't choose any image",
+                              button=QMessageBox.Ok, icon=QMessageBox.Warning)
         else:
-            image = cv2.imread(filename, flags=cv2.IMREAD_GRAYSCALE).T
-            self.heights[img_id], self.weights[img_id] = image.shape
+            # image = cv2.imread(filename, flags=cv2.IMREAD_GRAYSCALE).T
+            image = cv2.imread(filename, flags=cv2.IMREAD_GRAYSCALE)
+            self.heights[tab_id], self.weights[tab_id] = image.shape
 
             bgr_img = cv2.imread(filename)
             rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
             imgbyte_rgb = cv2.transpose(rgb_img)
-            self.imagesData[img_id] = imgbyte_rgb
+            # self.imagesData[tab_id] = imgbyte_rgb
+            self.imagesData[tab_id] = rgb_img
 
             # When Images in Tab1, Tab2 or Image A in Tab 3
-            if img_id != 3:
+            if tab_id != 3:
                 # Reset Results
-                self.clear_results(tab_id=img_id)
+                self.clear_results(tab_id=tab_id)
 
                 # Clear imgX output when uploading a new image
                 if self.tab_index == 2:
                     self.clear_results(tab_id=self.tab_index)
 
                 # Create and Display Original Image
-                self.display_image(source=self.imagesData[img_id], widget=self.inputImages[img_id])
+                self.display_image(source=self.imagesData[tab_id], widget=self.inputImages[tab_id])
 
                 # Enable the combo box and parameters input
-                self.enable_gui(tab_id=img_id)
+                self.enable_gui(tab_id=tab_id)
 
                 # Set Image Name and Size
-                self.imagesLabels[img_id + 1][0].setText(img_name)
-                self.imagesSizes[img_id + 1][0].setText(
-                    f"{self.imagesData[img_id].shape[0]}x{self.imagesData[img_id].shape[1]}")
+                self.imagesLabels[tab_id + 1][0].setText(img_name)
+                self.imagesSizes[tab_id + 1][0].setText(
+                    f"{self.imagesData[tab_id].shape[0]}x{self.imagesData[tab_id].shape[1]}")
 
-                logger.info(f"Added Image{img_id + 1}: {img_name} successfully")
+                logger.info(f"Added Image{tab_id + 1}: {img_name} successfully")
 
             # When Loading Image B in Tab 3
             else:
@@ -215,16 +232,16 @@ class ImageProcessor(m.Ui_MainWindow):
                     logger.warning("Warning!!. Images sizes must be the same, please upload another image")
                 else:
                     # Reset Results
-                    self.clear_results(tab_id=img_id)
+                    self.clear_results(tab_id=tab_id)
 
-                    self.display_image(self.imagesData[img_id], self.inputImages[img_id])
+                    self.display_image(self.imagesData[tab_id], self.inputImages[tab_id])
 
                     # Set Image Name and Size
-                    self.imagesLabels[img_id + 1][0].setText(img_name)
-                    self.imagesSizes[img_id + 1][0].setText(
-                        f"{self.imagesData[img_id].shape[0]}x{self.imagesData[img_id].shape[1]}")
+                    self.imagesLabels[tab_id + 1][0].setText(img_name)
+                    self.imagesSizes[tab_id + 1][0].setText(
+                        f"{self.imagesData[tab_id].shape[0]}x{self.imagesData[tab_id].shape[1]}")
                     self.btn_hybrid.setEnabled(True)
-                    logger.info(f"Added Image{img_id + 1}: {img_name} successfully")
+                    logger.info(f"Added Image{tab_id + 1}: {img_name} successfully")
 
     def enable_gui(self, tab_id):
         """
@@ -522,13 +539,10 @@ class ImageProcessor(m.Ui_MainWindow):
         # Initial variables
         contour_x, contour_y, window_coordinates = None, None, None
 
-        # Flag to check if initial contour is displayed 1 time only
-        initial_image = False
-
         # Greedy Algorithm
 
-        # Transpose and copy the image for proper calculations in the contour
-        image_src = np.copy(cv2.transpose(self.imagesData[5]))
+        # copy the image because cv2 will edit the original source in the contour
+        image_src = np.copy(self.imagesData[5])
 
         # Create Initial Contour and display it on the GUI
         if self.radioButton_square_contour.isChecked():
@@ -558,6 +572,11 @@ class ImageProcessor(m.Ui_MainWindow):
             self.text_gamma.setText(str(gamma))
             self.text_num_iterations.setText(str(num_iterations))
 
+        # Display the input image after creating the contour
+        src_copy = np.copy(image_src)
+        initial_image = self.draw_contour_on_image(src_copy, contour_x, contour_y)
+        self.display_image(source=initial_image, widget=self.img5_input)
+
         # Calculate External Energy which will be used in each iteration of greedy algorithm
         external_energy = gamma * Contour.calculate_external_energy(image_src, w_line, w_edge)
 
@@ -575,15 +594,7 @@ class ImageProcessor(m.Ui_MainWindow):
             # Display the new contour after each iteration
             src_copy = np.copy(image_src)
             processed_image = self.draw_contour_on_image(src_copy, cont_x, cont_y)
-            processed_image = cv2.transpose(processed_image)
-            self.updated_image = np.copy(processed_image)
-
-            # Display Initial Image once then update the output after that
-            if initial_image is False:
-                self.display_image(source=self.updated_image, widget=self.img5_input)
-                initial_image = True
-            else:
-                self.display_image(source=self.updated_image, widget=self.img5_output)
+            self.display_image(source=processed_image, widget=self.img5_output)
 
             # Used to allow the GUI to update ImageView Object without lagging
             QtWidgets.QApplication.processEvents()
@@ -594,9 +605,6 @@ class ImageProcessor(m.Ui_MainWindow):
         self.display_image(source=self.imagesData[5], widget=self.img5_input)
 
     def reset_contour(self):
-        """
-
-        """
         print("resetting contour")
         self.clear_results(tab_id=self.tab_index + 1)
 
@@ -659,15 +667,22 @@ class ImageProcessor(m.Ui_MainWindow):
         return image
 
     @staticmethod
-    def display_image(source, widget):
+    def display_image(source:  np.ndarray, widget: pyqtgraph.ImageView):
         """
-        Display the given data
-        :param source: 2d numpy array
+        Displays the given image source in the specified ImageView widget
+
+        :param source: image source
         :param widget: ImageView object
-        :return:
+        :return: void
         """
-        widget.setImage(source)
-        widget.view.setRange(xRange=[0, source.shape[0]], yRange=[0, source.shape[1]],
+
+        # Copy the original source because cv2 updates the passed parameter
+        src = np.copy(source)
+
+        # Rotate the image 90 degree because ImageView is rotated
+        src = cv2.transpose(src)
+        widget.setImage(src)
+        widget.view.setRange(xRange=[0, src.shape[0]], yRange=[0, src.shape[1]],
                              padding=0)
         widget.ui.roiPlot.hide()
 

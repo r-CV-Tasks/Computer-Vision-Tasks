@@ -46,10 +46,11 @@ def prewitt_edge(source: np.ndarray):
     return mag
 
 
-def sobel_edge(source: np.ndarray, GetDirection: bool = False):
+def sobel_edge(source: np.ndarray, GetMagnitude: bool = True, GetDirection: bool = False):
     """
         Apply Sobel Operator to detect edges
         :param source: Image to detect edges in
+        :param GetMagnitude: Get Magnitude of horizontal and vertical edges
         :param GetDirection: Get Gradient direction in Pi Terms
         :return: edges image
     """
@@ -60,9 +61,13 @@ def sobel_edge(source: np.ndarray, GetDirection: bool = False):
     vertical = np.flip(horizontal.T)
     mag, HorizontalEdge, VerticalEdge = apply_kernel(source, horizontal, vertical, True)
 
+    if GetMagnitude == False:
+        return HorizontalEdge, VerticalEdge
+
     if GetDirection:
         Direction = np.arctan2(VerticalEdge, HorizontalEdge)
         return mag, Direction
+
     return mag
 
 

@@ -241,7 +241,7 @@ class ImageProcessor(m.Ui_MainWindow):
                 #     logger.warning("Warning!!. Images sizes must be the same, please upload another image")
                 # else:
 
-                # Convert int index to key to use in the dictionaries
+                # Convert int index to string key to use in indexing the dictionaries
                 # "img_id + 1" : "+1" because it is the 2nd image in the same tab
                 img_idx = str(img_id) + "_2"
 
@@ -292,12 +292,12 @@ class ImageProcessor(m.Ui_MainWindow):
                 print("Load another Image to apply hybrid")
 
         # in Hough Tab
-        elif tab_id == 4:
+        elif tab_id == 3:
             self.hough_settings_layout.setEnabled(True)
             self.btn_hough.setEnabled(True)
 
         # in Active Contour Tab
-        elif tab_id == 5:
+        elif tab_id == 4:
             self.contour_settings_layout.setEnabled(True)
             self.gradiant_settings_layout.setEnabled(True)
             self.btn_clear_anchors.setEnabled(True)
@@ -305,17 +305,17 @@ class ImageProcessor(m.Ui_MainWindow):
             self.btn_reset_contour.setEnabled(True)
 
         # in Harris Operator Tab
-        elif tab_id == 6:
+        elif tab_id == 5:
             self.harris_settings_layout.setEnabled(True)
             self.btn_apply_harris.setEnabled(True)
 
         # in SIFT Tab
-        elif tab_id == 7:
+        elif tab_id == 6:
             self.sift_settings_layout.setEnabled(True)
             self.btn_match_sift.setEnabled(True)
 
         # in Template Matching  Tab
-        elif tab_id == 8:
+        elif tab_id == 7:
             self.template_matching_settings_layout.setEnabled(True)
             self.btn_match_template.setEnabled(True)
 
@@ -338,6 +338,15 @@ class ImageProcessor(m.Ui_MainWindow):
             self.combo_filter.setCurrentIndex(0)
             self.combo_edges.setCurrentIndex(0)
 
+            # Reset Sliders Values
+            self.snr_slider_1.setValue(5)
+            self.sigma_slider_1.setValue(2)
+            self.mask_size_1.setValue(2)
+            self.sigma_slider_2.setValue(2)
+
+            # Clear recently noised image
+            self.currentNoiseImage = None
+
         elif tab_id == 1:
             # Clear Histograms Widgets
             for widget in self.histoImages:
@@ -346,28 +355,25 @@ class ImageProcessor(m.Ui_MainWindow):
             # Reset combo box choices
             self.combo_histogram.setCurrentIndex(0)
 
-        # Clear widgets depending on current tab_id
-        else:
-            self.outputImages[tab_id].clear()
+        elif tab_id == 2:
+            self.img2_output.clear()
 
-        # elif tab_id == 2:
-        #     self.img2_output.clear()
-        #
-        # elif tab_id == 3:
-        #     self.img3_output.clear()
-        #
-        # elif tab_id == 4:
-        #     self.img4_output.clear()
-        #
-        # elif tab_id == 5:
-        #     self.img5_output.clear()
-        #
-        # elif tab_id == 6:
-        #     self.img6_output.clear()
-        #
-        # elif tab_id == 7:
-        #     self.img7_1_output.clear()
-        #     self.img7_2_output.clear()
+        elif tab_id == 3:
+            self.img3_output.clear()
+
+        elif tab_id == 4:
+            self.img4_output.clear()
+
+        elif tab_id == 5:
+            self.img5_output.clear()
+
+        elif tab_id == 6:
+            self.img6_output.clear()
+
+        elif tab_id == 7:
+            self.img7_1_input.clear()
+            self.img7_1_output.clear()
+            self.img7_2_output.clear()
 
     def combo_box_changed(self, tab_id, combo_id):
         """
@@ -376,6 +382,9 @@ class ImageProcessor(m.Ui_MainWindow):
         :param combo_id: id of the chosen combo box
         :return:
         """
+
+        # If tab 0: key will be "0_1" which exists in the dictionary
+        img_key = str(tab_id) + "_1"
 
         # If 1st tab is selected
         if tab_id == 0:
@@ -398,15 +407,15 @@ class ImageProcessor(m.Ui_MainWindow):
                 self.snr_slider_1.setEnabled(True)
 
                 if selected_component == "uniform noise":
-                    self.currentNoiseImage = Noise.uniform_noise(source=self.imagesData[0], snr=noise_snr)
+                    self.currentNoiseImage = Noise.uniform_noise(source=self.imagesData[img_key], snr=noise_snr)
 
                 elif selected_component == "gaussian noise":
                     self.sigma_slider_1.setEnabled(True)
-                    self.currentNoiseImage = Noise.gaussian_noise(source=self.imagesData[0], sigma=noise_sigma,
+                    self.currentNoiseImage = Noise.gaussian_noise(source=self.imagesData[img_key], sigma=noise_sigma,
                                                                   snr=noise_snr)
 
                 elif selected_component == "salt & pepper noise":
-                    self.currentNoiseImage = Noise.salt_pepper_noise(source=self.imagesData[0], snr=noise_snr)
+                    self.currentNoiseImage = Noise.salt_pepper_noise(source=self.imagesData[img_key], snr=noise_snr)
 
                 try:
                     self.display_image(source=self.currentNoiseImage, widget=self.filtersImages[combo_id])
@@ -441,16 +450,16 @@ class ImageProcessor(m.Ui_MainWindow):
             # Edge Detection Options
             if combo_id == 2:
                 if selected_component == "sobel mask":
-                    self.edged_image = EdgeDetection.sobel_edge(source=self.imagesData[0])
+                    self.edged_image = EdgeDetection.sobel_edge(source=self.imagesData[img_key])
 
                 elif selected_component == "roberts mask":
-                    self.edged_image = EdgeDetection.roberts_edge(source=self.imagesData[0])
+                    self.edged_image = EdgeDetection.roberts_edge(source=self.imagesData[img_key])
 
                 elif selected_component == "prewitt mask":
-                    self.edged_image = EdgeDetection.prewitt_edge(source=self.imagesData[0])
+                    self.edged_image = EdgeDetection.prewitt_edge(source=self.imagesData[img_key])
 
                 elif selected_component == "canny mask":
-                    self.edged_image = EdgeDetection.canny_edge(source=self.imagesData[0])
+                    self.edged_image = EdgeDetection.canny_edge(source=self.imagesData[img_key])
 
                 try:
                     self.display_image(source=self.edged_image, widget=self.filtersImages[combo_id])
@@ -471,23 +480,23 @@ class ImageProcessor(m.Ui_MainWindow):
                     # Clear old results
                     self.img1_input_histo.clear()
                     self.img1_output_histo.clear()
-                    self.output_hist_image = np.copy(self.imagesData[1])
+                    self.output_hist_image = np.copy(self.imagesData[img_key])
 
                     # Draw the histograms of the input image
-                    self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img1_input_histo,
+                    self.draw_rgb_histogram(source=self.imagesData[img_key], widget=self.img1_input_histo,
                                             title="Original Histogram", label="Pixels")
-                    self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img1_output_histo,
+                    self.draw_rgb_histogram(source=self.imagesData[img_key], widget=self.img1_output_histo,
                                             title="Original Histogram", label="Pixels")
 
                 if selected_component == "equalized histogram":
                     self.img1_output_histo.clear()
-                    self.output_hist_image, bins = Histogram.equalize_histogram(source=self.imagesData[1], bins_num=255)
+                    self.output_hist_image, bins = Histogram.equalize_histogram(source=self.imagesData[img_key], bins_num=255)
                     self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img1_output_histo,
                                             title="Equalized Histogram", label="Pixels")
 
                 elif selected_component == "normalized histogram":
                     self.img1_output_histo.clear()
-                    normalized_image, hist, bins = Histogram.normalize_histogram(source=self.imagesData[1],
+                    normalized_image, hist, bins = Histogram.normalize_histogram(source=self.imagesData[img_key],
                                                                                  bins_num=255)
                     self.output_hist_image = normalized_image
                     self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img1_output_histo,
@@ -495,7 +504,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
                 elif selected_component == "local thresholding":
                     self.img1_output_histo.clear()
-                    local_threshold = Histogram.local_threshold(source=self.imagesData[1], divs=4)
+                    local_threshold = Histogram.local_threshold(source=self.imagesData[img_key], divs=4)
                     hist, bins = Histogram.histogram(source=local_threshold, bins_num=2)
                     self.output_hist_image = local_threshold
                     self.display_bar_graph(widget=self.img1_output_histo, x=bins, y=hist, width=0.6, brush='r',
@@ -503,7 +512,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
                 elif selected_component == "global thresholding":
                     self.img1_output_histo.clear()
-                    global_threshold = Histogram.global_threshold(source=self.imagesData[1], threshold=128)
+                    global_threshold = Histogram.global_threshold(source=self.imagesData[img_key], threshold=128)
                     hist, bins = Histogram.histogram(source=global_threshold, bins_num=2)
                     self.output_hist_image = global_threshold
                     self.display_bar_graph(widget=self.img1_output_histo, x=bins, y=hist, width=0.6, brush='r',
@@ -511,7 +520,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
                 elif selected_component == "transform to gray":
                     self.img1_output_histo.clear()
-                    gray_image = cv2.cvtColor(self.imagesData[1], cv2.COLOR_RGB2GRAY)
+                    gray_image = cv2.cvtColor(self.imagesData[img_key], cv2.COLOR_RGB2GRAY)
                     hist, bins = Histogram.histogram(source=gray_image, bins_num=255)
                     self.output_hist_image = gray_image
                     self.display_bar_graph(widget=self.img1_output_histo, x=bins, y=hist, width=0.6, brush='r',
@@ -522,7 +531,7 @@ class ImageProcessor(m.Ui_MainWindow):
                 except TypeError:
                     print("Cannot display histogram image")
 
-            logger.info(f"Viewing {selected_component} Component Of Image{tab_id}")
+            logger.info(f"Viewing {selected_component} Component Of Image #{tab_id}")
 
     def hybrid_image(self):
         """
@@ -539,7 +548,8 @@ class ImageProcessor(m.Ui_MainWindow):
     def hough_transform(self):
         """
         Apply a hough transformation to detect lines or circles in the given image
-        :return:
+
+        :return: void
         """
 
         hough_image = None
@@ -549,14 +559,16 @@ class ImageProcessor(m.Ui_MainWindow):
         max_radius = int(self.text_max_radius.text())
         num_votes = int(self.text_votes.text())
 
+        # Apply the choosed type of hough transform
         if self.radioButton_lines.isChecked():
-            hough_image = Hough.hough_lines(source=self.imagesData[4], num_peaks=num_votes)
+            hough_image = Hough.hough_lines(source=self.imagesData["3_1"], num_peaks=num_votes)
         elif self.radioButton_circles.isChecked():
-            hough_image = Hough.hough_circles(source=self.imagesData[4], min_radius=min_radius,
+            hough_image = Hough.hough_circles(source=self.imagesData["3_1"], min_radius=min_radius,
                                               max_radius=max_radius)
 
+        # Display output
         try:
-            self.display_image(source=hough_image, widget=self.img4_output)
+            self.display_image(source=hough_image, widget=self.img3_output)
         except TypeError:
             print("Cannot display Image")
 
@@ -584,7 +596,7 @@ class ImageProcessor(m.Ui_MainWindow):
         # Greedy Algorithm
 
         # copy the image because cv2 will edit the original source in the contour
-        image_src = np.copy(self.imagesData[5])
+        image_src = np.copy(self.imagesData["4_1"])
 
         # Create Initial Contour and display it on the GUI
         if self.radioButton_square_contour.isChecked():
@@ -617,7 +629,7 @@ class ImageProcessor(m.Ui_MainWindow):
         # Display the input image after creating the contour
         src_copy = np.copy(image_src)
         initial_image = self.draw_contour_on_image(src_copy, contour_x, contour_y)
-        self.display_image(source=initial_image, widget=self.img5_input)
+        self.display_image(source=initial_image, widget=self.img4_input)
 
         # Calculate External Energy which will be used in each iteration of greedy algorithm
         external_energy = gamma * Contour.calculate_external_energy(image_src, w_line, w_edge)
@@ -636,35 +648,36 @@ class ImageProcessor(m.Ui_MainWindow):
             # Display the new contour after each iteration
             src_copy = np.copy(image_src)
             processed_image = self.draw_contour_on_image(src_copy, cont_x, cont_y)
-            self.display_image(source=processed_image, widget=self.img5_output)
+            self.display_image(source=processed_image, widget=self.img4_output)
 
             # Used to allow the GUI to update ImageView Object without lagging
             QtWidgets.QApplication.processEvents()
 
     def clear_anchors(self):
         print("Clearing anchors")
-        self.clear_results(tab_id=self.tab_index + 1)
-        self.display_image(source=self.imagesData[5], widget=self.img5_input)
+        self.clear_results(tab_id=self.tab_index)
+        self.display_image(source=self.imagesData["4_1"], widget=self.img4_input)
 
     def reset_contour(self):
         print("resetting contour")
-        self.clear_results(tab_id=self.tab_index + 1)
+        self.clear_results(tab_id=self.tab_index)
 
     def harris_operator(self):
         print("Applying harris operator")
-        harris_output = Harris.apply_harris_operator(source=self.imagesData[6])
-        self.display_image(source=harris_output, widget=self.img6_output)
+        harris_output = Harris.apply_harris_operator(source=self.imagesData["5_1"])
+        self.display_image(source=harris_output, widget=self.img5_output)
 
     def sift(self):
         print("Applying SIFT Matching")
-        sift_output = SIFT.apply_sift(source=self.imagesData[7], source2=self.imagesData[8])
+        sift_output = SIFT.apply_sift(source=self.imagesData["6_1"], source2=self.imagesData["6_2"])
         self.display_image(source=sift_output, widget=self.img6_output)
 
     def template_matching(self):
         print("Applying Template Matching")
-        matching_output = TemplateMatching.apply_template_matching(source=self.imagesData[9],
-                                                                   template=self.imagesData[10])
+        matching_output = TemplateMatching.apply_template_matching(source=self.imagesData["7_1"],
+                                                                   template=self.imagesData["7_2"])
         self.display_image(source=matching_output, widget=self.img7_1_output)
+        self.display_image(source=matching_output, widget=self.img7_2_output)
 
     def slider_changed(self, indx):
         """

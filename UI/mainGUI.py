@@ -764,6 +764,7 @@ class Ui_MainWindow(object):
         spacerItem9 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.verticalLayout_3.addItem(spacerItem9)
         self.btn_load_2_2 = QtWidgets.QPushButton(self.Hybrid_Tab)
+        self.btn_load_2_2.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1644,6 +1645,7 @@ class Ui_MainWindow(object):
         spacerItem28 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.verticalLayout_6.addItem(spacerItem28)
         self.btn_load_6_2 = QtWidgets.QPushButton(self.SIFT_Tab)
+        self.btn_load_6_2.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -2219,7 +2221,7 @@ class Ui_MainWindow(object):
         self.actionImage_2.setObjectName("actionImage_2")
 
         self.retranslateUi(MainWindow)
-        self.Main_TabWidget.setCurrentIndex(6)
+        self.Main_TabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

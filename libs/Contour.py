@@ -248,7 +248,7 @@ def calculate_external_energy(source, WLine, WEdge):
     ELine = gaussian_filter(gray, 7, 7 * 7)
 
     # Get Gradient Magnitude & Direction
-    EEdge, gradient_direction = sobel_edge(ELine, True)
+    EEdge, gradient_direction = sobel_edge(ELine, GetDirection=True)
     # EEdge *= 255 / EEdge.max()
     # EEdge = EEdge.astype("int16")
 

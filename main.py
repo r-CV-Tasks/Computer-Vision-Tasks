@@ -201,70 +201,49 @@ class ImageProcessor(m.Ui_MainWindow):
             img_bgr = cv2.imread(filename)
             img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
-
             # Loading one image only in the tab
             if multi_widget is False:
-
                 # Convert int index to key to use in the dictionaries
                 img_idx = str(img_id) + "_1"
+            # When Loading 2nd Image in same Tab (Hybrid, SIFT, Template Matching)
+            else:
+                img_idx = str(img_id) + "_2"
 
-                # Store the image
-                self.imagesData[img_idx] = img_rgb
-                self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
+            key_map = "2_2"
 
+            # Store the image
+            self.imagesData[img_idx] = img_rgb
+            self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
+
+            # Check if the 2nd image was loaded previously in hybrid tab
+            if key_map in self.heights or key_map in self.weights:
+                # Check 2 images have same dimensions in hybrid tab
+                if (self.heights["2_1"] != self.heights["2_2"]) or (self.weights["2_1"] != self.weights["2_2"]):
+                    self.show_message(header="Warning!!", message="Images sizes must be the same, "
+                                                                  "please upload another image",
+                                      button=QMessageBox.Ok, icon=QMessageBox.Warning)
+                    logger.warning("Warning!!. Images sizes must be the same, please upload another image")
+
+            # TODO Fix 2 sizes
+            # Load img2_1
+            else:
                 # Reset Results
                 self.clear_results(tab_id=img_id)
 
                 # Display Original Image
-                self.display_image(source=self.imagesData[img_idx], widget=self.inputImages[img_id][0])
+                self.display_image(source=self.imagesData[img_idx], widget=self.inputImages[img_id][multi_widget])
 
                 # Enable the comboBoxes and settings
                 self.enable_gui(tab_id=img_id)
 
-                # Set Image Name and Size
-
+                # Set Image Name and Sizes
                 self.imagesLabels[img_idx].setText(img_name)
                 self.imagesSizes[img_idx].setText(f"{self.imagesData[img_idx].shape[0]}x"
                                                   f"{self.imagesData[img_idx].shape[1]}")
 
-                logger.info(f"Added Image #{img_id + 1}: {img_name} successfully")
+                logger.info(f"Added Image #{img_id}: {img_name} successfully")
 
-            # When Loading 2nd Image in Tab "Hybrid"
-            # When Loading 2nd Image in Tab "SIFT"
-            # When Loading 2nd Image in Tab "Template Matching"
-            else:
-                # Check 2 images have same dimensions
-                # TODO
-                # if self.heights[3] != self.heights[2] or self.weights[3] != self.weights[2]:
-                #     self.show_message("Warning!!", "Images sizes must be the same, please upload another image",
-                #                       QMessageBox.Ok, QMessageBox.Warning)
-                #     logger.warning("Warning!!. Images sizes must be the same, please upload another image")
-                # else:
-
-                # Convert int index to string key to use in indexing the dictionaries
-                # "img_id + 1" : "+1" because it is the 2nd image in the same tab
-                img_idx = str(img_id) + "_2"
-
-                # Store the image
-                self.imagesData[img_idx] = img_rgb
-                self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
-
-                # Reset Results
-                self.clear_results(tab_id=img_id)
-
-                self.display_image(self.imagesData[img_idx], self.inputImages[img_id][1])
-
-                # Enable the comboBoxes and settings
-                self.enable_gui(tab_id=img_id)
-
-                # Set Image Name and Size
-                self.imagesLabels[img_idx].setText(img_name)
-                self.imagesSizes[img_idx].setText(f"{self.imagesData[img_idx].shape[0]}x"
-                                                  f"{self.imagesData[img_idx].shape[1]}")
-
-                logger.info(f"Added Image #{img_id+1}: {img_name} successfully")
-
-        # Check if the file wasn't loaded correctly
+        # The file wasn't loaded correctly
         else:
             self.show_message(header="Warning!!", message="You didn't choose any image",
                               button=QMessageBox.Ok, icon=QMessageBox.Warning)
@@ -285,6 +264,7 @@ class ImageProcessor(m.Ui_MainWindow):
             self.combo_histogram.setEnabled(True)
 
         elif tab_id == 2:
+            self.btn_load_2_2.setEnabled(True)
             try:
                 if isinstance(self.imagesData["2_1"], np.ndarray) and isinstance(self.imagesData["2_2"], np.ndarray):
                     self.btn_hybrid.setEnabled(True)

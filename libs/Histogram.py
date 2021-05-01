@@ -89,16 +89,23 @@ def local_threshold(source: np.ndarray, divs: int) -> np.ndarray:
     v_splits = np.split(src, s)
 
     splits = []
-    for sp in v_splits:
-        splits.append(np.split(sp, s, -1))
+    out = None
 
-    c1 = []
-    # Calculate the mean and threshold for each split
-    for ix, x in enumerate(splits):
-        for iy, y in enumerate(x):
-            threshold = int(np.mean(y))
-            splits[ix][iy] = global_threshold(splits[ix][iy], threshold)
-        c1.append(np.concatenate(splits[ix], -1))
+    try:
+        for sp in v_splits:
+            splits.append(np.split(sp, s, -1))
 
-    out = np.concatenate(c1)
+
+        c1 = []
+        # Calculate the mean and threshold for each split
+        for ix, x in enumerate(splits):
+            for iy, y in enumerate(x):
+                threshold = int(np.mean(y))
+                splits[ix][iy] = global_threshold(splits[ix][iy], threshold)
+            c1.append(np.concatenate(splits[ix], -1))
+
+        out = np.concatenate(c1)
+    except ValueError:
+        print("Shape is not equal")
+
     return out

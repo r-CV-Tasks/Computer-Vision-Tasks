@@ -539,7 +539,7 @@ class ImageProcessor(m.Ui_MainWindow):
         max_radius = int(self.text_max_radius.text())
         num_votes = int(self.text_votes.text())
 
-        # Apply the choosed type of hough transform
+        # Apply the chosen type of hough transform
         if self.radioButton_lines.isChecked():
             hough_image = Hough.hough_lines(source=self.imagesData["3_1"], num_peaks=num_votes)
         elif self.radioButton_circles.isChecked():
@@ -644,8 +644,10 @@ class ImageProcessor(m.Ui_MainWindow):
 
     def harris_operator(self):
         print("Applying harris operator")
-        harris_output = Harris.apply_harris_operator(source=self.imagesData["5_1"])
-        self.display_image(source=harris_output, widget=self.img5_output)
+        harris_corners, _ = Harris.apply_harris_operator(source=self.imagesData["5_1"])
+        print(harris_corners)
+        print(harris_corners.shape)
+        self.display_image(source=harris_corners, widget=self.img5_output)
 
     def sift(self):
         print("Applying SIFT Matching")

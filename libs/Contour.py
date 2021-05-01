@@ -68,7 +68,6 @@ def create_square_contour(source, num_xpoints, num_ypoints):
     """
     Create a square shape to be the initial contour
     :param source: image source
-    :param num_points: number of points in the contour
     :return: list of x points coordinates, list of y points coordinates and list of window coordinates
     """
     step = 5
@@ -296,7 +295,7 @@ def main():
                                                                     num_xpoints=num_xpoints, num_ypoints=num_ypoints)
 
     # Calculate External Energy which will be used in each iteration of greedy algorithm
-    ExternalEnergy = gamma * compute_external_energy(image_src, w_line, w_edge)
+    ExternalEnergy = gamma * calculate_external_energy(image_src, w_line, w_edge)
 
     # Draw the Initial Contour on the image
     fig = plt.figure()

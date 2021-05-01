@@ -44,12 +44,12 @@ class ImageProcessor(m.Ui_MainWindow):
         self.Main_TabWidget.currentChanged.connect(self.tab_changed)
 
         # Images Lists
-        self.inputImages = [self.img0_input,   self.img1_input,
-                            self.img2_1_input, self.img2_2_input,
-                            self.img3_input,   self.img4_input,
-                            self.img5_input,
-                            self.img6_1_input, self.img6_2_input,
-                            self.img7_1_input, self.img7_2_input]
+        self.inputImages = [[self.img0_input],   [self.img1_input],
+                            [self.img2_1_input, self.img2_2_input],
+                            [self.img3_input],   [self.img4_input],
+                            [self.img5_input],
+                            [self.img6_1_input, self.img6_2_input],
+                            [self.img7_1_input, self.img7_2_input]]
 
         self.outputImages = [[self.img0_noisy, self.img0_filtered, self.img0_edged],
                              self.img1_output, self.img2_output, self.img3_output,
@@ -60,6 +60,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
         self.histoImages = [self.img1_input_histo, self.img1_output, self.img1_output_histo]
 
+        # This contains all the widgets to setup them in one loop
         self.imageWidgets = [self.img0_input, self.img0_noisy, self.img0_filtered, self.img0_edged,
                              self.img1_input, self.img1_output,
                              self.img2_1_input, self.img2_2_input, self.img2_output,
@@ -76,24 +77,25 @@ class ImageProcessor(m.Ui_MainWindow):
         self.output_hist_image = None
         self.updated_image = None
 
+        # Dictionaries to store images data
         self.imagesData = {}
         self.heights = {}
         self.weights = {}
 
         # Images Labels and Sizes
-        self.imagesLabels = {0:   self.label_imgName_0,   1:   self.label_imgName_1,
-                             2_1: self.label_imgName_2_1, 2_2: self.label_imgName_2_2,
-                             3:   self.label_imgName_3,   4:   self.label_imgName_4,
-                             5:   self.label_imgName_5,
-                             6_1: self.label_imgName_6_1, 6_2: self.label_imgName_6_2,
-                             7_1: self.label_imgName_7_1, 7_2: self.label_imgName_7_2}
+        self.imagesLabels = {"0_1": self.label_imgName_0,   "1_1": self.label_imgName_1,
+                             "2_1": self.label_imgName_2_1, "2_2": self.label_imgName_2_2,
+                             "3_1": self.label_imgName_3,   "4_1": self.label_imgName_4,
+                             "5_1": self.label_imgName_5,
+                             "6_1": self.label_imgName_6_1, "6_2": self.label_imgName_6_2,
+                             "7_1": self.label_imgName_7_1, "7_2": self.label_imgName_7_2}
 
-        self.imagesSizes = {0:   self.label_imgSize_0,   1:   self.label_imgSize_1,
-                            2_1: self.label_imgSize_2_1, 2_2: self.label_imgSize_2_2,
-                            3:   self.label_imgSize_3,   4:   self.label_imgSize_4,
-                            5:   self.label_imgSize_5,
-                            6_1: self.label_imgSize_6_1, 6_2: self.label_imgSize_6_2,
-                            7_1: self.label_imgSize_7_1, 7_2: self.label_imgSize_7_2}
+        self.imagesSizes = {"0_1": self.label_imgSize_0,   "1_1": self.label_imgSize_1,
+                            "2_1": self.label_imgSize_2_1, "2_2": self.label_imgSize_2_2,
+                            "3_1": self.label_imgSize_3,   "4_1": self.label_imgSize_4,
+                            "5_1": self.label_imgSize_5,
+                            "6_1": self.label_imgSize_6_1, "6_2": self.label_imgSize_6_2,
+                            "7_1": self.label_imgSize_7_1, "7_2": self.label_imgSize_7_2}
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
@@ -198,34 +200,38 @@ class ImageProcessor(m.Ui_MainWindow):
             # Read the image
             img_bgr = cv2.imread(filename)
             img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-            self.imagesData[img_id] = img_rgb
-            self.heights[img_id], self.weights[img_id], _ = img_rgb.shape
 
-            # When Images in Tab1, Tab2 or Image A in Tab 3
-            # if img_id != 3:
 
             # Loading one image only in the tab
             if multi_widget is False:
+
+                # Convert int index to key to use in the dictionaries
+                img_idx = str(img_id) + "_1"
+
+                # Store the image
+                self.imagesData[img_idx] = img_rgb
+                self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
 
                 # Reset Results
                 self.clear_results(tab_id=img_id)
 
                 # Display Original Image
-                self.display_image(source=self.imagesData[img_id], widget=self.inputImages[img_id])
+                self.display_image(source=self.imagesData[img_idx], widget=self.inputImages[img_id][0])
 
                 # Enable the comboBoxes and settings
                 self.enable_gui(tab_id=img_id)
 
                 # Set Image Name and Size
-                self.imagesLabels[img_id].setText(img_name)
-                self.imagesSizes[img_id].setText(f"{self.imagesData[img_id].shape[0]}x"
-                                                 f"{self.imagesData[img_id].shape[1]}")
+
+                self.imagesLabels[img_idx].setText(img_name)
+                self.imagesSizes[img_idx].setText(f"{self.imagesData[img_idx].shape[0]}x"
+                                                  f"{self.imagesData[img_idx].shape[1]}")
 
                 logger.info(f"Added Image #{img_id + 1}: {img_name} successfully")
 
-            # When Loading Image B in Tab "Hybrid"
-            # When Loading Image B in Tab "SIFT"
-            # When Loading Image B in Tab "Template Matching"
+            # When Loading 2nd Image in Tab "Hybrid"
+            # When Loading 2nd Image in Tab "SIFT"
+            # When Loading 2nd Image in Tab "Template Matching"
             else:
                 # Check 2 images have same dimensions
                 # TODO
@@ -234,16 +240,27 @@ class ImageProcessor(m.Ui_MainWindow):
                 #                       QMessageBox.Ok, QMessageBox.Warning)
                 #     logger.warning("Warning!!. Images sizes must be the same, please upload another image")
                 # else:
-                # Reset Results
-                self.clear_results(tab_id=img_id+1)
 
-                self.display_image(self.imagesData[img_id+1], self.inputImages[img_id+1])
+                # Convert int index to key to use in the dictionaries
+                # "img_id + 1" : "+1" because it is the 2nd image in the same tab
+                img_idx = str(img_id) + "_2"
+
+                # Store the image
+                self.imagesData[img_idx] = img_rgb
+                self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
+
+                # Reset Results
+                self.clear_results(tab_id=img_id)
+
+                self.display_image(self.imagesData[img_idx], self.inputImages[img_id][1])
+
+                # Enable the comboBoxes and settings
+                self.enable_gui(tab_id=img_id)
 
                 # Set Image Name and Size
-                # "img_id + 1" : "+1" because it is the 2nd image in the same tab
-                self.imagesLabels[img_id+1].setText(img_name)
-                self.imagesSizes[img_id+1].setText(f"{self.imagesData[img_id+1].shape[0]}x"
-                                                   f"{self.imagesData[img_id+1].shape[1]}")
+                self.imagesLabels[img_idx].setText(img_name)
+                self.imagesSizes[img_idx].setText(f"{self.imagesData[img_idx].shape[0]}x"
+                                                  f"{self.imagesData[img_idx].shape[1]}")
 
                 logger.info(f"Added Image #{img_id+1}: {img_name} successfully")
 
@@ -252,12 +269,13 @@ class ImageProcessor(m.Ui_MainWindow):
             self.show_message(header="Warning!!", message="You didn't choose any image",
                               button=QMessageBox.Ok, icon=QMessageBox.Warning)
 
-    def enable_gui(self, tab_id):
+    def enable_gui(self, tab_id: int):
         """
         This function enables the required elements in the gui
         :param tab_id: if of the current tab
         :return:
         """
+
         if tab_id == 0:
             for i in range(len(self.updateCombos)):
                 # Enable Combo Boxes
@@ -268,10 +286,10 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif tab_id == 2:
             try:
-                if isinstance(self.imagesData[2], np.ndarray) and isinstance(self.imagesData[3], np.ndarray):
+                if isinstance(self.imagesData["2_1"], np.ndarray) and isinstance(self.imagesData["2_2"], np.ndarray):
                     self.btn_hybrid.setEnabled(True)
             except KeyError:
-                print("The other Image is not loaded yet")
+                print("Load another Image to apply hybrid")
 
         # in Hough Tab
         elif tab_id == 4:
@@ -512,8 +530,8 @@ class ImageProcessor(m.Ui_MainWindow):
         and a low pass filter to the other image
         :return:
         """
-        image1_dft = FrequencyFilters.high_pass_filter(self.imagesData[2], size=20)
-        image2_dft = FrequencyFilters.low_pass_filter(self.imagesData[3], size=15)
+        image1_dft = FrequencyFilters.high_pass_filter(self.imagesData["2_1"], size=20)
+        image2_dft = FrequencyFilters.low_pass_filter(self.imagesData["2_2"], size=15)
 
         hybrid_image = image1_dft + image2_dft
         self.display_image(source=hybrid_image, widget=self.img2_output)

@@ -61,6 +61,9 @@ def sobel_edge(source: np.ndarray, GetMagnitude: bool = True, GetDirection: bool
     vertical = np.flip(horizontal.T)
     mag, HorizontalEdge, VerticalEdge = apply_kernel(source, horizontal, vertical, True)
 
+    HorizontalEdge = HorizontalEdge[:-2, :-2]
+    VerticalEdge = VerticalEdge[:-2, :-2]
+
     if GetMagnitude == False:
         return HorizontalEdge, VerticalEdge
 

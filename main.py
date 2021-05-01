@@ -1,12 +1,10 @@
 # Importing Packages
 import sys
-import time
-
 import cv2
 import numpy as np
 import pyqtgraph
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 
@@ -46,23 +44,30 @@ class ImageProcessor(m.Ui_MainWindow):
         self.Main_TabWidget.currentChanged.connect(self.tab_changed)
 
         # Images Lists
-        self.inputImages = [self.img1_input, self.img2_input, self.imgA_input,
-                            self.imgB_input, self.img4_input, self.img5_input,
-                            self.img6_input, self.img7_input, self.img8_input,
-                            self.img9_input, self.img10_input]
+        self.inputImages = [self.img0_input,   self.img1_input,
+                            self.img2_1_input, self.img2_2_input,
+                            self.img3_input,   self.img4_input,
+                            self.img5_input,
+                            self.img6_1_input, self.img6_2_input,
+                            self.img7_1_input, self.img7_2_input]
 
-        self.filtersImages = [self.img1_noisy, self.img1_filtered, self.img1_edged]
+        self.outputImages = [[self.img0_noisy, self.img0_filtered, self.img0_edged],
+                             self.img1_output, self.img2_output, self.img3_output,
+                             self.img4_output, self.img5_output, self.img6_output,
+                             [self.img7_1_output, self.img7_2_output]]
 
-        self.histoImages = [self.img2_input_histo, self.img2_output, self.img2_output_histo]
+        self.filtersImages = [self.img0_noisy, self.img0_filtered, self.img0_edged]
 
-        self.imageWidgets = [self.img1_input, self.img1_noisy, self.img1_filtered, self.img1_edged,
-                             self.img2_input, self.img2_output,
-                             self.imgA_input, self.imgB_input, self.imgX_output,
+        self.histoImages = [self.img1_input_histo, self.img1_output, self.img1_output_histo]
+
+        self.imageWidgets = [self.img0_input, self.img0_noisy, self.img0_filtered, self.img0_edged,
+                             self.img1_input, self.img1_output,
+                             self.img2_1_input, self.img2_2_input, self.img2_output,
+                             self.img3_input, self.img3_output,
                              self.img4_input, self.img4_output,
                              self.img5_input, self.img5_output,
-                             self.img6_input, self.img6_output,
-                             self.img7_input, self.img8_input, self.img7_output,
-                             self.img9_input, self.img10_input, self.img9_output, self.img10_output]
+                             self.img6_1_input, self.img6_2_input, self.img6_output,
+                             self.img7_1_input, self.img7_2_input, self.img7_1_output, self.img7_2_output]
 
         # Initial Variables
         self.currentNoiseImage = None
@@ -76,19 +81,19 @@ class ImageProcessor(m.Ui_MainWindow):
         self.weights = {}
 
         # Images Labels and Sizes
-        self.imagesLabels = {1:  [self.label_imgName_1], 2:  [self.label_imgName_2],
-                             3:  [self.label_imgName_3], 4:  [self.label_imgName_4],
-                             5:  [self.label_imgName_5], 6:  [self.label_imgName_6],
-                             7:  [self.label_imgName_7], 8:  [self.label_imgName_8],
-                             9:  [self.label_imgName_9], 10: [self.label_imgName_10],
-                             11: [self.label_imgName_11]}
+        self.imagesLabels = {0:   self.label_imgName_0,   1:   self.label_imgName_1,
+                             2_1: self.label_imgName_2_1, 2_2: self.label_imgName_2_2,
+                             3:   self.label_imgName_3,   4:   self.label_imgName_4,
+                             5:   self.label_imgName_5,
+                             6_1: self.label_imgName_6_1, 6_2: self.label_imgName_6_2,
+                             7_1: self.label_imgName_7_1, 7_2: self.label_imgName_7_2}
 
-        self.imagesSizes = {1:  [self.label_imgSize_1], 2:  [self.label_imgSize_2],
-                            3:  [self.label_imgSize_3], 4:  [self.label_imgSize_4],
-                            5:  [self.label_imgSize_5], 6:  [self.label_imgSize_6],
-                            7:  [self.label_imgSize_7], 8:  [self.label_imgSize_8],
-                            9:  [self.label_imgSize_9], 10: [self.label_imgSize_10],
-                            11: [self.label_imgSize_11]}
+        self.imagesSizes = {0:   self.label_imgSize_0,   1:   self.label_imgSize_1,
+                            2_1: self.label_imgSize_2_1, 2_2: self.label_imgSize_2_2,
+                            3:   self.label_imgSize_3,   4:   self.label_imgSize_4,
+                            5:   self.label_imgSize_5,
+                            6_1: self.label_imgSize_6_1, 6_2: self.label_imgSize_6_2,
+                            7_1: self.label_imgSize_7_1, 7_2: self.label_imgSize_7_2}
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
@@ -103,17 +108,17 @@ class ImageProcessor(m.Ui_MainWindow):
         self.updateCombos = [self.combo_noise, self.combo_filter, self.combo_edges, self.combo_histogram]
 
         # Setup Load Buttons Connections
+        self.btn_load_0.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_1.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_2.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_2_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_2_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
         self.btn_load_3.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_4.clicked.connect(lambda: self.load_file(self.tab_index + 1))
-        self.btn_load_5.clicked.connect(lambda: self.load_file(self.tab_index + 1))
-        self.btn_load_6.clicked.connect(lambda: self.load_file(self.tab_index + 1))
-        self.btn_load_7.clicked.connect(lambda: self.load_file(self.tab_index + 1))
-        self.btn_load_8.clicked.connect(lambda: self.load_file(self.tab_index + 1))
-        self.btn_load_9.clicked.connect(lambda: self.load_file(self.tab_index + 1))
-        self.btn_load_10.clicked.connect(lambda: self.load_file(self.tab_index + 1))
-        self.btn_load_11.clicked.connect(lambda: self.load_file(self.tab_index + 1))
+        self.btn_load_4.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_5.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_6_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_6_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
+        self.btn_load_7_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_7_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(self.tab_index, 0))
@@ -170,11 +175,12 @@ class ImageProcessor(m.Ui_MainWindow):
             widget.getView().setAspectLocked(False)
             widget.view.setAspectLocked(False)
 
-    def load_file(self, tab_id):
+    def load_file(self, img_id: int, multi_widget: bool = False):
         """
         Load the File from User
 
-        :param tab_id: 0, 1, 2, 3 or 4
+        :param img_id: current tab index
+        :param multi_widget: Flag to check if the tab has more than one image
         :return:
         """
 
@@ -184,64 +190,67 @@ class ImageProcessor(m.Ui_MainWindow):
         filename, file_format = QtWidgets.QFileDialog.getOpenFileName(None, "Load Image", repo_path,
                                                                       "*;;" "*.jpg;;" "*.jpeg;;" "*.png;;")
 
-        # Take last part of the filename string
-        img_name = filename.split('/')[-1]
+        # If the file is loaded successfully
+        if filename != "":
+            # Take last part of the filename string
+            img_name = filename.split('/')[-1]
 
-        # Check if the file was loaded correctly
-        if filename == "":
-            self.show_message(header="Warning!!", message="You didn't choose any image",
-                              button=QMessageBox.Ok, icon=QMessageBox.Warning)
-        else:
-            # image = cv2.imread(filename, flags=cv2.IMREAD_GRAYSCALE).T
-            image = cv2.imread(filename, flags=cv2.IMREAD_GRAYSCALE)
-            self.heights[tab_id], self.weights[tab_id] = image.shape
-
-            bgr_img = cv2.imread(filename)
-            rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
-            imgbyte_rgb = cv2.transpose(rgb_img)
-            # self.imagesData[tab_id] = imgbyte_rgb
-            self.imagesData[tab_id] = rgb_img
+            # Read the image
+            img_bgr = cv2.imread(filename)
+            img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+            self.imagesData[img_id] = img_rgb
+            self.heights[img_id], self.weights[img_id], _ = img_rgb.shape
 
             # When Images in Tab1, Tab2 or Image A in Tab 3
-            if tab_id != 3:
+            # if img_id != 3:
+
+            # Loading one image only in the tab
+            if multi_widget is False:
+
                 # Reset Results
-                self.clear_results(tab_id=tab_id)
+                self.clear_results(tab_id=img_id)
 
-                # Clear imgX output when uploading a new image
-                if self.tab_index == 2:
-                    self.clear_results(tab_id=self.tab_index)
+                # Display Original Image
+                self.display_image(source=self.imagesData[img_id], widget=self.inputImages[img_id])
 
-                # Create and Display Original Image
-                self.display_image(source=self.imagesData[tab_id], widget=self.inputImages[tab_id])
-
-                # Enable the combo box and parameters input
-                self.enable_gui(tab_id=tab_id)
+                # Enable the comboBoxes and settings
+                self.enable_gui(tab_id=img_id)
 
                 # Set Image Name and Size
-                self.imagesLabels[tab_id + 1][0].setText(img_name)
-                self.imagesSizes[tab_id + 1][0].setText(
-                    f"{self.imagesData[tab_id].shape[0]}x{self.imagesData[tab_id].shape[1]}")
+                self.imagesLabels[img_id].setText(img_name)
+                self.imagesSizes[img_id].setText(f"{self.imagesData[img_id].shape[0]}x"
+                                                 f"{self.imagesData[img_id].shape[1]}")
 
-                logger.info(f"Added Image{tab_id + 1}: {img_name} successfully")
+                logger.info(f"Added Image #{img_id + 1}: {img_name} successfully")
 
-            # When Loading Image B in Tab 3
+            # When Loading Image B in Tab "Hybrid"
+            # When Loading Image B in Tab "SIFT"
+            # When Loading Image B in Tab "Template Matching"
             else:
-                if self.heights[3] != self.heights[2] or self.weights[3] != self.weights[2]:
-                    self.show_message("Warning!!", "Images sizes must be the same, please upload another image",
-                                      QMessageBox.Ok, QMessageBox.Warning)
-                    logger.warning("Warning!!. Images sizes must be the same, please upload another image")
-                else:
-                    # Reset Results
-                    self.clear_results(tab_id=tab_id)
+                # Check 2 images have same dimensions
+                # TODO
+                # if self.heights[3] != self.heights[2] or self.weights[3] != self.weights[2]:
+                #     self.show_message("Warning!!", "Images sizes must be the same, please upload another image",
+                #                       QMessageBox.Ok, QMessageBox.Warning)
+                #     logger.warning("Warning!!. Images sizes must be the same, please upload another image")
+                # else:
+                # Reset Results
+                self.clear_results(tab_id=img_id+1)
 
-                    self.display_image(self.imagesData[tab_id], self.inputImages[tab_id])
+                self.display_image(self.imagesData[img_id+1], self.inputImages[img_id+1])
 
-                    # Set Image Name and Size
-                    self.imagesLabels[tab_id + 1][0].setText(img_name)
-                    self.imagesSizes[tab_id + 1][0].setText(
-                        f"{self.imagesData[tab_id].shape[0]}x{self.imagesData[tab_id].shape[1]}")
-                    self.btn_hybrid.setEnabled(True)
-                    logger.info(f"Added Image{tab_id + 1}: {img_name} successfully")
+                # Set Image Name and Size
+                # "img_id + 1" : "+1" because it is the 2nd image in the same tab
+                self.imagesLabels[img_id+1].setText(img_name)
+                self.imagesSizes[img_id+1].setText(f"{self.imagesData[img_id+1].shape[0]}x"
+                                                   f"{self.imagesData[img_id+1].shape[1]}")
+
+                logger.info(f"Added Image #{img_id+1}: {img_name} successfully")
+
+        # Check if the file wasn't loaded correctly
+        else:
+            self.show_message(header="Warning!!", message="You didn't choose any image",
+                              button=QMessageBox.Ok, icon=QMessageBox.Warning)
 
     def enable_gui(self, tab_id):
         """
@@ -256,10 +265,13 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif tab_id == 1:
             self.combo_histogram.setEnabled(True)
+
         elif tab_id == 2:
-            if isinstance(self.imagesData[3], np.ndarray):
-                self.btn_hybrid.setEnabled(True)
-            # if type(self.imagesData[3]) != type(...):
+            try:
+                if isinstance(self.imagesData[2], np.ndarray) and isinstance(self.imagesData[3], np.ndarray):
+                    self.btn_hybrid.setEnabled(True)
+            except KeyError:
+                print("The other Image is not loaded yet")
 
         # in Hough Tab
         elif tab_id == 4:
@@ -290,9 +302,16 @@ class ImageProcessor(m.Ui_MainWindow):
             self.btn_match_template.setEnabled(True)
 
     def clear_results(self, tab_id):
-        # Reset previous outputs
+        """
+        Clears previous results when loading a new image
+
+        :param tab_id: current tab index
+        :return: void
+        """
+
+        # Check current tab index
         if tab_id == 0:
-            # Clear Images Widgets
+            # Clear Filters Images Widgets
             for i in range(len(self.filtersImages)):
                 self.filtersImages[i].clear()
 
@@ -302,30 +321,35 @@ class ImageProcessor(m.Ui_MainWindow):
             self.combo_edges.setCurrentIndex(0)
 
         elif tab_id == 1:
+            # Clear Histograms Widgets
             for widget in self.histoImages:
                 widget.clear()
 
             # Reset combo box choices
             self.combo_histogram.setCurrentIndex(0)
 
-        elif tab_id == 2:
-            self.imgX_output.clear()
+        # Clear widgets depending on current tab_id
+        else:
+            self.outputImages[tab_id].clear()
 
-        elif tab_id == 4:
-            self.img4_output.clear()
-
-        elif tab_id == 5:
-            self.img5_output.clear()
-
-        elif tab_id == 6:
-            self.img6_output.clear()
-
-        elif tab_id == 7:
-            self.img7_output.clear()
-
-        elif tab_id == 8:
-            self.img9_output.clear()
-            self.img10_output.clear()
+        # elif tab_id == 2:
+        #     self.img2_output.clear()
+        #
+        # elif tab_id == 3:
+        #     self.img3_output.clear()
+        #
+        # elif tab_id == 4:
+        #     self.img4_output.clear()
+        #
+        # elif tab_id == 5:
+        #     self.img5_output.clear()
+        #
+        # elif tab_id == 6:
+        #     self.img6_output.clear()
+        #
+        # elif tab_id == 7:
+        #     self.img7_1_output.clear()
+        #     self.img7_2_output.clear()
 
     def combo_box_changed(self, tab_id, combo_id):
         """
@@ -415,7 +439,7 @@ class ImageProcessor(m.Ui_MainWindow):
                 except TypeError:
                     print("Cannot display Image")
 
-            logger.info(f"Viewing {selected_component} Of Image{tab_id}")
+            logger.info(f"Viewing {selected_component} Of Image #{tab_id}")
 
         # If 2nd tab is selected
         elif tab_id == 1:
@@ -427,56 +451,56 @@ class ImageProcessor(m.Ui_MainWindow):
             if combo_id == 3:
                 if selected_component == "original histogram":
                     # Clear old results
-                    self.img2_input_histo.clear()
-                    self.img2_output_histo.clear()
+                    self.img1_input_histo.clear()
+                    self.img1_output_histo.clear()
                     self.output_hist_image = np.copy(self.imagesData[1])
 
                     # Draw the histograms of the input image
-                    self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img2_input_histo,
+                    self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img1_input_histo,
                                             title="Original Histogram", label="Pixels")
-                    self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img2_output_histo,
+                    self.draw_rgb_histogram(source=self.imagesData[1], widget=self.img1_output_histo,
                                             title="Original Histogram", label="Pixels")
 
                 if selected_component == "equalized histogram":
-                    self.img2_output_histo.clear()
+                    self.img1_output_histo.clear()
                     self.output_hist_image, bins = Histogram.equalize_histogram(source=self.imagesData[1], bins_num=255)
-                    self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img2_output_histo,
+                    self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img1_output_histo,
                                             title="Equalized Histogram", label="Pixels")
 
                 elif selected_component == "normalized histogram":
-                    self.img2_output_histo.clear()
+                    self.img1_output_histo.clear()
                     normalized_image, hist, bins = Histogram.normalize_histogram(source=self.imagesData[1],
                                                                                  bins_num=255)
                     self.output_hist_image = normalized_image
-                    self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img2_output_histo,
+                    self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img1_output_histo,
                                             title="Normalized Histogram", label="Pixels")
 
                 elif selected_component == "local thresholding":
-                    self.img2_output_histo.clear()
+                    self.img1_output_histo.clear()
                     local_threshold = Histogram.local_threshold(source=self.imagesData[1], divs=4)
                     hist, bins = Histogram.histogram(source=local_threshold, bins_num=2)
                     self.output_hist_image = local_threshold
-                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
+                    self.display_bar_graph(widget=self.img1_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Local Histogram", label="Pixels")
 
                 elif selected_component == "global thresholding":
-                    self.img2_output_histo.clear()
+                    self.img1_output_histo.clear()
                     global_threshold = Histogram.global_threshold(source=self.imagesData[1], threshold=128)
                     hist, bins = Histogram.histogram(source=global_threshold, bins_num=2)
                     self.output_hist_image = global_threshold
-                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
+                    self.display_bar_graph(widget=self.img1_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Global Histogram", label="Pixels")
 
                 elif selected_component == "transform to gray":
-                    self.img2_output_histo.clear()
+                    self.img1_output_histo.clear()
                     gray_image = cv2.cvtColor(self.imagesData[1], cv2.COLOR_RGB2GRAY)
                     hist, bins = Histogram.histogram(source=gray_image, bins_num=255)
                     self.output_hist_image = gray_image
-                    self.display_bar_graph(widget=self.img2_output_histo, x=bins, y=hist, width=0.6, brush='r',
+                    self.display_bar_graph(widget=self.img1_output_histo, x=bins, y=hist, width=0.6, brush='r',
                                            title="Gray Histogram", label="Pixels")
 
                 try:
-                    self.display_image(source=self.output_hist_image, widget=self.img2_output)
+                    self.display_image(source=self.output_hist_image, widget=self.img1_output)
                 except TypeError:
                     print("Cannot display histogram image")
 
@@ -492,7 +516,7 @@ class ImageProcessor(m.Ui_MainWindow):
         image2_dft = FrequencyFilters.low_pass_filter(self.imagesData[3], size=15)
 
         hybrid_image = image1_dft + image2_dft
-        self.display_image(source=hybrid_image, widget=self.imgX_output)
+        self.display_image(source=hybrid_image, widget=self.img2_output)
 
     def hough_transform(self):
         """
@@ -616,13 +640,13 @@ class ImageProcessor(m.Ui_MainWindow):
     def sift(self):
         print("Applying SIFT Matching")
         sift_output = SIFT.apply_sift(source=self.imagesData[7], source2=self.imagesData[8])
-        self.display_image(source=sift_output, widget=self.img7_output)
+        self.display_image(source=sift_output, widget=self.img6_output)
 
     def template_matching(self):
         print("Applying Template Matching")
         matching_output = TemplateMatching.apply_template_matching(source=self.imagesData[9],
                                                                    template=self.imagesData[10])
-        self.display_image(source=matching_output, widget=self.img9_output)
+        self.display_image(source=matching_output, widget=self.img7_1_output)
 
     def slider_changed(self, indx):
         """

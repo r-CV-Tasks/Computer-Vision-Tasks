@@ -2,7 +2,6 @@
 import sys
 import cv2
 import numpy as np
-from PIL import Image
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
@@ -83,16 +82,16 @@ class ImageProcessor(m.Ui_MainWindow):
         self.weights = {}
 
         # Images Labels and Sizes
-        self.imagesLabels = {"0_1": self.label_imgName_0, "1_1": self.label_imgName_1,
+        self.imagesLabels = {"0_1": self.label_imgName_0,   "1_1": self.label_imgName_1,
                              "2_1": self.label_imgName_2_1, "2_2": self.label_imgName_2_2,
-                             "3_1": self.label_imgName_3, "4_1": self.label_imgName_4,
+                             "3_1": self.label_imgName_3,   "4_1": self.label_imgName_4,
                              "5_1": self.label_imgName_5,
                              "6_1": self.label_imgName_6_1, "6_2": self.label_imgName_6_2,
                              "7_1": self.label_imgName_7_1, "7_2": self.label_imgName_7_2}
 
-        self.imagesSizes = {"0_1": self.label_imgSize_0, "1_1": self.label_imgSize_1,
+        self.imagesSizes = {"0_1": self.label_imgSize_0,   "1_1": self.label_imgSize_1,
                             "2_1": self.label_imgSize_2_1, "2_2": self.label_imgSize_2_2,
-                            "3_1": self.label_imgSize_3, "4_1": self.label_imgSize_4,
+                            "3_1": self.label_imgSize_3,   "4_1": self.label_imgSize_4,
                             "5_1": self.label_imgSize_5,
                             "6_1": self.label_imgSize_6_1, "6_2": self.label_imgSize_6_2,
                             "7_1": self.label_imgSize_7_1, "7_2": self.label_imgSize_7_2}
@@ -209,30 +208,10 @@ class ImageProcessor(m.Ui_MainWindow):
             else:
                 img_idx = str(img_id) + "_2"
 
-            key_map = "2_2"
-
             # Store the image
             self.imagesData[img_idx] = img_rgb
             self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
 
-            # Check if the 2nd image was loaded previously in hybrid tab
-            # if key_map in self.heights or key_map in self.weights:
-            #     # Check 2 images have same dimensions in hybrid tab
-            #     if (self.heights["2_1"] != self.heights["2_2"]) or (self.weights["2_1"] != self.weights["2_2"]):
-            #         self.show_message(header="Warning!!", message="Images sizes must be the same, "
-            #                                                       "please upload another image",
-            #                           button=QMessageBox.Ok, icon=QMessageBox.Warning)
-            #         logger.warning("Warning!!. Images sizes must be the same, please upload another image")
-            #     else:
-            #         self.show_image(img_id=img_id, img_idx=img_idx,
-            #                         multi_widget=multi_widget, img_name=img_name)
-
-            # TODO Fix 2 sizes
-
-            # Load img2_1
-            # else:
-                # self.show_image(img_id=img_id, img_idx=img_idx,
-                #                 multi_widget=multi_widget, img_name=img_name)
             # Reset Results
             self.clear_results(tab_id=img_id)
 
@@ -253,23 +232,6 @@ class ImageProcessor(m.Ui_MainWindow):
         else:
             self.show_message(header="Warning!!", message="You didn't choose any image",
                               button=QMessageBox.Ok, icon=QMessageBox.Warning)
-
-    def show_image(self, img_id: int, img_idx, multi_widget: bool, img_name):
-        # Reset Results
-        self.clear_results(tab_id=img_id)
-
-        # Display Original Image
-        self.display_image(source=self.imagesData[img_idx], widget=self.inputImages[img_id][multi_widget])
-
-        # Enable the comboBoxes and settings
-        self.enable_gui(tab_id=img_id)
-
-        # Set Image Name and Sizes
-        self.imagesLabels[img_idx].setText(img_name)
-        self.imagesSizes[img_idx].setText(f"{self.heights[img_idx]}x"
-                                          f"{self.weights[img_idx]}")
-
-        logger.info(f"Added Image #{img_id}: {img_name} successfully")
 
     def enable_gui(self, tab_id: int):
         """

@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from EdgeDetection import sobel_edge
 from LowPass import gaussian_filter
 
-from Contour import GenerateWindowCoordinates
 
 def apply_harris_operator(source: np.ndarray, k: float = 0.05) -> np.ndarray:
     """
@@ -64,9 +63,16 @@ def apply_harris_operator2(source: np.ndarray, k: float = 0.03, window_size: int
 
     I_x, I_y = sobel_edge(source=src, GetMagnitude=False)
 
-    Ixx = gaussian_filter(source=I_x ** 2, sigma=255)
-    Ixy = gaussian_filter(source=I_y * I_x, sigma=255)
-    Iyy = gaussian_filter(source=I_y ** 2, sigma=255)
+    # I_x = cv2.Sobel(src, cv2.CV_64F, 1, 0, ksize=5)
+    # I_y = cv2.Sobel(src, cv2.CV_64F, 0, 1, ksize=5)
+
+    # Ixx = gaussian_filter(source=I_x ** 2, sigma=1)
+    # Ixy = gaussian_filter(source=I_y * I_x, sigma=1)
+    # Iyy = gaussian_filter(source=I_y ** 2, sigma=1)
+
+    Ixx = cv2.GaussianBlur(src=I_x ** 2, ksize=(5, 5), sigmaX=0)
+    Ixy = cv2.GaussianBlur(src=I_y * I_x, ksize=(5, 5), sigmaX=0)
+    Iyy = cv2.GaussianBlur(src=I_y ** 2, ksize=(5, 5), sigmaX=0)
 
     height, width = src.shape
     harris_response = []

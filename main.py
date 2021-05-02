@@ -635,15 +635,27 @@ class ImageProcessor(m.Ui_MainWindow):
             QtWidgets.QApplication.processEvents()
 
     def clear_anchors(self):
+        """
+
+        :return:
+        """
         print("Clearing anchors")
         self.clear_results(tab_id=self.tab_index)
         self.display_image(source=self.imagesData["4_1"], widget=self.img4_input)
 
     def reset_contour(self):
+        """
+
+        :return:
+        """
         print("resetting contour")
         self.clear_results(tab_id=self.tab_index)
 
     def harris_operator(self):
+        """
+
+        :return:
+        """
         print("Applying harris operator")
         threshold = float(self.text_harris_threshold.text())
         sensitivity = float(self.text_harris_sensitivity.text())

@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from EdgeDetection import sobel_edge
-from LowPass import gaussian_filter
+
+from libs.EdgeDetection import sobel_edge
+from libs.LowPass import gaussian_filter
 
 
 def apply_harris_operator(source: np.ndarray, k: float = 0.05) -> np.ndarray:
@@ -113,9 +114,9 @@ def get_harris_indices(harris_response: np.ndarray, threshold: float = 0.01):
 
     # Indices of each corner, edges and flat area
     # Threshold for an optimal value, it may vary depending on the image.
-    corner_indices = np.array(harris_matrix > (max_response*threshold), dtype="uint8")
-    edges_indices  = np.array(harris_matrix < (max_response*threshold), dtype="uint8")
-    flat_indices   = np.array(harris_matrix == (max_response*threshold), dtype="uint8")
+    corner_indices = np.array(harris_matrix > (max_response*threshold), dtype="int8")
+    edges_indices  = np.array(harris_matrix < (max_response*threshold), dtype="int8")
+    flat_indices   = np.array(harris_matrix == (max_response*threshold), dtype="int8")
 
     # Threshold for an optimal value, it may vary depending on the image.
     # img[dst > 0.01 * dst.max()] = [0, 0, 255]
@@ -179,7 +180,7 @@ def main():
     print(f"dst min: {dst.min()}")
 
     # result is dilated for marking the corners, not important
-    # dst = cv2.dilate(dst, None)
+    dst = cv2.dilate(dst, None)
 
     # Threshold for an optimal value, it may vary depending on the image.
     img[dst > 0.01 * dst.max()] = [0, 0, 255]

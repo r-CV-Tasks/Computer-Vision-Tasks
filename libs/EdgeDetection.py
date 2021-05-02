@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from scipy.signal import convolve2d
 
-from LowPass import gaussian_filter
+from libs.LowPass import gaussian_filter
 
 
 def apply_kernel(source: np.ndarray, horizontal_kernel: np.ndarray, vertical_kernel: np.ndarray,

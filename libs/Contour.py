@@ -4,11 +4,9 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-from EdgeDetection import sobel_edge
-from LowPass import gaussian_filter
-from FrequencyFilters import square_pad
-
-
+from libs.EdgeDetection import sobel_edge
+from libs.LowPass import gaussian_filter
+from libs.FrequencyFilters import square_pad 
 
 def iterate_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndarray,
                     external_energy: np.ndarray, window_coordinates: list,

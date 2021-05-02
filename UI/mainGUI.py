@@ -841,7 +841,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox_10.sizePolicy().hasHeightForWidth())
         self.groupBox_10.setSizePolicy(sizePolicy)
-        self.groupBox_10.setMaximumSize(QtCore.QSize(350, 16777215))
+        self.groupBox_10.setMaximumSize(QtCore.QSize(500, 16777215))
         self.groupBox_10.setObjectName("groupBox_10")
         self.gridLayout_16 = QtWidgets.QGridLayout(self.groupBox_10)
         self.gridLayout_16.setObjectName("gridLayout_16")
@@ -861,7 +861,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox_9.sizePolicy().hasHeightForWidth())
         self.groupBox_9.setSizePolicy(sizePolicy)
-        self.groupBox_9.setMaximumSize(QtCore.QSize(350, 16777215))
+        self.groupBox_9.setMaximumSize(QtCore.QSize(500, 16777215))
         self.groupBox_9.setObjectName("groupBox_9")
         self.gridLayout_15 = QtWidgets.QGridLayout(self.groupBox_9)
         self.gridLayout_15.setObjectName("gridLayout_15")
@@ -2218,7 +2218,7 @@ class Ui_MainWindow(object):
         self.actionImage_2.setObjectName("actionImage_2")
 
         self.retranslateUi(MainWindow)
-        self.Main_TabWidget.setCurrentIndex(5)
+        self.Main_TabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

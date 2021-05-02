@@ -62,10 +62,10 @@ def apply_harris_operator2(source: np.ndarray, k: float = 0.03, window_size: int
     src = np.copy(source)
     src = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
-    I_x, I_y = sobel_edge(source=src, GetMagnitude=False)
+    # I_x, I_y = sobel_edge(source=src, GetMagnitude=False)
 
-    # I_x = cv2.Sobel(src, cv2.CV_64F, 1, 0, ksize=5)
-    # I_y = cv2.Sobel(src, cv2.CV_64F, 0, 1, ksize=5)
+    I_x = cv2.Sobel(src, cv2.CV_64F, 1, 0, ksize=5)
+    I_y = cv2.Sobel(src, cv2.CV_64F, 0, 1, ksize=5)
 
     # Ixx = gaussian_filter(source=I_x ** 2, sigma=1)
     # Ixy = gaussian_filter(source=I_y * I_x, sigma=1)
@@ -74,6 +74,7 @@ def apply_harris_operator2(source: np.ndarray, k: float = 0.03, window_size: int
     Ixx = cv2.GaussianBlur(src=I_x ** 2, ksize=(5, 5), sigmaX=0)
     Ixy = cv2.GaussianBlur(src=I_y * I_x, ksize=(5, 5), sigmaX=0)
     Iyy = cv2.GaussianBlur(src=I_y ** 2, ksize=(5, 5), sigmaX=0)
+
 
     height, width = src.shape
     harris_response = []

@@ -1,10 +1,8 @@
 import cv2
 import numpy as np
-from scipy import linalg
 import matplotlib.pyplot as plt
 from EdgeDetection import sobel_edge
 from LowPass import gaussian_filter
-# from scipy.ndimage import gaussian_filter
 
 from Contour import GenerateWindowCoordinates
 
@@ -53,28 +51,82 @@ def apply_harris_operator(source: np.ndarray) -> (np.ndarray, np.ndarray):
 
     harris_response = det_H - k * (trace_H ** 2)
 
-    img_corners = np.copy(source)
-    img_edges = np.copy(source)
+    return harris_response
 
-    for rowindex, response in enumerate(harris_response):
-        for colindex, r in enumerate(response):
-            if r > 0:
-                # this is a corner
-                img_corners[rowindex, colindex] = [255, 0, 0]
-            elif r < 0:
-                # this is an edge
-                img_edges[rowindex, colindex] = [0, 255, 0]
-
-    return img_corners, img_edges
-
-def get_harris_corners(source: np.ndarray):
+def apply_harris_operator2(source: np.ndarray) -> (np.ndarray, np.ndarray):
     """
 
     :param source:
     :return:
     """
-    return source
 
+    src = np.copy(source)
+    src = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+
+    I_x, I_y = sobel_edge(source=src, GetMagnitude=False)
+
+    Ixx = gaussian_filter(source=I_x ** 2, sigma=255)
+    Ixy = gaussian_filter(source=I_y * I_x, sigma=255)
+    Iyy = gaussian_filter(source=I_y ** 2, sigma=255)
+
+    k = 0.03
+
+    height, width = src.shape
+    harris_response = []
+    window_size = 3
+    offset = int(window_size/2)
+
+    for y in range(offset, height-offset):
+        for x in range(offset, width-offset):
+            Sxx = np.sum(Ixx[y-offset:y+1+offset, x-offset:x+1+offset])
+            Syy = np.sum(Iyy[y-offset:y+1+offset, x-offset:x+1+offset])
+            Sxy = np.sum(Ixy[y-offset:y+1+offset, x-offset:x+1+offset])
+
+            # Find determinant and trace, use to get corner response
+            det = (Sxx * Syy) - (Sxy**2)
+            trace = Sxx + Syy
+            r = det - k*(trace**2)
+
+            harris_response.append(r)
+
+    # Convert response from list to numpy array
+    new_width = src.shape[0]-(window_size-offset)
+    new_height = src.shape[1]-(window_size-offset)
+    harris_response = np.array(harris_response).reshape((new_width, new_height))
+
+    return harris_response
+
+def get_harris_indices(harris_response: np.ndarray):
+    """
+
+    :param harris_response:
+    :return:
+    """
+
+    # Indices of each corner, edges and flat area
+    corner_indices = np.array(harris_response > 0, dtype="uint8")
+    edges_indices  = np.array(harris_response < 0, dtype="uint8")
+    flat_indices   = np.array(harris_response == 0, dtype="uint8")
+
+    return corner_indices, edges_indices, flat_indices
+
+def map_indices_to_image(source: np.ndarray, indices: np.ndarray, color: list):
+    """
+
+    :param source:
+    :param indices:
+    :return:
+    """
+
+    src = np.copy(source)
+
+    # Make sure that the original source shape == indices shape
+    src = src[:indices.shape[0], :indices.shape[1]]
+
+    # Mark each index with red dot
+    src[indices == 1] = color
+
+    return src
 
 def display_image(src):
     fig = plt.figure()

@@ -9,8 +9,8 @@ from PyQt5.QtWidgets import QMessageBox
 import pyqtgraph as pg
 
 from UI import mainGUI as m
-from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters,\
-                 Hough, Contour, Harris, SIFT, TemplateMatching
+from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
+    Hough, Contour, Harris, SIFT, TemplateMatching
 
 # importing module
 import logging
@@ -44,9 +44,9 @@ class ImageProcessor(m.Ui_MainWindow):
         self.Main_TabWidget.currentChanged.connect(self.tab_changed)
 
         # Images Lists
-        self.inputImages = [[self.img0_input],   [self.img1_input],
+        self.inputImages = [[self.img0_input], [self.img1_input],
                             [self.img2_1_input, self.img2_2_input],
-                            [self.img3_input],   [self.img4_input],
+                            [self.img3_input], [self.img4_input],
                             [self.img5_input],
                             [self.img6_1_input, self.img6_2_input],
                             [self.img7_1_input, self.img7_2_input]]
@@ -83,16 +83,16 @@ class ImageProcessor(m.Ui_MainWindow):
         self.weights = {}
 
         # Images Labels and Sizes
-        self.imagesLabels = {"0_1": self.label_imgName_0,   "1_1": self.label_imgName_1,
+        self.imagesLabels = {"0_1": self.label_imgName_0, "1_1": self.label_imgName_1,
                              "2_1": self.label_imgName_2_1, "2_2": self.label_imgName_2_2,
-                             "3_1": self.label_imgName_3,   "4_1": self.label_imgName_4,
+                             "3_1": self.label_imgName_3, "4_1": self.label_imgName_4,
                              "5_1": self.label_imgName_5,
                              "6_1": self.label_imgName_6_1, "6_2": self.label_imgName_6_2,
                              "7_1": self.label_imgName_7_1, "7_2": self.label_imgName_7_2}
 
-        self.imagesSizes = {"0_1": self.label_imgSize_0,   "1_1": self.label_imgSize_1,
+        self.imagesSizes = {"0_1": self.label_imgSize_0, "1_1": self.label_imgSize_1,
                             "2_1": self.label_imgSize_2_1, "2_2": self.label_imgSize_2_2,
-                            "3_1": self.label_imgSize_3,   "4_1": self.label_imgSize_4,
+                            "3_1": self.label_imgSize_3, "4_1": self.label_imgSize_4,
                             "5_1": self.label_imgSize_5,
                             "6_1": self.label_imgSize_6_1, "6_2": self.label_imgSize_6_2,
                             "7_1": self.label_imgSize_7_1, "7_2": self.label_imgSize_7_2}
@@ -470,7 +470,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
                 if selected_component == "equalized histogram":
                     self.img1_output_histo.clear()
-                    self.output_hist_image, bins = Histogram.equalize_histogram(source=self.imagesData[img_key], bins_num=255)
+                    self.output_hist_image, bins = Histogram.equalize_histogram(source=self.imagesData[img_key],
+                                                                                bins_num=255)
                     self.draw_rgb_histogram(source=self.output_hist_image, widget=self.img1_output_histo,
                                             title="Equalized Histogram", label="Pixels")
 
@@ -644,10 +645,12 @@ class ImageProcessor(m.Ui_MainWindow):
 
     def harris_operator(self):
         print("Applying harris operator")
-        harris_corners, _ = Harris.apply_harris_operator(source=self.imagesData["5_1"])
-        print(harris_corners)
-        print(harris_corners.shape)
-        self.display_image(source=harris_corners, widget=self.img5_output)
+        harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"])
+        # harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"])
+        corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response)
+        img_corners = Harris.map_indices_to_image(source=self.imagesData["5_1"], indices=corner_indices, color=[255, 0, 0])
+
+        self.display_image(source=img_corners, widget=self.img5_output)
 
     def sift(self):
         print("Applying SIFT Matching")
@@ -704,7 +707,7 @@ class ImageProcessor(m.Ui_MainWindow):
         return image
 
     @staticmethod
-    def display_image(source:  np.ndarray, widget: pyqtgraph.ImageView):
+    def display_image(source: np.ndarray, widget: pyqtgraph.ImageView):
         """
         Displays the given image source in the specified ImageView widget
 

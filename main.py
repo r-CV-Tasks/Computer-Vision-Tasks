@@ -2,7 +2,7 @@
 import sys
 import cv2
 import numpy as np
-import pyqtgraph
+from PIL import Image
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
@@ -216,37 +216,60 @@ class ImageProcessor(m.Ui_MainWindow):
             self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
 
             # Check if the 2nd image was loaded previously in hybrid tab
-            if key_map in self.heights or key_map in self.weights:
-                # Check 2 images have same dimensions in hybrid tab
-                if (self.heights["2_1"] != self.heights["2_2"]) or (self.weights["2_1"] != self.weights["2_2"]):
-                    self.show_message(header="Warning!!", message="Images sizes must be the same, "
-                                                                  "please upload another image",
-                                      button=QMessageBox.Ok, icon=QMessageBox.Warning)
-                    logger.warning("Warning!!. Images sizes must be the same, please upload another image")
+            # if key_map in self.heights or key_map in self.weights:
+            #     # Check 2 images have same dimensions in hybrid tab
+            #     if (self.heights["2_1"] != self.heights["2_2"]) or (self.weights["2_1"] != self.weights["2_2"]):
+            #         self.show_message(header="Warning!!", message="Images sizes must be the same, "
+            #                                                       "please upload another image",
+            #                           button=QMessageBox.Ok, icon=QMessageBox.Warning)
+            #         logger.warning("Warning!!. Images sizes must be the same, please upload another image")
+            #     else:
+            #         self.show_image(img_id=img_id, img_idx=img_idx,
+            #                         multi_widget=multi_widget, img_name=img_name)
 
             # TODO Fix 2 sizes
+
             # Load img2_1
-            else:
-                # Reset Results
-                self.clear_results(tab_id=img_id)
+            # else:
+                # self.show_image(img_id=img_id, img_idx=img_idx,
+                #                 multi_widget=multi_widget, img_name=img_name)
+            # Reset Results
+            self.clear_results(tab_id=img_id)
 
-                # Display Original Image
-                self.display_image(source=self.imagesData[img_idx], widget=self.inputImages[img_id][multi_widget])
+            # Display Original Image
+            self.display_image(source=self.imagesData[img_idx], widget=self.inputImages[img_id][multi_widget])
 
-                # Enable the comboBoxes and settings
-                self.enable_gui(tab_id=img_id)
+            # Enable the comboBoxes and settings
+            self.enable_gui(tab_id=img_id)
 
-                # Set Image Name and Sizes
-                self.imagesLabels[img_idx].setText(img_name)
-                self.imagesSizes[img_idx].setText(f"{self.imagesData[img_idx].shape[0]}x"
-                                                  f"{self.imagesData[img_idx].shape[1]}")
+            # Set Image Name and Sizes
+            self.imagesLabels[img_idx].setText(img_name)
+            self.imagesSizes[img_idx].setText(f"{self.heights[img_idx]}x"
+                                              f"{self.weights[img_idx]}")
 
-                logger.info(f"Added Image #{img_id}: {img_name} successfully")
+            logger.info(f"Added Image #{img_id}: {img_name} successfully")
 
         # The file wasn't loaded correctly
         else:
             self.show_message(header="Warning!!", message="You didn't choose any image",
                               button=QMessageBox.Ok, icon=QMessageBox.Warning)
+
+    def show_image(self, img_id: int, img_idx, multi_widget: bool, img_name):
+        # Reset Results
+        self.clear_results(tab_id=img_id)
+
+        # Display Original Image
+        self.display_image(source=self.imagesData[img_idx], widget=self.inputImages[img_id][multi_widget])
+
+        # Enable the comboBoxes and settings
+        self.enable_gui(tab_id=img_id)
+
+        # Set Image Name and Sizes
+        self.imagesLabels[img_idx].setText(img_name)
+        self.imagesSizes[img_idx].setText(f"{self.heights[img_idx]}x"
+                                          f"{self.weights[img_idx]}")
+
+        logger.info(f"Added Image #{img_id}: {img_name} successfully")
 
     def enable_gui(self, tab_id: int):
         """
@@ -518,12 +541,28 @@ class ImageProcessor(m.Ui_MainWindow):
         """
         Create a hybrid image by applying a high pass filter to one of the images
         and a low pass filter to the other image
-        :return:
-        """
-        image1_dft = FrequencyFilters.high_pass_filter(self.imagesData["2_1"], size=20)
-        image2_dft = FrequencyFilters.low_pass_filter(self.imagesData["2_2"], size=15)
 
+        :return: void
+        """
+
+        src1 = np.copy(self.imagesData["2_1"])
+        src2 = np.copy(self.imagesData["2_2"])
+
+        # Minimum required shape
+        min_shape = (min(src1.shape[0], src2.shape[0]),
+                     min(src1.shape[1], src2.shape[1]))
+
+        # resize images to ensure both have same shapes
+        src1_resized = cv2.resize(src1, min_shape, interpolation=cv2.INTER_AREA)
+        src2_resized = cv2.resize(src2, min_shape, interpolation=cv2.INTER_AREA)
+
+        # Apply filters
+        image1_dft = FrequencyFilters.high_pass_filter(source=src1_resized, size=20)
+        image2_dft = FrequencyFilters.low_pass_filter(source=src2_resized, size=15)
+
+        # Mix 2 images
         hybrid_image = image1_dft + image2_dft
+
         self.display_image(source=hybrid_image, widget=self.img2_output)
 
     def hough_transform(self):
@@ -661,7 +700,9 @@ class ImageProcessor(m.Ui_MainWindow):
         sensitivity = float(self.text_harris_sensitivity.text())
         window_size = int(self.text_harris_window_size.text())
         # harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity)
-        harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"], k=sensitivity, window_size=window_size)
+        harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"], k=sensitivity,
+                                                        window_size=window_size)
+
         corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response,
                                                                                 threshold=threshold)
 
@@ -725,7 +766,7 @@ class ImageProcessor(m.Ui_MainWindow):
         return image
 
     @staticmethod
-    def display_image(source: np.ndarray, widget: pyqtgraph.ImageView):
+    def display_image(source: np.ndarray, widget: pg.ImageView):
         """
         Displays the given image source in the specified ImageView widget
 

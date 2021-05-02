@@ -3136,7 +3136,7 @@
                      <item>
                       <widget class="QLineEdit" name="text_harris_threshold">
                        <property name="text">
-                        <string>0.01</string>
+                        <string>0.03</string>
                        </property>
                       </widget>
                      </item>
@@ -3166,7 +3166,7 @@
                      <item>
                       <widget class="QLineEdit" name="text_harris_sensitivity">
                        <property name="text">
-                        <string>0.03</string>
+                        <string>0.02</string>
                        </property>
                       </widget>
                      </item>

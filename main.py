@@ -5,6 +5,9 @@ import numpy as np
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import QFile, QTextStream
+from UI import breeze_resources
+
 import pyqtgraph as pg
 
 from UI import mainGUI as m
@@ -842,6 +845,13 @@ def main():
     :return:
     """
     app = QtWidgets.QApplication(sys.argv)
+
+    # set stylesheet
+    file = QFile(":/dark.qss")
+    file.open(QFile.ReadOnly | QFile.Text)
+    stream = QTextStream(file)
+    app.setStyleSheet(stream.readAll())
+
     main_window = QtWidgets.QMainWindow()
     ImageProcessor(main_window)
     main_window.show()

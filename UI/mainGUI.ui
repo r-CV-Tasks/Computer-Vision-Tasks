@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>0</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -210,7 +210,7 @@
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -341,13 +341,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>25</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <item>
@@ -429,13 +429,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>210</width>
-                  <height>0</height>
+                  <height>30</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>210</width>
-                  <height>25</height>
+                  <height>30</height>
                  </size>
                 </property>
                 <property name="minimum">
@@ -727,7 +727,7 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>25</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -1141,7 +1141,7 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>25</height>
                </size>
               </property>
               <property name="maximumSize">

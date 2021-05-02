@@ -143,15 +143,12 @@ def display_image(src):
 
 def main():
 
-    img = cv2.imread("../resources/Images/harris_image_400.jpg")
-
-    img_corners, img_edges = apply_harris_operator(img)
-
-    display_image(img_corners)
-    display_image(img_edges)
-
-    # Create neighborhood window
-    WindowCoordinates = GenerateWindowCoordinates(5)
+    # img = cv2.imread("../resources/Images/harris_image_400.jpg")
+    #
+    # img_corners, img_edges = apply_harris_operator(img)
+    #
+    # display_image(img_corners)
+    # display_image(img_edges)
 
     # h_mat = np.array([[10, 20], [50, 60]])
     # print(np.trace(h_mat))
@@ -159,6 +156,23 @@ def main():
     # eigen_values, eigen_vectors = np.linalg.eig(h_mat)
     # print(eigen_values)
     # print(eigen_vectors)
+
+    filename = "../resources/Images/cow_step_harris.png"
+    img = cv2.imread(filename)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    gray = np.float32(gray)
+    dst = cv2.cornerHarris(gray, 2, 3, 0.04)
+
+    # result is dilated for marking the corners, not important
+    dst = cv2.dilate(dst, None)
+
+    # Threshold for an optimal value, it may vary depending on the image.
+    img[dst > 0.01 * dst.max()] = [0, 0, 255]
+
+    cv2.imshow('dst', img)
+    if cv2.waitKey(0) & 0xff == 27:
+        cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()

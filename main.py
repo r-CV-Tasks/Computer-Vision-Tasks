@@ -645,8 +645,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
     def harris_operator(self):
         print("Applying harris operator")
-        harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"])
-        # harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"])
+        # harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"])
+        harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"])
         corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response)
         img_corners = Harris.map_indices_to_image(source=self.imagesData["5_1"], indices=corner_indices, color=[255, 0, 0])
 

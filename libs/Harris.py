@@ -6,10 +6,12 @@ from LowPass import gaussian_filter
 
 from Contour import GenerateWindowCoordinates
 
-def apply_harris_operator(source: np.ndarray) -> (np.ndarray, np.ndarray):
+def apply_harris_operator(source: np.ndarray, k: float = 0.05) -> np.ndarray:
     """
 
     :param source:
+    :param k: sensitivity factor to separate corners from edges.
+              Small values of k result in detection of sharp corners
     :return:
     """
 
@@ -39,10 +41,6 @@ def apply_harris_operator(source: np.ndarray) -> (np.ndarray, np.ndarray):
     # Corner : R > 0
     # Flat   : R = 0
 
-    # k is a sensitivity factor to separate corners from edges
-    # Small values of k result in detection of sharp corners
-    k = 0.05
-
     # where A, B and C are shifts of window defined by w.
     # The lambdas are the Eigen values of H
 
@@ -53,10 +51,11 @@ def apply_harris_operator(source: np.ndarray) -> (np.ndarray, np.ndarray):
 
     return harris_response
 
-def apply_harris_operator2(source: np.ndarray) -> (np.ndarray, np.ndarray):
+def apply_harris_operator2(source: np.ndarray, k: float = 0.03, window_size: int = 3) -> np.ndarray:
     """
 
-    :param source:
+    :param source: image source
+    :param k: sensitivity factor to separate corners from edges
     :return:
     """
 
@@ -69,11 +68,8 @@ def apply_harris_operator2(source: np.ndarray) -> (np.ndarray, np.ndarray):
     Ixy = gaussian_filter(source=I_y * I_x, sigma=255)
     Iyy = gaussian_filter(source=I_y ** 2, sigma=255)
 
-    k = 0.03
-
     height, width = src.shape
     harris_response = []
-    window_size = 3
     offset = int(window_size/2)
 
     # Loop over each column in the image
@@ -98,17 +94,25 @@ def apply_harris_operator2(source: np.ndarray) -> (np.ndarray, np.ndarray):
 
     return harris_response
 
-def get_harris_indices(harris_response: np.ndarray):
+def get_harris_indices(harris_response: np.ndarray, threshold: float = 0.01):
     """
 
     :param harris_response:
     :return:
     """
 
+    harris_copy = np.copy(harris_response)
+    harris_matrix = cv2.dilate(harris_copy, None)
+    max_response = np.max(harris_matrix)
+
     # Indices of each corner, edges and flat area
-    corner_indices = np.array(harris_response > 0, dtype="uint8")
-    edges_indices  = np.array(harris_response < 0, dtype="uint8")
-    flat_indices   = np.array(harris_response == 0, dtype="uint8")
+    # Threshold for an optimal value, it may vary depending on the image.
+    corner_indices = np.array(harris_matrix > (max_response*threshold), dtype="uint8")
+    edges_indices  = np.array(harris_matrix < (max_response*threshold), dtype="uint8")
+    flat_indices   = np.array(harris_matrix == (max_response*threshold), dtype="uint8")
+
+    # Threshold for an optimal value, it may vary depending on the image.
+    # img[dst > 0.01 * dst.max()] = [0, 0, 255]
 
     return corner_indices, edges_indices, flat_indices
 
@@ -158,14 +162,18 @@ def main():
     # print(eigen_vectors)
 
     filename = "../resources/Images/cow_step_harris.png"
+    # filename = "../resources/Images/bill.png"
     img = cv2.imread(filename)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     gray = np.float32(gray)
     dst = cv2.cornerHarris(gray, 2, 3, 0.04)
+    print(f"dst shape: {dst.shape}")
+    print(f"dst max: {dst.max()}")
+    print(f"dst min: {dst.min()}")
 
     # result is dilated for marking the corners, not important
-    dst = cv2.dilate(dst, None)
+    # dst = cv2.dilate(dst, None)
 
     # Threshold for an optimal value, it may vary depending on the image.
     img[dst > 0.01 * dst.max()] = [0, 0, 255]

@@ -661,9 +661,10 @@ class ImageProcessor(m.Ui_MainWindow):
         threshold = float(self.text_harris_threshold.text())
         sensitivity = float(self.text_harris_sensitivity.text())
         window_size = int(self.text_harris_window_size.text())
-        # harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity)
-        harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"], k=sensitivity,
-                                                        window_size=window_size)
+
+        # harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity,
+        #                                                 window_size=window_size)
+        harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"], k=sensitivity)
 
         corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response,
                                                                                 threshold=threshold)

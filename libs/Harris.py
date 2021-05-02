@@ -76,16 +76,18 @@ def apply_harris_operator2(source: np.ndarray) -> (np.ndarray, np.ndarray):
     window_size = 3
     offset = int(window_size/2)
 
+    # Loop over each column in the image
     for y in range(offset, height-offset):
+        # Loop over each row in the image
         for x in range(offset, width-offset):
             Sxx = np.sum(Ixx[y-offset:y+1+offset, x-offset:x+1+offset])
             Syy = np.sum(Iyy[y-offset:y+1+offset, x-offset:x+1+offset])
             Sxy = np.sum(Ixy[y-offset:y+1+offset, x-offset:x+1+offset])
 
             # Find determinant and trace, use to get corner response
-            det = (Sxx * Syy) - (Sxy**2)
+            det   = (Sxx * Syy) - (Sxy**2)
             trace = Sxx + Syy
-            r = det - k*(trace**2)
+            r     = det - k*(trace**2)
 
             harris_response.append(r)
 

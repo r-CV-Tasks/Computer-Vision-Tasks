@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>5</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -3124,19 +3124,19 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>55</width>
+                         <width>60</width>
                          <height>0</height>
                         </size>
                        </property>
                        <property name="text">
-                        <string>Alpha</string>
+                        <string>Threshold</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_alpha_3">
+                      <widget class="QLineEdit" name="text_harris_threshold">
                        <property name="text">
-                        <string/>
+                        <string>0.01</string>
                        </property>
                       </widget>
                      </item>
@@ -3154,19 +3154,19 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>55</width>
+                         <width>60</width>
                          <height>0</height>
                         </size>
                        </property>
                        <property name="text">
-                        <string>Beta</string>
+                        <string>Sensitivity</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_beta_3">
+                      <widget class="QLineEdit" name="text_harris_sensitivity">
                        <property name="text">
-                        <string/>
+                        <string>0.03</string>
                        </property>
                       </widget>
                      </item>
@@ -3184,19 +3184,19 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>55</width>
+                         <width>60</width>
                          <height>0</height>
                         </size>
                        </property>
                        <property name="text">
-                        <string>Gamma</string>
+                        <string>W Size</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_gamma_3">
+                      <widget class="QLineEdit" name="text_harris_window_size">
                        <property name="text">
-                        <string/>
+                        <string>3</string>
                        </property>
                       </widget>
                      </item>
@@ -3214,12 +3214,12 @@
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>55</width>
+                         <width>60</width>
                          <height>0</height>
                         </size>
                        </property>
                        <property name="text">
-                        <string>Iterations</string>
+                        <string>..</string>
                        </property>
                       </widget>
                      </item>

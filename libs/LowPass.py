@@ -91,7 +91,7 @@ def average_filter(source: np.ndarray, shape: int = 3) -> np.ndarray:
     return out.astype('uint8')
 
 
-def gaussian_filter(source: np.ndarray, shape: int = 3, sigma: [int, float] = 64) -> np.ndarray:
+def gaussian_filter(source: np.ndarray, shape: int = 5, sigma: [int, float] = 64) -> np.ndarray:
     """
         Gaussian Low Pass Filter Implementation
     :param source: Image to Apply Filter to

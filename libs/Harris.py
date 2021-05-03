@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 def apply_harris_operator(source: np.ndarray, k: float = 0.05) -> np.ndarray:
     """
 
-    :param source:
+    :param source: image source to apply harris operator on it
     :param k: sensitivity factor to separate corners from edges.
               Small values of k result in detection of sharp corners
     :return:

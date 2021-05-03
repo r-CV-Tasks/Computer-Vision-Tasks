@@ -26,6 +26,9 @@ def apply_harris_operator(source: np.ndarray, k: float = 0.03, window_size: int 
     # Ixy = gaussian_filter(source=I_y * I_x, sigma=1)
     # Iyy = gaussian_filter(source=I_y ** 2, sigma=1)
 
+    # The weights Wp should be circularly symmetric (for rotation invariance)
+    # use a 5x5 Gaussian mask with 0.5 sigma
+
     Ixx = cv2.GaussianBlur(src=I_x ** 2, ksize=(5, 5), sigmaX=0)
     Ixy = cv2.GaussianBlur(src=I_y * I_x, ksize=(5, 5), sigmaX=0)
     Iyy = cv2.GaussianBlur(src=I_y ** 2, ksize=(5, 5), sigmaX=0)
@@ -35,6 +38,7 @@ def apply_harris_operator(source: np.ndarray, k: float = 0.03, window_size: int 
     # [ Ix * Iy     Iy^2    ]
 
     # Harris Response R
+    # corner strength function
     # R = det(H) - k(trace(H))^2
 
     # The response R is an array of peak values of each row in the image.
@@ -101,7 +105,7 @@ def apply_harris_operator2(source: np.ndarray, k: float = 0.05) -> np.ndarray:
 
 def get_harris_indices(harris_response: np.ndarray, threshold: float = 0.01):
     """
-
+    Compute Local Maxima
     :param harris_response:
     :return:
     """

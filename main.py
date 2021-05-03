@@ -12,7 +12,7 @@ import pyqtgraph as pg
 
 from UI import mainGUI as m
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
-    Hough, Contour, Harris, SIFT, TemplateMatching
+    Hough, Contour, Harris, SIFT, FeatureMatching
 
 # importing module
 import logging
@@ -684,8 +684,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
     def template_matching(self):
         print("Applying Template Matching")
-        matching_output = TemplateMatching.apply_template_matching(source=self.imagesData["7_1"],
-                                                                   template=self.imagesData["7_2"])
+        matching_output = FeatureMatching.apply_feature_matching(desc1=self.imagesData["7_1"],
+                                                                 desc2=self.imagesData["7_2"])
         self.display_image(source=matching_output, widget=self.img7_1_output)
         self.display_image(source=matching_output, widget=self.img7_2_output)
 

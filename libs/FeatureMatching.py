@@ -235,9 +235,6 @@ def main():
     matches = apply_feature_matching(descriptors_1, descriptors_2, calculate_ncc)
     matches = sorted(matches, key=lambda x: x.distance, reverse=True)
 
-    print(f"matches:\n {matches}")
-    print(f"matches shape {len(matches)}")
-
     matched_image = cv2.drawMatches(img1, keypoints_1, img2, keypoints_2,
                                     matches[:30], img2, flags=2)
 

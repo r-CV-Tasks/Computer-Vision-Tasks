@@ -979,6 +979,8 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(8)
         self.hough_settings_layout.setFont(font)
+        self.hough_settings_layout.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.hough_settings_layout.setCheckable(False)
         self.hough_settings_layout.setObjectName("hough_settings_layout")
         self.gridLayout_23 = QtWidgets.QGridLayout(self.hough_settings_layout)
         self.gridLayout_23.setObjectName("gridLayout_23")
@@ -2218,7 +2220,7 @@ class Ui_MainWindow(object):
         self.actionImage_2.setObjectName("actionImage_2")
 
         self.retranslateUi(MainWindow)
-        self.Main_TabWidget.setCurrentIndex(0)
+        self.Main_TabWidget.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

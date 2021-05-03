@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -2117,6 +2117,12 @@
               <property name="title">
                <string>Hough Settings</string>
               </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_23">
                <item row="0" column="0">
                 <layout class="QGridLayout" name="gridLayout_24">
@@ -2752,26 +2758,6 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QGroupBox" name="gradiant_settings_layout">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>210</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="title">
-                 <string>Gradiant Settings</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_29"/>
-               </widget>
-              </item>
-              <item row="2" column="0">
                <layout class="QGridLayout" name="gridLayout_30">
                 <item row="0" column="0">
                  <widget class="QPushButton" name="btn_clear_anchors">

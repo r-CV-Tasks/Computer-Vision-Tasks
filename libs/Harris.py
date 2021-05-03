@@ -2,8 +2,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-from libs.EdgeDetection import sobel_edge
-from libs.LowPass import gaussian_filter
 
 def apply_harris_operator(source: np.ndarray, k: float = 0.03, window_size: int = 3) -> np.ndarray:
     """
@@ -76,6 +74,7 @@ def apply_harris_operator(source: np.ndarray, k: float = 0.03, window_size: int 
 
     return harris_response
 
+
 def apply_harris_operator2(source: np.ndarray, k: float = 0.05) -> np.ndarray:
     """
 
@@ -92,16 +91,17 @@ def apply_harris_operator2(source: np.ndarray, k: float = 0.05) -> np.ndarray:
     I_x = cv2.Sobel(src, cv2.CV_64F, 1, 0, ksize=5)
     I_y = cv2.Sobel(src, cv2.CV_64F, 0, 1, ksize=5)
 
-    Ixx = cv2.GaussianBlur(src=I_x **2, ksize=(5, 5), sigmaX=0)
+    Ixx = cv2.GaussianBlur(src=I_x ** 2, ksize=(5, 5), sigmaX=0)
     Ixy = cv2.GaussianBlur(src=I_y * I_x, ksize=(5, 5), sigmaX=0)
     Iyy = cv2.GaussianBlur(src=I_y ** 2, ksize=(5, 5), sigmaX=0)
 
-    det_H   = Ixx * Iyy - Ixy ** 2
+    det_H = Ixx * Iyy - Ixy ** 2
     trace_H = Ixx + Iyy
 
     harris_response = det_H - k * (trace_H ** 2)
 
     return harris_response
+
 
 def get_harris_indices(harris_response: np.ndarray, threshold: float = 0.01):
     """
@@ -116,14 +116,15 @@ def get_harris_indices(harris_response: np.ndarray, threshold: float = 0.01):
 
     # Indices of each corner, edges and flat area
     # Threshold for an optimal value, it may vary depending on the image.
-    corner_indices = np.array(harris_matrix > (max_response*threshold), dtype="int8")
-    edges_indices  = np.array(harris_matrix < (max_response*threshold), dtype="int8")
-    flat_indices   = np.array(harris_matrix == (max_response*threshold), dtype="int8")
+    corner_indices = np.array(harris_matrix > (max_response * threshold), dtype="int8")
+    edges_indices = np.array(harris_matrix < (max_response * threshold), dtype="int8")
+    flat_indices = np.array(harris_matrix == (max_response * threshold), dtype="int8")
 
     # Threshold for an optimal value, it may vary depending on the image.
     # img[dst > 0.01 * dst.max()] = [0, 0, 255]
 
     return corner_indices, edges_indices, flat_indices
+
 
 def map_indices_to_image(source: np.ndarray, indices: np.ndarray, color: list):
     """
@@ -143,6 +144,7 @@ def map_indices_to_image(source: np.ndarray, indices: np.ndarray, color: list):
 
     return src
 
+
 def display_image(src):
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -155,7 +157,6 @@ def display_image(src):
 
 
 def main():
-
     # img = cv2.imread("../resources/Images/harris_image_400.jpg")
     #
     # img_corners, img_edges = apply_harris_operator2(img)
@@ -190,6 +191,7 @@ def main():
     cv2.imshow('dst', img)
     if cv2.waitKey(0) & 0xff == 27:
         cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     main()

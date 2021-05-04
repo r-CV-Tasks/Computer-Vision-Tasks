@@ -680,7 +680,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
     def sift(self):
         print("Applying SIFT Matching")
-        sift_output = SIFT.apply_sift(source=self.imagesData["6_1"], source2=self.imagesData["6_2"])
+        sift_output = SIFT.Sift()
         self.display_image(source=sift_output, widget=self.img6_output)
 
     def feature_matching(self):

@@ -3,12 +3,13 @@
 import logging
 import sys
 import timeit
+from time import sleep
 
 import cv2
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QFile, QTextStream
+from PyQt5.QtCore import QObject, QThread, pyqtSignal, QFile, QTextStream
 from PyQt5.QtWidgets import QMessageBox
 
 from UI import mainGUI as m
@@ -24,6 +25,29 @@ logging.basicConfig(level=logging.DEBUG,
 # Creating an object
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
+# Step 1: Create a worker class (subclass of QObject)
+class SIFTWorker(QObject):
+    def __init__(self, source, source_id):
+        super().__init__()
+        self.img = source
+        self.source_id = source_id
+
+    # Create 2 signals
+    finished = pyqtSignal(list, np.ndarray, int)
+    progress = pyqtSignal(int)
+
+    def run(self):
+        """
+        Function to run a long task
+        This is executed when calling SIFTWorker.start() in the main application
+        :return:
+        """
+        keypoints, descriptors = SIFT.Sift(source=self.img)
+
+        # Emit finished signal to end the thread
+        self.finished.emit(keypoints, descriptors, self.source_id)
 
 
 class ImageProcessor(m.Ui_MainWindow):
@@ -76,6 +100,13 @@ class ImageProcessor(m.Ui_MainWindow):
         self.filtered_image = None
         self.output_hist_image = None
         self.updated_image = None
+
+        # Threads and workers we will use in QThread for SIFT Algorithm
+        self.threads = [..., ...]
+        self.workers = [..., ...]
+
+        # SIFT Results
+        self.sift_results = {}
 
         # Dictionaries to store images data
         self.imagesData = {}
@@ -143,7 +174,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_apply_harris.clicked.connect(self.harris_operator)
 
         # Setup SIFT Button
-        self.btn_match_sift.clicked.connect(self.sift)
+        self.btn_match_features.clicked.connect(self.sift)
 
         self.setup_images_view()
 
@@ -155,7 +186,6 @@ class ImageProcessor(m.Ui_MainWindow):
         """
 
         self.tab_index = self.Main_TabWidget.currentIndex()
-        print(f"Current Tab index: {self.tab_index}")
 
     def setup_images_view(self):
         """
@@ -275,7 +305,7 @@ class ImageProcessor(m.Ui_MainWindow):
         elif tab_id == 6:
             self.sift_settings_layout.setEnabled(True)
             self.btn_load_6_2.setEnabled(True)
-            self.btn_match_sift.setEnabled(True)
+            self.btn_match_features.setEnabled(True)
 
         # in Template Matching  Tab
         elif tab_id == 7:
@@ -703,34 +733,104 @@ class ImageProcessor(m.Ui_MainWindow):
         # Calculate function run time
         start_time = timeit.default_timer()
 
-        keypoints_1, descriptors_1 = SIFT.Sift(source=img1)
-        keypoints_2, descriptors_2 = SIFT.Sift(source=img2)
+        # TODO Implement QThread
+        self.create_sift_thread(source=img1, source_id=0)
+        self.create_sift_thread(source=img2, source_id=1)
 
-        # Function end
-        end_time = timeit.default_timer()
+        # keypoints_1, descriptors_1 = SIFT.Sift(source=img1)
+        # keypoints_2, descriptors_2 = SIFT.Sift(source=img2)
+        #
+        # # Function end
+        # end_time = timeit.default_timer()
+        #
+        # # Show only 3 digits after floating point
+        # elapsed_time = format(end_time - start_time, '.3f')
+        # self.label_sift_time.setText(str(elapsed_time))
+        #
+        # # Calculate function run time
+        # start_time = timeit.default_timer()
+        # matches = FeatureMatching.apply_feature_matching(descriptors_1, descriptors_2, FeatureMatching.calculate_ncc)
+        # matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+        #
+        # matched_image = cv2.drawMatches(img1, keypoints_1, img2, keypoints_2,
+        #                                 matches[:num_matches], img2, flags=2)
+        #
+        # # Function end
+        # end_time = timeit.default_timer()
+        #
+        # # Show only 3 digits after floating point
+        # elapsed_time = format(end_time - start_time, '.3f')
+        # self.label_feature_matching_time.setText(str(elapsed_time))
+        # total_time = float(self.label_sift_time.text()) + float(self.label_feature_matching_time.text())
+        # self.label_total_matching_time.setText(str(total_time))
+        #
+        # self.display_image(source=matched_image, widget=self.img6_output)
 
-        # Show only 3 digits after floating point
-        elapsed_time = format(end_time - start_time, '.3f')
-        self.label_sift_time.setText(str(elapsed_time))
+    def save_sift_result(self, keypoints, descriptors, source_id):
+        """
+        Save the output from each QThread to use it in the matching
+        Then Apply feature matching
+        :param keypoints:
+        :param descriptors:
+        :param source_id:
+        :return:
+        """
 
-        # Calculate function run time
-        start_time = timeit.default_timer()
-        matches = FeatureMatching.apply_feature_matching(descriptors_1, descriptors_2, FeatureMatching.calculate_ncc)
-        matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+        print(f"SIFT Thread {source_id} finished")
 
-        matched_image = cv2.drawMatches(img1, keypoints_1, img2, keypoints_2,
-                                        matches[:num_matches], img2, flags=2)
+        self.sift_results[source_id] = {
+            "keypoints": keypoints,
+            "descriptors": descriptors
+        }
 
-        # Function end
-        end_time = timeit.default_timer()
+        # Check if 2 threads are finished so we can apply matching
+        if (0 in self.sift_results) and (1 in self.sift_results):
 
-        # Show only 3 digits after floating point
-        elapsed_time = format(end_time - start_time, '.3f')
-        self.label_feature_matching_time.setText(str(elapsed_time))
-        total_time = float(self.label_sift_time.text()) + float(self.label_feature_matching_time.text())
-        self.label_total_matching_time.setText(str(total_time))
+            img1 = np.copy(self.imagesData["6_1"])
+            img2 = np.copy(self.imagesData["6_2"])
 
-        self.display_image(source=matched_image, widget=self.img6_output)
+            matches = FeatureMatching.apply_feature_matching(self.sift_results[0]["descriptors"],
+                                                             self.sift_results[1]["descriptors"],
+                                                             FeatureMatching.calculate_ncc)
+            matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+
+            matched_image = cv2.drawMatches(img1, self.sift_results[0]["keypoints"],
+                                            img2, self.sift_results[1]["keypoints"],
+                                            matches[:20], img2, flags=2)
+
+            self.display_image(source=matched_image, widget=self.img6_output)
+
+    def create_sift_thread(self, source: np.ndarray, source_id: int):
+        """
+
+        :param source:
+        :param source_id:
+        :return:
+        """
+
+        # Step 2: Create a QThread object
+        self.threads[source_id] = QThread()
+
+        # Step 3: Create a worker object
+        self.workers[source_id] = SIFTWorker(source=source, source_id=source_id)
+
+        # Step 4: Move worker to the thread
+        self.workers[source_id].moveToThread(self.threads[source_id])
+
+        # Step 5: Connect signals and slots
+        self.threads[source_id].started.connect(self.workers[source_id].run)
+        self.workers[source_id].finished.connect(self.threads[source_id].quit)
+        self.workers[source_id].finished.connect(self.workers[source_id].deleteLater)
+        self.threads[source_id].finished.connect(self.threads[source_id].deleteLater)
+        self.workers[source_id].finished.connect(self.save_sift_result)
+        # self.worker.progress.connect(self.reportProgress)
+
+        # Step 6: Start the thread
+        self.threads[source_id].start()
+
+        # Final resets
+        self.btn_match_features.setEnabled(False)
+        self.threads[source_id].finished.connect(lambda: self.btn_match_features.setEnabled(True))
 
     def slider_changed(self, indx):
         """

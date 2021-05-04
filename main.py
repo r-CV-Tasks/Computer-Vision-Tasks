@@ -148,7 +148,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_match_sift.clicked.connect(self.sift)
 
         # Setup Template Matching Button
-        self.btn_match_template.clicked.connect(self.template_matching)
+        self.btn_match_template.clicked.connect(self.feature_matching)
 
         self.setup_images_view()
 
@@ -663,11 +663,12 @@ class ImageProcessor(m.Ui_MainWindow):
         print("Applying harris operator")
         threshold = float(self.text_harris_threshold.text())
         sensitivity = float(self.text_harris_sensitivity.text())
-        window_size = int(self.text_harris_window_size.text())
+        # window_size = int(self.text_harris_window_size.text())
+
+        harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity)
 
         # harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity,
         #                                                 window_size=window_size)
-        harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"], k=sensitivity)
 
         corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response,
                                                                                 threshold=threshold)
@@ -682,12 +683,12 @@ class ImageProcessor(m.Ui_MainWindow):
         sift_output = SIFT.apply_sift(source=self.imagesData["6_1"], source2=self.imagesData["6_2"])
         self.display_image(source=sift_output, widget=self.img6_output)
 
-    def template_matching(self):
-        print("Applying Template Matching")
-        matching_output = FeatureMatching.apply_feature_matching(desc1=self.imagesData["7_1"],
-                                                                 desc2=self.imagesData["7_2"])
-        self.display_image(source=matching_output, widget=self.img7_1_output)
-        self.display_image(source=matching_output, widget=self.img7_2_output)
+    def feature_matching(self):
+        print("Applying Feature Matching")
+        # matches = FeatureMatching.apply_feature_matching(desc1=self.imagesData["7_1"],
+        #                                                  desc2=self.imagesData["7_2"])
+        # self.display_image(source=matches, widget=self.img7_1_output)
+        # self.display_image(source=matches, widget=self.img7_2_output)
 
     def slider_changed(self, indx):
         """

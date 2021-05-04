@@ -3,7 +3,6 @@
 import logging
 import sys
 import timeit
-from time import sleep
 
 import cv2
 import numpy as np
@@ -319,6 +318,7 @@ class ImageProcessor(m.Ui_MainWindow):
         elif tab_id == 6:
             self.sift_settings_layout.setEnabled(True)
             self.btn_load_6_2.setEnabled(True)
+            self.combo_matching_methods.setEnabled(True)
             self.btn_match_features.setEnabled(True)
 
         # in Template Matching  Tab
@@ -745,8 +745,13 @@ class ImageProcessor(m.Ui_MainWindow):
         # Calculate function run time
         start_time = timeit.default_timer()
 
-        self.create_sift_thread(source=img1, source_id=0, start_time=start_time)
-        self.create_sift_thread(source=img2, source_id=1, start_time=start_time)
+        # Check that user selected a matching method
+        if self.combo_matching_methods.currentIndex() == 0:
+            self.show_message(header="Warning!!", message="You didn't choose any matching method!",
+                              button=QMessageBox.Ok, icon=QMessageBox.Warning)
+        else:
+            self.create_sift_thread(source=img1, source_id=0, start_time=start_time)
+            self.create_sift_thread(source=img2, source_id=1, start_time=start_time)
 
     def save_sift_result(self, keypoints: list, descriptors: np.ndarray, source_id: int, elapsed_time: float):
         """
@@ -767,6 +772,8 @@ class ImageProcessor(m.Ui_MainWindow):
         elif source_id == 1:
             self.label_sift_B_time.setText(str(elapsed_time))
 
+        QtWidgets.QApplication.processEvents()
+
         self.sift_results[source_id] = {
             "keypoints": keypoints,
             "descriptors": descriptors
@@ -777,15 +784,22 @@ class ImageProcessor(m.Ui_MainWindow):
 
             img1 = np.copy(self.imagesData["6_1"])
             img2 = np.copy(self.imagesData["6_2"])
-
             num_matches = int(self.text_sift_matches.text())
+
+            match_method = None
+
+            # Check which match function to apply
+            if self.combo_matching_methods.currentText() == "Sum Square Differences":
+                match_method = FeatureMatching.calculate_ssd
+            elif self.combo_matching_methods.currentText() == "Normalized Cross Correlations":
+                match_method = FeatureMatching.calculate_ncc
 
             # Calculate function run time
             start_time = timeit.default_timer()
 
-            matches = FeatureMatching.apply_feature_matching(self.sift_results[0]["descriptors"],
-                                                             self.sift_results[1]["descriptors"],
-                                                             FeatureMatching.calculate_ncc)
+            matches = FeatureMatching.apply_feature_matching(desc1=self.sift_results[0]["descriptors"],
+                                                             desc2=self.sift_results[1]["descriptors"],
+                                                             match_calculator=match_method)
             matches = sorted(matches, key=lambda x: x.distance, reverse=True)
 
             matched_image = cv2.drawMatches(img1, self.sift_results[0]["keypoints"],

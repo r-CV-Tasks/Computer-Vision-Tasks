@@ -29,13 +29,21 @@ logger.setLevel(logging.DEBUG)
 
 # Step 1: Create a worker class (subclass of QObject)
 class SIFTWorker(QObject):
-    def __init__(self, source, source_id):
+    def __init__(self, source: np.ndarray, source_id: int, start_time: float):
+        """
+
+        :param source:
+        :param source_id:
+        :param start_time:
+        """
         super().__init__()
         self.img = source
         self.source_id = source_id
+        self.start_time = start_time
+        self.end_time = 0
 
     # Create 2 signals
-    finished = pyqtSignal(list, np.ndarray, int)
+    finished = pyqtSignal(list, np.ndarray, int, float)
     progress = pyqtSignal(int)
 
     def run(self):
@@ -46,8 +54,14 @@ class SIFTWorker(QObject):
         """
         keypoints, descriptors = SIFT.Sift(source=self.img)
 
+        # Function end
+        end_time = timeit.default_timer()
+
+        # # Show only 3 digits after floating point
+        elapsed_time = float(format(end_time - self.start_time, '.3f'))
+
         # Emit finished signal to end the thread
-        self.finished.emit(keypoints, descriptors, self.source_id)
+        self.finished.emit(keypoints, descriptors, self.source_id, elapsed_time)
 
 
 class ImageProcessor(m.Ui_MainWindow):
@@ -728,55 +742,30 @@ class ImageProcessor(m.Ui_MainWindow):
         img1 = np.copy(self.imagesData["6_1"])
         img2 = np.copy(self.imagesData["6_2"])
 
-        num_matches = int(self.text_sift_matches.text())
-
         # Calculate function run time
         start_time = timeit.default_timer()
 
-        # TODO Implement QThread
-        self.create_sift_thread(source=img1, source_id=0)
-        self.create_sift_thread(source=img2, source_id=1)
+        self.create_sift_thread(source=img1, source_id=0, start_time=start_time)
+        self.create_sift_thread(source=img2, source_id=1, start_time=start_time)
 
-        # keypoints_1, descriptors_1 = SIFT.Sift(source=img1)
-        # keypoints_2, descriptors_2 = SIFT.Sift(source=img2)
-        #
-        # # Function end
-        # end_time = timeit.default_timer()
-        #
-        # # Show only 3 digits after floating point
-        # elapsed_time = format(end_time - start_time, '.3f')
-        # self.label_sift_time.setText(str(elapsed_time))
-        #
-        # # Calculate function run time
-        # start_time = timeit.default_timer()
-        # matches = FeatureMatching.apply_feature_matching(descriptors_1, descriptors_2, FeatureMatching.calculate_ncc)
-        # matches = sorted(matches, key=lambda x: x.distance, reverse=True)
-        #
-        # matched_image = cv2.drawMatches(img1, keypoints_1, img2, keypoints_2,
-        #                                 matches[:num_matches], img2, flags=2)
-        #
-        # # Function end
-        # end_time = timeit.default_timer()
-        #
-        # # Show only 3 digits after floating point
-        # elapsed_time = format(end_time - start_time, '.3f')
-        # self.label_feature_matching_time.setText(str(elapsed_time))
-        # total_time = float(self.label_sift_time.text()) + float(self.label_feature_matching_time.text())
-        # self.label_total_matching_time.setText(str(total_time))
-        #
-        # self.display_image(source=matched_image, widget=self.img6_output)
-
-    def save_sift_result(self, keypoints, descriptors, source_id):
+    def save_sift_result(self, keypoints: list, descriptors: np.ndarray, source_id: int, elapsed_time: float):
         """
         Save the output from each QThread to use it in the matching
         Then Apply feature matching
         :param keypoints:
         :param descriptors:
         :param source_id:
+        :param elapsed_time:
         :return:
         """
 
         print(f"SIFT Thread {source_id} finished")
+
+        # Update Elapsed Time in GUI Depending on which Thread is finished
+        if source_id == 0:
+            self.label_sift_A_time.setText(str(elapsed_time))
+        elif source_id == 1:
+            self.label_sift_B_time.setText(str(elapsed_time))
 
         self.sift_results[source_id] = {
             "keypoints": keypoints,
@@ -789,6 +778,11 @@ class ImageProcessor(m.Ui_MainWindow):
             img1 = np.copy(self.imagesData["6_1"])
             img2 = np.copy(self.imagesData["6_2"])
 
+            num_matches = int(self.text_sift_matches.text())
+
+            # Calculate function run time
+            start_time = timeit.default_timer()
+
             matches = FeatureMatching.apply_feature_matching(self.sift_results[0]["descriptors"],
                                                              self.sift_results[1]["descriptors"],
                                                              FeatureMatching.calculate_ncc)
@@ -796,15 +790,29 @@ class ImageProcessor(m.Ui_MainWindow):
 
             matched_image = cv2.drawMatches(img1, self.sift_results[0]["keypoints"],
                                             img2, self.sift_results[1]["keypoints"],
-                                            matches[:20], img2, flags=2)
+                                            matches[:num_matches], img2, flags=2)
+
+            # Function end
+            end_time = timeit.default_timer()
+
+            # Show only 3 digits after floating point
+            elapsed_time = format(end_time - start_time, '.3f')
+
+            self.label_feature_matching_time.setText(str(elapsed_time))
+
+            # Update Total Time
+            max_sift_time = max(float(self.label_sift_A_time.text()), float(self.label_sift_B_time.text()))
+            total_time = max_sift_time + float(self.label_feature_matching_time.text())
+            self.label_total_matching_time.setText(str(total_time))
 
             self.display_image(source=matched_image, widget=self.img6_output)
 
-    def create_sift_thread(self, source: np.ndarray, source_id: int):
+    def create_sift_thread(self, source: np.ndarray, source_id: int, start_time: float):
         """
 
         :param source:
         :param source_id:
+        :param start_time:
         :return:
         """
 
@@ -812,7 +820,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.threads[source_id] = QThread()
 
         # Step 3: Create a worker object
-        self.workers[source_id] = SIFTWorker(source=source, source_id=source_id)
+        self.workers[source_id] = SIFTWorker(source=source, source_id=source_id, start_time=start_time)
 
         # Step 4: Move worker to the thread
         self.workers[source_id].moveToThread(self.threads[source_id])

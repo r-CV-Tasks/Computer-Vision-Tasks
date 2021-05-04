@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>6</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -2969,12 +2969,19 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>210</width>
+                  <width>40</width>
                   <height>25</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>0.0 seconds</string>
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_41">
+                <property name="text">
+                 <string>seconds</string>
                 </property>
                </widget>
               </item>
@@ -3392,12 +3399,19 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>210</width>
+                  <width>40</width>
                   <height>25</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>0.0 seconds</string>
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_42">
+                <property name="text">
+                 <string>seconds</string>
                 </property>
                </widget>
               </item>
@@ -3892,6 +3906,58 @@
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_33">
+              <item row="2" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_64">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetFixedSize</enum>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_72">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>90</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Total Time:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_total_matching_time">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>40</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>0.0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_46">
+                  <property name="text">
+                   <string>seconds</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
               <item row="0" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_62">
                 <property name="sizeConstraint">
@@ -3926,24 +3992,31 @@
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>210</width>
+                    <width>40</width>
                     <height>25</height>
                    </size>
                   </property>
                   <property name="text">
-                   <string>0.0 seconds</string>
+                   <string>0.0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_44">
+                  <property name="text">
+                   <string>seconds</string>
                   </property>
                  </widget>
                 </item>
                </layout>
               </item>
               <item row="1" column="0">
-               <layout class="QHBoxLayout" name="horizontalLayout_64">
+               <layout class="QHBoxLayout" name="horizontalLayout_66">
                 <property name="sizeConstraint">
                  <enum>QLayout::SetFixedSize</enum>
                 </property>
                 <item>
-                 <widget class="QLabel" name="label_72">
+                 <widget class="QLabel" name="label_74">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -3962,7 +4035,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLabel" name="label_matching_time">
+                 <widget class="QLabel" name="label_feature_matching_time">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -3971,12 +4044,19 @@
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>210</width>
+                    <width>40</width>
                     <height>25</height>
                    </size>
                   </property>
                   <property name="text">
-                   <string>0.0 seconds</string>
+                   <string>0.0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_45">
+                  <property name="text">
+                   <string>seconds</string>
                   </property>
                  </widget>
                 </item>
@@ -4626,12 +4706,19 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>210</width>
+                  <width>40</width>
                   <height>25</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>0.0 seconds</string>
+                 <string>0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_47">
+                <property name="text">
+                 <string>seconds</string>
                 </property>
                </widget>
               </item>

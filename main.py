@@ -2,6 +2,7 @@
 # importing module
 import logging
 import sys
+import timeit
 
 import cv2
 import numpy as np
@@ -572,6 +573,9 @@ class ImageProcessor(m.Ui_MainWindow):
         # Initial variables
         contour_x, contour_y, window_coordinates = None, None, None
 
+        # Calculate function run time
+        start_time = timeit.default_timer()
+
         # Greedy Algorithm
 
         # copy the image because cv2 will edit the original source in the contour
@@ -632,6 +636,13 @@ class ImageProcessor(m.Ui_MainWindow):
             # Used to allow the GUI to update ImageView Object without lagging
             QtWidgets.QApplication.processEvents()
 
+        # Function end
+        end_time = timeit.default_timer()
+
+        # Show only 3 digits after floating point
+        elapsed_time = format(end_time - start_time, '.3f')
+        self.label_snake_time.setText(str(elapsed_time))
+
     def clear_anchors(self):
         """
 
@@ -654,15 +665,13 @@ class ImageProcessor(m.Ui_MainWindow):
 
         :return:
         """
-        print("Applying harris operator")
         threshold = float(self.text_harris_threshold.text())
         sensitivity = float(self.text_harris_sensitivity.text())
-        # window_size = int(self.text_harris_window_size.text())
+
+        # Calculate function run time
+        start_time = timeit.default_timer()
 
         harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity)
-
-        # harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity,
-        #                                                 window_size=window_size)
 
         corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response,
                                                                                 threshold=threshold)
@@ -670,39 +679,65 @@ class ImageProcessor(m.Ui_MainWindow):
         img_corners = Harris.map_indices_to_image(source=self.imagesData["5_1"], indices=corner_indices,
                                                   color=[255, 0, 0])
 
+        # Function end
+        end_time = timeit.default_timer()
+
+        # Show only 3 digits after floating point
+        elapsed_time = format(end_time - start_time, '.3f')
+        self.label_harris_time.setText(str(elapsed_time))
+
         self.display_image(source=img_corners, widget=self.img5_output)
 
     def sift(self):
         """
+        Apply Scale Invariant Feature Detection (SIFT) Algorithm
 
         :return:
         """
-        print("Applying SIFT Matching")
+
         img1 = np.copy(self.imagesData["6_1"])
         img2 = np.copy(self.imagesData["6_2"])
 
-        img1_copy = np.copy(self.imagesData["6_1"])
-        img2_copy = np.copy(self.imagesData["6_2"])
-
         num_matches = int(self.text_sift_matches.text())
+
+        # Calculate function run time
+        start_time = timeit.default_timer()
 
         keypoints_1, descriptors_1 = SIFT.Sift(source=img1)
         keypoints_2, descriptors_2 = SIFT.Sift(source=img2)
 
+        # Function end
+        end_time = timeit.default_timer()
+
+        # Show only 3 digits after floating point
+        elapsed_time = format(end_time - start_time, '.3f')
+        self.label_sift_time.setText(str(elapsed_time))
+
+        # Calculate function run time
+        start_time = timeit.default_timer()
         matches = FeatureMatching.apply_feature_matching(descriptors_1, descriptors_2, FeatureMatching.calculate_ncc)
         matches = sorted(matches, key=lambda x: x.distance, reverse=True)
 
-        matched_image = cv2.drawMatches(img1_copy, keypoints_1, img2_copy, keypoints_2,
-                                        matches[:num_matches], img2_copy, flags=2)
+        matched_image = cv2.drawMatches(img1, keypoints_1, img2, keypoints_2,
+                                        matches[:num_matches], img2, flags=2)
+
+        # Function end
+        end_time = timeit.default_timer()
+
+        # Show only 3 digits after floating point
+        elapsed_time = format(end_time - start_time, '.3f')
+        self.label_feature_matching_time.setText(str(elapsed_time))
+        total_time = float(self.label_sift_time.text()) + float(self.label_feature_matching_time.text())
+        self.label_total_matching_time.setText(str(total_time))
 
         self.display_image(source=matched_image, widget=self.img6_output)
 
     def slider_changed(self, indx):
         """
         detects the changes in the sliders using the indx given by ith slider
-        and the slider value
+        and the slider value (add val parameter if you want to use it)
         :param indx: int
-        :return: none
+        :return: void
         """
         if indx == 0 or indx == 1:
             self.combo_box_changed(tab_id=self.tab_index, combo_id=0)

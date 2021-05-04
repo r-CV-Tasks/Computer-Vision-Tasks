@@ -3806,6 +3806,9 @@
               <property name="title">
                <string>Feature Matching Settings</string>
               </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_44">
                <item row="1" column="0">
                 <layout class="QGridLayout" name="gridLayout_56">

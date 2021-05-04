@@ -12,6 +12,7 @@ from PyQt5.QtCore import QObject, QThread, pyqtSignal, QFile, QTextStream
 from PyQt5.QtWidgets import QMessageBox
 
 from UI import mainGUI as m
+from UI import breeze_resources
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
                  Hough, Contour, Harris, SIFT, FeatureMatching
 

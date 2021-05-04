@@ -64,6 +64,33 @@ class SIFTWorker(QObject):
         self.finished.emit(keypoints, descriptors, self.source_id, elapsed_time)
 
 
+class MedianFilterWorker(QObject):
+    def __init__(self, source: np.ndarray, shape: int):
+        """
+
+        :param source:
+        :param shape:
+        """
+        super().__init__()
+        self.noisy_image = source
+        self.shape = shape
+
+    # Create 2 signals
+    finished = pyqtSignal(np.ndarray)
+    progress = pyqtSignal(int)
+
+    def run(self):
+        """
+        Function to run a long task
+        This is executed when calling MedianFilterWorker.start() in the main application
+        :return:
+        """
+        filtered_image = LowPass.median_filter(source=self.noisy_image, shape=self.shape)
+
+        # Emit finished signal to end the thread
+        self.finished.emit(filtered_image)
+
+
 class ImageProcessor(m.Ui_MainWindow):
     """
     Main Class of the program GUI
@@ -116,8 +143,8 @@ class ImageProcessor(m.Ui_MainWindow):
         self.updated_image = None
 
         # Threads and workers we will use in QThread for SIFT Algorithm
-        self.threads = [..., ...]
-        self.workers = [..., ...]
+        self.threads = {}
+        self.workers = {}
 
         # SIFT Results
         self.sift_results = {}
@@ -448,7 +475,8 @@ class ImageProcessor(m.Ui_MainWindow):
                                                                   sigma=filter_sigma)
 
                 elif selected_component == "median filter":
-                    self.filtered_image = LowPass.median_filter(source=self.currentNoiseImage, shape=mask_size)
+                    # self.filtered_image = LowPass.median_filter(source=self.currentNoiseImage, shape=mask_size)
+                    self.create_median_thread(source=self.currentNoiseImage, shape=mask_size, source_id=2)
 
                 try:
                     self.display_image(source=self.filtered_image, widget=self.filtersImages[combo_id])
@@ -720,6 +748,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
         corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response,
                                                                                 threshold=threshold)
+        unique, counts = np.unique(corner_indices, return_counts=True)
+        print(f"Number of points: {counts[1]}")
 
         img_corners = Harris.map_indices_to_image(source=self.imagesData["5_1"], indices=corner_indices,
                                                   color=[255, 0, 0])
@@ -822,6 +852,16 @@ class ImageProcessor(m.Ui_MainWindow):
 
             self.display_image(source=matched_image, widget=self.img6_output)
 
+    def save_median_result(self, source: np.ndarray):
+        """
+        Save the output from Median QThread to view median filter result
+
+        :param source:
+        :return:
+        """
+        print("Median Filter is Finished")
+        self.display_image(source=source, widget=self.filtersImages[1])
+
     def create_sift_thread(self, source: np.ndarray, source_id: int, start_time: float):
         """
 
@@ -854,6 +894,39 @@ class ImageProcessor(m.Ui_MainWindow):
         # Final resets
         self.btn_match_features.setEnabled(False)
         self.threads[source_id].finished.connect(lambda: self.btn_match_features.setEnabled(True))
+
+    def create_median_thread(self, source: np.ndarray, source_id: int, shape: int):
+        """
+
+        :param source:
+        :param source_id:
+        :param shape:
+        :return:
+        """
+
+        # Step 2: Create a QThread object
+        self.threads[source_id] = QThread()
+
+        # Step 3: Create a worker object
+        self.workers[source_id] = MedianFilterWorker(source=source, shape=shape)
+
+        # Step 4: Move worker to the thread
+        self.workers[source_id].moveToThread(self.threads[source_id])
+
+        # Step 5: Connect signals and slots
+        self.threads[source_id].started.connect(self.workers[source_id].run)
+        self.workers[source_id].finished.connect(self.threads[source_id].quit)
+        self.workers[source_id].finished.connect(self.workers[source_id].deleteLater)
+        self.threads[source_id].finished.connect(self.threads[source_id].deleteLater)
+        self.workers[source_id].finished.connect(self.save_median_result)
+        # self.worker.progress.connect(self.reportProgress)
+
+        # Step 6: Start the thread
+        self.threads[source_id].start()
+
+        # Final resets
+        self.combo_filter.setEnabled(False)
+        self.threads[source_id].finished.connect(lambda: self.combo_filter.setEnabled(True))
 
     def slider_changed(self, indx):
         """

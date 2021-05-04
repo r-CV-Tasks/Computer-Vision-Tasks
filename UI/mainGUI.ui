@@ -3861,7 +3861,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="btn_match_sift">
+             <widget class="QPushButton" name="btn_match_features">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -3884,7 +3884,7 @@
                </size>
               </property>
               <property name="text">
-               <string>Match</string>
+               <string>Match Features</string>
               </property>
              </widget>
             </item>

@@ -670,8 +670,9 @@ QPushButton:pressed
 QComboBox
 {
     selection-background-color: #3daee9;
+
     /*border-style: solid;*/
-    border: 0.3ex solid #76797c;
+    border: 0.4ex solid #76797c;
     border-radius: 0.2ex;
     padding: 1ex;
     min-width: 7.5ex;
@@ -705,7 +706,7 @@ QPlainTextEdit:hover,
 QAbstractView:hover,
 QTreeView:hover
 {
-    border: 0.3ex solid #3daee9;
+    border: 0.4ex solid #3daee9;
     color: #eff0f1;
 }
 
@@ -718,21 +719,26 @@ QPlainTextEdit:hover:pressed,
 QAbstractView:hover:pressed,
 QTreeView:hover:pressed
 {
-    background-color: #31363b;
+    /*background-color: #31363b;*/
+    background-color: #3daee9;
 }
 
 QComboBox:on
 {
-    padding-top: 0.3ex;
-    padding-left: 0.4ex;
-    selection-background-color: #4a4a4a;
+    /*padding-top: 0.3ex;*/
+    /*padding-left: 0.4ex;*/
+    padding: 1.2ex;
+    /*selection-background-color: #4a4a4a;*/
+    selection-background-color: #3daee9;
+    border: 0.4ex solid #76797c;
 }
 
 QComboBox QAbstractItemView
 {
     background-color: #232629;
     border-radius: 0.2ex;
-    border: 0.1ex solid #76797c;
+    /*border: 0.1ex solid #76797c;*/
+    border: 0.4ex solid #76797c;
     selection-background-color: #3daee9;
 }
 

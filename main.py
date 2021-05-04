@@ -280,6 +280,7 @@ class ImageProcessor(m.Ui_MainWindow):
         # in SIFT Tab
         elif tab_id == 6:
             self.sift_settings_layout.setEnabled(True)
+            self.btn_load_6_2.setEnabled(True)
             self.btn_match_sift.setEnabled(True)
 
         # in Template Matching  Tab
@@ -679,16 +680,32 @@ class ImageProcessor(m.Ui_MainWindow):
         self.display_image(source=img_corners, widget=self.img5_output)
 
     def sift(self):
+        """
+
+        :return:
+        """
         print("Applying SIFT Matching")
-        sift_output = SIFT.Sift()
-        self.display_image(source=sift_output, widget=self.img6_output)
+        img1 = np.copy(self.imagesData["6_1"])
+        img2 = np.copy(self.imagesData["6_2"])
+
+        img1_copy = np.copy(self.imagesData["6_1"])
+        img2_copy = np.copy(self.imagesData["6_2"])
+
+        num_matches = int(self.text_sift_matches.text())
+
+        keypoints_1, descriptors_1 = SIFT.Sift(source=img1)
+        keypoints_2, descriptors_2 = SIFT.Sift(source=img2)
+
+        matches = FeatureMatching.apply_feature_matching(descriptors_1, descriptors_2, FeatureMatching.calculate_ncc)
+        matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+
+        matched_image = cv2.drawMatches(img1_copy, keypoints_1, img2_copy, keypoints_2,
+                                        matches[:num_matches], img2_copy, flags=2)
+
+        self.display_image(source=matched_image, widget=self.img6_output)
 
     def feature_matching(self):
         print("Applying Feature Matching")
-        # matches = FeatureMatching.apply_feature_matching(desc1=self.imagesData["7_1"],
-        #                                                  desc2=self.imagesData["7_2"])
-        # self.display_image(source=matches, widget=self.img7_1_output)
-        # self.display_image(source=matches, widget=self.img7_2_output)
 
     def slider_changed(self, indx):
         """

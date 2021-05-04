@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>6</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -3697,104 +3697,14 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Alpha</string>
+                      <string>Matches</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="text_alpha_4">
+                    <widget class="QLineEdit" name="text_sift_matches">
                      <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="1" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_36">
-                   <item>
-                    <widget class="QLabel" name="label_44">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>55</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Beta</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="text_beta_4">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="2" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_37">
-                   <item>
-                    <widget class="QLabel" name="label_45">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>55</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Gamma</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="text_gamma_4">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="3" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_42">
-                   <item>
-                    <widget class="QLabel" name="label_46">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>55</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Iterations</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="text_num_iterations_4">
-                     <property name="text">
-                      <string/>
+                      <string>20</string>
                      </property>
                     </widget>
                    </item>
@@ -3922,66 +3832,23 @@
           <item row="0" column="1">
            <layout class="QGridLayout" name="gridLayout_32">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_33">
-              <item row="1" column="0">
-               <widget class="QGroupBox" name="groupBox_12">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>350</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="title">
-                 <string>Input Image B</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_34">
-                 <item row="0" column="0">
-                  <widget class="ImageView" name="img6_2_input" native="true">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>256</width>
-                     <height>256</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
+             <layout class="QGridLayout" name="gridLayout_29">
               <item row="0" column="0">
-               <widget class="QGroupBox" name="groupBox_13">
+               <widget class="QGroupBox" name="groupBox_19">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>350</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                 <property name="title">
                  <string>Input Image A</string>
                 </property>
-                <layout class="QGridLayout" name="gridLayout_35">
+                <layout class="QGridLayout" name="gridLayout_69">
                  <item row="0" column="0">
                   <widget class="ImageView" name="img6_1_input" native="true">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -3997,28 +3864,39 @@
                 </layout>
                </widget>
               </item>
-             </layout>
-            </item>
-            <item row="0" column="1">
-             <layout class="QGridLayout" name="gridLayout_39">
-              <property name="sizeConstraint">
-               <enum>QLayout::SetMinimumSize</enum>
-              </property>
               <item row="0" column="1">
-               <spacer name="verticalSpacer_18">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+               <widget class="QGroupBox" name="groupBox_20">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
+                <property name="title">
+                 <string>Input Image B</string>
                 </property>
-               </spacer>
+                <layout class="QGridLayout" name="gridLayout_70">
+                 <item row="0" column="0">
+                  <widget class="ImageView" name="img6_2_input" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>256</width>
+                     <height>256</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
               </item>
               <item row="1" column="0" colspan="2">
-               <widget class="QGroupBox" name="groupBox_14">
+               <widget class="QGroupBox" name="groupBox_21">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -4034,11 +3912,11 @@
                 <property name="title">
                  <string>Output Image</string>
                 </property>
-                <layout class="QGridLayout" name="gridLayout_42">
+                <layout class="QGridLayout" name="gridLayout_73">
                  <item row="0" column="0">
                   <widget class="ImageView" name="img6_output" native="true">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -4049,23 +3927,16 @@
                      <height>256</height>
                     </size>
                    </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>400</height>
+                    </size>
+                   </property>
                   </widget>
                  </item>
                 </layout>
                </widget>
-              </item>
-              <item row="2" column="0">
-               <spacer name="verticalSpacer_19">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
               </item>
              </layout>
             </item>

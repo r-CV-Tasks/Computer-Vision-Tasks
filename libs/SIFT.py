@@ -1,7 +1,7 @@
 from numpy import all, array, arctan2, cos, sin, exp, dot, log, logical_and, roll, sqrt, stack, trace, deg2rad,\
-    rad2deg, where, zeros, floor, round, float32
+    rad2deg, where, zeros, floor, round, float32, copy
 from numpy.linalg import det, lstsq, norm
-from cv2 import resize, GaussianBlur, subtract, KeyPoint, INTER_LINEAR, INTER_NEAREST
+from cv2 import resize, GaussianBlur, subtract, KeyPoint, INTER_LINEAR, INTER_NEAREST, cvtColor, COLOR_BGR2GRAY
 from functools import cmp_to_key
 
 float_tolerance = 1e-7
@@ -22,7 +22,10 @@ def Sift(source: array, sigma: [float, int] = 1.6, num_intervals: int = 3, assum
     :param image_border_width: Padding Added to the Image Borders
     :return: Array of KeyPoint Objects and an Array of Descriptors for each KeyPoint
     """
-    image = source.astype('float32')
+
+    src = copy(source)
+    src = cvtColor(src, COLOR_BGR2GRAY)
+    image = src.astype('float32')
     base_image = generateBaseImage(image, sigma, assumed_blur)
     num_octaves = computeNumberOfOctaves(base_image.shape)
     gaussian_kernels = generateGaussianKernels(sigma, num_intervals)

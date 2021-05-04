@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>0</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -204,7 +204,7 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -230,6 +230,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="maximumSize">
                  <size>
@@ -272,6 +278,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="maximumSize">
                  <size>
@@ -341,7 +353,7 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -727,13 +739,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <item>
@@ -1141,13 +1153,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="currentText">
@@ -1228,13 +1240,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -1254,6 +1266,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -1290,6 +1308,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -1331,13 +1355,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <item>
@@ -1544,13 +1568,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -1570,6 +1594,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -1606,6 +1636,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -1663,13 +1699,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -1689,6 +1725,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -1725,6 +1767,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -1987,13 +2035,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -2013,6 +2061,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -2049,6 +2103,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -2485,13 +2545,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -2511,6 +2571,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -2547,6 +2613,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -2848,6 +2920,67 @@
              </layout>
             </item>
             <item>
+             <spacer name="verticalSpacer_39">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_65">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetFixedSize</enum>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_73">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>90</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Snake Time:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_snake_time">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>210</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>0.0 seconds</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <spacer name="verticalSpacer_34">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -2968,13 +3101,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -2994,6 +3127,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -3030,6 +3169,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -3158,66 +3303,6 @@
                      </item>
                     </layout>
                    </item>
-                   <item row="2" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_33">
-                     <item>
-                      <widget class="QLabel" name="label_41">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>60</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="text">
-                        <string>W Size</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="text_harris_window_size">
-                       <property name="text">
-                        <string>3</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="3" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_34">
-                     <item>
-                      <widget class="QLabel" name="label_42">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>60</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="text">
-                        <string>..</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="text_num_iterations_3">
-                       <property name="text">
-                        <string/>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
                   </layout>
                  </item>
                 </layout>
@@ -3286,13 +3371,19 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>90</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="text">
-                 <string>Elapsed Time</string>
+                 <string>Harris Time:</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_elapsed_time_harris">
+               <widget class="QLabel" name="label_harris_time">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3433,13 +3524,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -3459,6 +3550,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -3495,6 +3592,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -3552,13 +3655,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -3578,6 +3681,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -3614,6 +3723,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -3776,41 +3891,96 @@
              </spacer>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_62">
-              <property name="sizeConstraint">
-               <enum>QLayout::SetFixedSize</enum>
-              </property>
-              <item>
-               <widget class="QLabel" name="label_70">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+             <layout class="QGridLayout" name="gridLayout_33">
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_62">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetFixedSize</enum>
                 </property>
-                <property name="text">
-                 <string>Elapsed Time</string>
-                </property>
-               </widget>
+                <item>
+                 <widget class="QLabel" name="label_70">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>90</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>SIFT Time:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_sift_time">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>210</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>0.0 seconds</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
-              <item>
-               <widget class="QLabel" name="label_elapsed_time_sift">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+              <item row="1" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_64">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetFixedSize</enum>
                 </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>210</width>
-                  <height>25</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>0.0 seconds</string>
-                </property>
-               </widget>
+                <item>
+                 <widget class="QLabel" name="label_72">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>90</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Matching Time:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_matching_time">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>210</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>0.0 seconds</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>
@@ -3966,13 +4136,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -3992,6 +4162,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -4028,6 +4204,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -4073,6 +4255,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="btn_load_7_2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -4082,13 +4267,13 @@
               <property name="minimumSize">
                <size>
                 <width>210</width>
-                <height>0</height>
+                <height>30</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>210</width>
-                <height>25</height>
+                <height>30</height>
                </size>
               </property>
               <property name="text">
@@ -4108,6 +4293,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Name:</string>
@@ -4144,6 +4335,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="text">
                  <string>Size:</string>
@@ -4408,8 +4605,14 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>90</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="text">
-                 <string>Elapsed Time</string>
+                 <string>Matching Time:</string>
                 </property>
                </widget>
               </item>

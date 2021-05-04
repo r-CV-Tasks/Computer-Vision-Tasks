@@ -3804,10 +3804,10 @@
                </size>
               </property>
               <property name="title">
-               <string>SIFT Settings</string>
+               <string>Feature Matching Settings</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_44">
-               <item row="0" column="0">
+               <item row="1" column="0">
                 <layout class="QGridLayout" name="gridLayout_56">
                  <item row="0" column="0">
                   <layout class="QHBoxLayout" name="horizontalLayout_35">
@@ -3821,25 +3821,65 @@
                      </property>
                      <property name="minimumSize">
                       <size>
-                       <width>55</width>
+                       <width>110</width>
                        <height>0</height>
                       </size>
                      </property>
                      <property name="text">
-                      <string>Matches</string>
+                      <string>Matches Number</string>
                      </property>
                     </widget>
                    </item>
                    <item>
                     <widget class="QLineEdit" name="text_sift_matches">
                      <property name="text">
-                      <string>20</string>
+                      <string>30</string>
                      </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
                 </layout>
+               </item>
+               <item row="0" column="0">
+                <widget class="QComboBox" name="combo_matching_methods">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>180</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>210</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Choose Matching Method</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Sum Square Differences</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Normalized Cross Correlations</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
               </layout>
              </widget>

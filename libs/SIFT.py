@@ -39,29 +39,29 @@ def Sift(source: array, sigma: [float, int] = 1.6, num_intervals: int = 3, assum
 # Image pyramid related #
 #########################
 
-def generateBaseImage(src: array, sigma: float, assumed_blur: float) -> array:
+def generateBaseImage(source: array, sigma: float, assumed_blur: float) -> array:
     """
     Generate base image from input image by up sampling by 2 in both directions and blurring
 
-    :param src: Input Image
+    :param source: Input Image
     :param sigma: Standard Deviation Parameter passed to Blurring Function
     :param assumed_blur: Blurring Ratio
     :return: Blurred and Up sampled Image
     """
-    image = resize(src, (0, 0), fx=2, fy=2, interpolation=INTER_LINEAR)
+    image = resize(source, (0, 0), fx=2, fy=2, interpolation=INTER_LINEAR)
     sigma_diff = sqrt(max((sigma ** 2) - ((2 * assumed_blur) ** 2), 0.01))
     # the image blur is now sigma instead of assumed_blur
     return GaussianBlur(image, (0, 0), sigmaX=sigma_diff, sigmaY=sigma_diff)
 
 
-def computeNumberOfOctaves(src_shape: tuple) -> int:
+def computeNumberOfOctaves(source_shape: tuple) -> int:
     """
     Compute number of octaves in image pyramid as function of base image shape (OpenCV default)
 
     :param src_shape: Input Image Shape
     :return: Number of Octaves Needed for Sift Calculation
     """
-    return int(round(log(min(src_shape)) / log(2) - 1))
+    return int(round(log(min(source_shape)) / log(2) - 1))
 
 
 def generateGaussianKernels(sigma, num_intervals):
@@ -89,11 +89,11 @@ def generateGaussianKernels(sigma, num_intervals):
     return gaussian_kernels
 
 
-def generateGaussianImages(src: array, num_octaves: int, gaussian_kernels: list) -> array:
+def generateGaussianImages(source: array, num_octaves: int, gaussian_kernels: list) -> array:
     """
     Generate scale-space pyramid of Gaussian images
 
-    :param src: Input Images
+    :param source: Input Images
     :param num_octaves: Calculated from image Shape
     :param gaussian_kernels: Calculated Kernels
     :return: Gaussian Blurred Images Pyramid
@@ -101,14 +101,14 @@ def generateGaussianImages(src: array, num_octaves: int, gaussian_kernels: list)
     gaussian_images = []
 
     for octave_index in range(num_octaves):
-        gaussian_images_in_octave = [src]
+        gaussian_images_in_octave = [source]
         for gaussian_kernel in gaussian_kernels[1:]:
-            src = GaussianBlur(src, (0, 0), sigmaX=gaussian_kernel, sigmaY=gaussian_kernel)
-            gaussian_images_in_octave.append(src)
+            source = GaussianBlur(source, (0, 0), sigmaX=gaussian_kernel, sigmaY=gaussian_kernel)
+            gaussian_images_in_octave.append(source)
         gaussian_images.append(gaussian_images_in_octave)
         octave_base = gaussian_images_in_octave[-3]
-        src = resize(octave_base, (int(octave_base.shape[1] / 2), int(octave_base.shape[0] / 2)),
-                     interpolation=INTER_NEAREST)
+        source = resize(octave_base, (int(octave_base.shape[1] / 2), int(octave_base.shape[0] / 2)),
+                        interpolation=INTER_NEAREST)
     return array(gaussian_images, dtype=object)
 
 

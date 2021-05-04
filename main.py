@@ -1,21 +1,18 @@
 # Importing Packages
+# importing module
+import logging
 import sys
+
 import cv2
 import numpy as np
-
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtCore import QFile, QTextStream
-from UI import breeze_resources
-
 import pyqtgraph as pg
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QFile, QTextStream
+from PyQt5.QtWidgets import QMessageBox
 
 from UI import mainGUI as m
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
-    Hough, Contour, Harris, SIFT, FeatureMatching
-
-# importing module
-import logging
+                 Hough, Contour, Harris, SIFT, FeatureMatching
 
 # Create and configure logger
 logging.basicConfig(level=logging.DEBUG,
@@ -147,9 +144,6 @@ class ImageProcessor(m.Ui_MainWindow):
         # Setup SIFT Button
         self.btn_match_sift.clicked.connect(self.sift)
 
-        # Setup Template Matching Button
-        self.btn_match_template.clicked.connect(self.feature_matching)
-
         self.setup_images_view()
 
     def tab_changed(self):
@@ -267,7 +261,6 @@ class ImageProcessor(m.Ui_MainWindow):
         # in Active Contour Tab
         elif tab_id == 4:
             self.contour_settings_layout.setEnabled(True)
-            self.gradiant_settings_layout.setEnabled(True)
             self.btn_clear_anchors.setEnabled(True)
             self.btn_apply_contour.setEnabled(True)
             self.btn_reset_contour.setEnabled(True)
@@ -704,9 +697,6 @@ class ImageProcessor(m.Ui_MainWindow):
 
         self.display_image(source=matched_image, widget=self.img6_output)
 
-    def feature_matching(self):
-        print("Applying Feature Matching")
-
     def slider_changed(self, indx):
         """
         detects the changes in the sliders using the indx given by ith slider
@@ -862,10 +852,11 @@ def main():
     the application startup functions
     :return:
     """
+
     app = QtWidgets.QApplication(sys.argv)
 
     # set stylesheet
-    file = QFile(":/dark.qss")
+    file = QFile("UI/dark.qss")
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
     app.setStyleSheet(stream.readAll())

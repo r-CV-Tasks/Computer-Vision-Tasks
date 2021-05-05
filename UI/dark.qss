@@ -646,27 +646,25 @@ QToolBar::separator:vertical
 QPushButton
 {
     color: #eff0f1;
-    background-color: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #3b4045, stop: 0.5 #31363b);
-    border-width: 0.1ex;
-    border-color: #76797c;
-    border-style: solid;
+    background-color: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #3b4045, stop: 0.5 #3c4348);
+    border: 0.1ex solid #76797c;
     padding: 0.5ex;
-    border-radius: 0.2ex;
+    border-radius: 1ex;
     outline: none;
 }
 
 QPushButton:disabled
 {
-    background-color: #31363b;
-    border-width: 0.1ex;
-    border-color: #454545;
-    border-style: solid;
+    background-color: #404247;
+    border: 0.1ex solid #646770;
+    /*background-color: #454545;*/
+    /*border: 0.1ex solid #454545;*/
     padding-top: 0.5ex;
     padding-bottom: 0.5ex;
     padding-left: 1ex;
     padding-right: 1ex;
     border-radius: 0.2ex;
-    color: #454545;
+    color: #a9a9a9;
 }
 
 QPushButton:focus
@@ -885,7 +883,8 @@ QTabBar
 
 QTabBar:focus
 {
-    border: 0ex transparent black;
+    border: 0 transparent black;
+    /*border: 3ex solid red;*/
 }
 
 QTabBar::close-button
@@ -970,6 +969,27 @@ QTabBar::tab:top:!selected:first:hover
     background-color: rgba(61, 173, 232, 0.2);
     border: 0.1ex rgba(61, 173, 232, 0.2);
 }
+
+/*
+My Styles
+*/
+
+/*QTabBar::tab::top,*/
+/*QTabBar::tab:top:last,*/
+/*QTabBar::tab:top:only-one*/
+/*{*/
+/*    color: #eff0f1;*/
+/*    border: 0.1ex transparent black;*/
+/*    border-left: 0.1ex solid #76797c;*/
+/*    border-top: 0.1ex solid #76797c;*/
+/*    background-color: #31363b;*/
+/*    padding: 0.5ex;*/
+/*    min-width: 50px;*/
+/*    border-top-left-radius: 0.4ex;*/
+/*    border-top-right-radius: 0.4ex;*/
+/*    border: 0.5ex transparent #76797c;*/
+/*}*/
+
 
 /* BOTTOM TABS */
 
@@ -1325,13 +1345,13 @@ QSlider::handle:horizontal:focus,
 QSlider::handle:vertical:hover,
 QSlider::handle:vertical:focus
 {
-    border: 0.1ex solid #3daee9;
+    border: 0.1ex solid #29779f;
 }
 
 QSlider::sub-page:horizontal,
 QSlider::add-page:vertical
 {
-    background: #3daee9;
+    background: #215e80;
     border-radius: 0.3ex;
 }
 
@@ -1678,3 +1698,8 @@ QDoubleSpinBox::down-arrow:off
 /*	max-height: 25px;*/
 /*        font-size: 14px;*/
 /*}*/
+
+QGroupBox
+{
+    border: 0.4ex solid #76797c;
+}

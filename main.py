@@ -344,9 +344,10 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # in SIFT Tab
         elif tab_id == 6:
-            self.sift_settings_layout.setEnabled(True)
             self.btn_load_6_2.setEnabled(True)
             self.combo_matching_methods.setEnabled(True)
+            self.label_matches_number.setEnabled(True)
+            self.text_sift_matches.setEnabled(True)
             self.btn_match_features.setEnabled(True)
 
         # in Template Matching  Tab
@@ -475,7 +476,6 @@ class ImageProcessor(m.Ui_MainWindow):
                                                                   sigma=filter_sigma)
 
                 elif selected_component == "median filter":
-                    # self.filtered_image = LowPass.median_filter(source=self.currentNoiseImage, shape=mask_size)
                     self.create_median_thread(source=self.currentNoiseImage, shape=mask_size, source_id=2)
 
                 try:
@@ -770,19 +770,24 @@ class ImageProcessor(m.Ui_MainWindow):
         :return:
         """
 
-        img1 = np.copy(self.imagesData["6_1"])
-        img2 = np.copy(self.imagesData["6_2"])
-
-        # Calculate function run time
-        start_time = timeit.default_timer()
-
-        # Check that user selected a matching method
-        if self.combo_matching_methods.currentIndex() == 0:
-            self.show_message(header="Warning!!", message="You didn't choose any matching method!",
+        # Check if both images were loaded
+        if ("6_1" not in self.imagesData) or ("6_2" not in self.imagesData):
+            self.show_message(header="Warning!!", message="Choose the other image!",
                               button=QMessageBox.Ok, icon=QMessageBox.Warning)
         else:
-            self.create_sift_thread(source=img1, source_id=0, start_time=start_time)
-            self.create_sift_thread(source=img2, source_id=1, start_time=start_time)
+            img1 = np.copy(self.imagesData["6_1"])
+            img2 = np.copy(self.imagesData["6_2"])
+
+            # Calculate function run time
+            start_time = timeit.default_timer()
+
+            # Check that user selected a matching method
+            if self.combo_matching_methods.currentIndex() == 0:
+                self.show_message(header="Warning!!", message="You didn't choose any matching method!",
+                                  button=QMessageBox.Ok, icon=QMessageBox.Warning)
+            else:
+                self.create_sift_thread(source=img1, source_id=0, start_time=start_time)
+                self.create_sift_thread(source=img2, source_id=1, start_time=start_time)
 
     def save_sift_result(self, keypoints: list, descriptors: np.ndarray, source_id: int, elapsed_time: float):
         """

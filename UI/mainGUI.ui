@@ -48,7 +48,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>6</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -3793,35 +3793,57 @@
              </spacer>
             </item>
             <item>
-             <widget class="QGroupBox" name="sift_settings_layout">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>210</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="title">
-               <string>Feature Matching Settings</string>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_44">
-               <item row="1" column="0">
-                <layout class="QGridLayout" name="gridLayout_56">
+             <layout class="QGridLayout" name="gridLayout_35">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_50">
+                <property name="maximumSize">
+                 <size>
+                  <width>210</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Feature Matching Settings</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QFrame" name="sift_settings_layout">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>210</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Box</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>1</number>
+                </property>
+                <property name="midLineWidth">
+                 <number>0</number>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_39">
                  <item row="0" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_35">
+                  <layout class="QVBoxLayout" name="verticalLayout_12">
                    <item>
-                    <widget class="QLabel" name="label_43">
+                    <widget class="QComboBox" name="combo_matching_methods">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -3830,68 +3852,69 @@
                      </property>
                      <property name="minimumSize">
                       <size>
-                       <width>110</width>
-                       <height>0</height>
+                       <width>180</width>
+                       <height>30</height>
                       </size>
                      </property>
-                     <property name="text">
-                      <string>Matches Number</string>
-                     </property>
+                     <item>
+                      <property name="text">
+                       <string>Choose Matching Method</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>Sum Square Differences</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>Normalized Cross Correlations</string>
+                      </property>
+                     </item>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="text_sift_matches">
-                     <property name="text">
-                      <string>30</string>
-                     </property>
-                    </widget>
+                    <layout class="QHBoxLayout" name="horizontalLayout_36">
+                     <item>
+                      <widget class="QLabel" name="label_matches_number">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>110</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Matches Number:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="text_sift_matches">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>30</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </item>
                 </layout>
-               </item>
-               <item row="0" column="0">
-                <widget class="QComboBox" name="combo_matching_methods">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>180</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>210</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>Choose Matching Method</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Sum Square Differences</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Normalized Cross Correlations</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
-             </widget>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <spacer name="verticalSpacer_20">

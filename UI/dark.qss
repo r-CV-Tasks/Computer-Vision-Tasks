@@ -35,6 +35,14 @@
  * ---------------------------------------------------------------------
  */
 
+
+QFrame {
+	/*border: 1px solid #FF17365D;*/
+	border: 1px solid #626568;
+	/*border-bottom-left-radius: 15px;*/
+	/*border-bottom-right-radius: 15px;*/
+}
+
 QToolTip
 {
     border: 0.1ex solid #eff0f1;
@@ -329,6 +337,13 @@ QAbstractItemView
     border-radius: 0.2ex;
 }
 
+QFrame {
+	/*border: 1px solid #FF17365D;*/
+	border: 1px solid #626568;
+	/*border-bottom-left-radius: 15px;*/
+	/*border-bottom-right-radius: 15px;*/
+}
+
 QWidget:focus,
 QMenuBar:focus
 {
@@ -347,7 +362,6 @@ QLineEdit
 {
     background-color: #232629;
     padding: 0.5ex;
-    border-style: solid;
     border: 0.1ex solid #76797c;
     border-radius: 0.2ex;
     color: #eff0f1;
@@ -1650,3 +1664,17 @@ QDoubleSpinBox::down-arrow:off
 {
    border-image: url(:/dark/down_arrow_disabled.svg);
 }
+
+
+/*QLabel*/
+/*{*/
+/*    qproperty-alignment: AlignCenter;*/
+/*	border: 1px solid #FF17365D;*/
+/*	border-top-left-radius: 15px;*/
+/*	border-top-right-radius: 15px;*/
+/*	background-color: #FF17365D;*/
+/*	padding: 5px 0px;*/
+/*	color: rgb(255, 255, 255);*/
+/*	max-height: 25px;*/
+/*        font-size: 14px;*/
+/*}*/

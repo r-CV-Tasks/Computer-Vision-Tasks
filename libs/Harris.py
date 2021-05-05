@@ -129,13 +129,13 @@ def get_harris_indices(harris_response: np.ndarray, threshold: float = 0.01) -> 
     # Dilate the points to be more clear
     harris_matrix = cv2.dilate(harris_copy, None)
 
-    max_response = np.max(harris_matrix)
+    max_corner_response = np.max(harris_matrix)
 
     # Indices of each corner, edges and flat area
     # Threshold for an optimal value, it may vary depending on the image.
-    corner_indices = np.array(harris_matrix > (max_response * threshold), dtype="int8")
-    edges_indices = np.array(harris_matrix < (max_response * threshold), dtype="int8")
-    flat_indices = np.array(harris_matrix == (max_response * threshold), dtype="int8")
+    corner_indices = np.array(harris_matrix > (max_corner_response * threshold), dtype="int8")
+    edges_indices = np.array(harris_matrix < 0, dtype="int8")
+    flat_indices = np.array(harris_matrix == 0, dtype="int8")
 
     return corner_indices, edges_indices, flat_indices
 

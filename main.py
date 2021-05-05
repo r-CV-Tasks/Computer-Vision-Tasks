@@ -745,11 +745,17 @@ class ImageProcessor(m.Ui_MainWindow):
         start_time = timeit.default_timer()
 
         harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity)
+        # harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"], k=sensitivity)
 
         corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response,
                                                                                 threshold=threshold)
-        unique, counts = np.unique(corner_indices, return_counts=True)
-        print(f"Number of points: {counts[1]}")
+
+        unique_corners, counts_corners = np.unique(corner_indices, return_counts=True)
+        unique_edges, counts_edges = np.unique(edges_indices, return_counts=True)
+        unique_flat, counts_flat = np.unique(flat_indices, return_counts=True)
+        # print(f"Corners points: {counts_corners[1]}")
+        # print(f"Edges points: {counts_edges[1]}")
+        # print(f"Flat points: {counts_flat[1]}")
 
         img_corners = Harris.map_indices_to_image(source=self.imagesData["5_1"], indices=corner_indices,
                                                   color=[255, 0, 0])

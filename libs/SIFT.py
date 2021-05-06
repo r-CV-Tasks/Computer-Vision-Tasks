@@ -14,9 +14,9 @@ def gaussian_filter(sigma: float) -> np.ndarray:
     :return: 2d Array
     """
     size = 4
-    x, y = np.mgrid[-size//2 + 1:size//2 + 1, -size//2 + 1:size//2 + 1]
-    g = np.exp(-((x**2 + y**2)/(2.0*sigma**2))) / (2*np.pi*sigma**2)
-    return g/g.sum()
+    x, y = np.mgrid[-size // 2 + 1:size // 2 + 1, -size // 2 + 1:size // 2 + 1]
+    g = np.exp(-((x ** 2 + y ** 2) / (2.0 * sigma ** 2))) / (2 * np.pi * sigma ** 2)
+    return g / g.sum()
 
 
 #########################
@@ -35,30 +35,37 @@ def calculateOrientation(keypoint: KeyPoint, source: np.ndarray) -> list:
     raw_histogram = np.zeros(bins)
     kp_oriented = []
     src = np.copy(cv2.cvtColor(source, cv2.COLOR_BGR2GRAY))
+    smooth_histogram = np.zeros(bins)
 
     # Looping each pixel in the selected window around the Keypoint
-    for i in range(-radius, radius+1):
+    for i in range(-radius, radius + 1):
         y = int(keypoint.pt[1] + i)
-        for j in range(-radius, radius+1):
+        for j in range(-radius, radius + 1):
             # Calculate Magnitude and Theta
             x = int(keypoint.pt[0] + j)
-            xx = int(src[y, x+1]) - int(src[y, x-1])
-            yy = int(src[y+1, x]) - int(src[y-1, x])
-            mag = np.sqrt(xx*xx + yy*yy)
-            theta = np.rad2deg(np.arctan2(yy, xx))
+            if 0 < x < src.shape[1] - 1:
+                xx = int(src[y, x + 1]) - int(src[y, x - 1])
+                yy = int(src[y + 1, x]) - int(src[y - 1, x])
+                mag = np.sqrt(xx * xx + yy * yy)
+                theta = np.rad2deg(np.arctan2(yy, xx))
+                weight = np.exp(-0.5 * (i ** 2 + j**2))
 
-            # Add the Magnitude to the right bin in histogram
-            hist_index = int((theta * bins)/360.0)
-            raw_histogram[hist_index % bins] += mag
+                # Add the Magnitude to the right bin in histogram
+                hist_index = int((theta * bins) / 360.0)
+                raw_histogram[hist_index % bins] += mag * weight
+
+    for n in range(bins):
+        smooth_histogram[n] = (6 * raw_histogram[n] + 4 * (raw_histogram[n - 1] + raw_histogram[(n + 1) % bins]) +
+                               raw_histogram[n - 2] + raw_histogram[(n + 2) % bins]) / 16.
 
     # Finding New points with Orientation higher
     # than 80% of the maximum peak in histogram
-    max_orientation = max(raw_histogram)
+    max_orientation = max(smooth_histogram)
     keypoint.angle = max_orientation
     kp_oriented.append(keypoint)
 
-    for __bin in raw_histogram:
-        if __bin >= 0.8*max_orientation:
+    for __bin in smooth_histogram:
+        if __bin >= 0.8 * max_orientation:
             new_kp = KeyPoint(*keypoint.pt, keypoint.size, __bin, keypoint.response, keypoint.octave)
             kp_oriented.append(new_kp)
     return kp_oriented
@@ -84,21 +91,21 @@ def generateDescriptors(keypoint: KeyPoint, source: np.ndarray):
     kernel = gaussian_filter(sigma)
 
     # Taking a 16 by 16 window around the keypoint
-    for i in range(-radius, radius+2, 4):
+    for i in range(-radius, radius + 2, 4):
         y = int(keypoint.pt[1] + i)
-        for j in range(-radius, radius+2, 4):
+        for j in range(-radius, radius + 2, 4):
             hist = np.zeros(bins)
-            x = int(keypoint.pt[0]+j)
+            x = int(keypoint.pt[0] + j)
             # Looping each 4 by 4 window inside the larger window
-            for window_i in range(y, y+4):
-                for window_j in range(x, x+4):
+            for window_i in range(y, y + 4):
+                for window_j in range(x, x + 4):
                     # Calculate the Weight from the Gaussian Kernel Created
-                    weight = kernel[window_j-x, window_i-y]
-                    xx = int(src[window_j, window_i+1] * weight) - int(src[window_j, window_i-1] * weight)
-                    yy = int(src[window_j+1, window_i] * weight) - int(src[window_j-1, window_j] * weight)
-                    mag = np.sqrt(xx*xx + yy*yy)
+                    weight = kernel[window_j - x, window_i - y]
+                    xx = int(src[window_j, window_i + 1] * weight) - int(src[window_j, window_i - 1] * weight)
+                    yy = int(src[window_j + 1, window_i] * weight) - int(src[window_j - 1, window_j] * weight)
+                    mag = np.sqrt(xx * xx + yy * yy)
                     theta = np.rad2deg(np.arctan2(yy, xx)) - keypoint.angle
-                    hist_indx = int((theta*bins)/360.0)
+                    hist_indx = int((theta * bins) / 360.0)
                     hist[hist_indx % bins] += mag
             feature.extend(hist)
     return np.array(feature)

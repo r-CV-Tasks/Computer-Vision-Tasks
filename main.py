@@ -52,7 +52,7 @@ class SIFTWorker(QObject):
         This is executed when calling SIFTWorker.start() in the main application
         :return:
         """
-        keypoints, descriptors = SIFT.Sift(source=self.img)
+        keypoints, descriptors = SIFT.siftHarris(source=self.img, n_feats=50)
 
         # Function end
         end_time = timeit.default_timer()

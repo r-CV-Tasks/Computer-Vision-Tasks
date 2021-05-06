@@ -1,6 +1,6 @@
 import numpy as np
 from cv2 import KeyPoint
-import cv2 as cv
+import cv2
 from Harris import apply_harris_operator, get_harris_indices
 
 
@@ -81,7 +81,7 @@ def generateDescriptors(keypoint: KeyPoint, source: np.ndarray):
     sigma = 1.6
     # window = source[int(keypoint.pt[1]-6):int(keypoint.pt[1]+10), int(keypoint.pt[0]-6):int(keypoint.pt[0]+10)]
     # splits = [np.vsplit(i, 4)*gaussian_filter(1.6) for i in np.hsplit(window, 4)]
-    src = np.copy(cv.cvtColor(source, cv.COLOR_BGR2GRAY))
+    src = np.copy(cv2.cvtColor(source, cv2.COLOR_BGR2GRAY))
     kernel = gaussian_filter(sigma)
 
     # Taking a 16 by 16 window around the keypoint
@@ -129,11 +129,11 @@ def siftHarris(source: np.ndarray, n_feats: int = 100):
     kps_orientation = []
     dsc = []
     for kp in kps:
-        kps_orientation.extend(calculateOrientation(kp, img))
+        kps_orientation.extend(calculateOrientation(kp, source))
     print(len(kps_orientation))
     for kp in kps_orientation[::n_feats]:
         dsc.append(generateDescriptors(kp, source))
-    return dsc
+    return kps_orientation, dsc
 
 
 if __name__ == '__main__':

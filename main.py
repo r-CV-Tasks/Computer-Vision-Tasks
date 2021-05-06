@@ -3,6 +3,7 @@
 import logging
 import sys
 import timeit
+from typing import Callable
 
 import cv2
 import numpy as np
@@ -15,6 +16,7 @@ from UI import mainGUI as m
 from UI import breeze_resources
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
                  Hough, Contour, Harris, SIFT, FeatureMatching
+from libs import sift_remo
 
 # Create and configure logger
 logging.basicConfig(level=logging.DEBUG,
@@ -52,16 +54,93 @@ class SIFTWorker(QObject):
         This is executed when calling SIFTWorker.start() in the main application
         :return:
         """
-        keypoints, descriptors = SIFT.siftHarris(source=self.img, n_feats=50)
+        harris = Harris.apply_harris_operator(self.img)
+        indices = Harris.get_harris_indices(harris, 0.4)[0]  # Get only Corners
+        indices = np.transpose(np.nonzero(indices))
+        kps = []
+        for idx in indices:
+            k = (idx[0], idx[1])
+            kps.append(k)
+
+        img_src = np.copy(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY))
+
+        print(f"Harris kps {self.source_id}: {kps}")
+        print("-------")
+        new_key_points = sift_remo.main_orientation(img_src, kps)
+        keypoints, descriptors = sift_remo.local_descriptors(img_src, new_key_points)
+        print(f"keypoints {self.source_id}: {keypoints}")
+        print(f"len keypoints {self.source_id}: {len(keypoints)}")
+        print("----")
+        print(f"descriptors {self.source_id}: {descriptors}")
+        print(f"len keypoints {self.source_id}: {len(keypoints)}")
+        print("----")
+
+        # keypoints, descriptors = SIFT.siftHarris(source=self.img, n_feats=1, threshold=0.4)
 
         # Function end
         end_time = timeit.default_timer()
 
         # # Show only 3 digits after floating point
-        elapsed_time = float(format(end_time - self.start_time, '.3f'))
+        elapsed_time = float(format(end_time - self.start_time, '.5f'))
 
         # Emit finished signal to end the thread
         self.finished.emit(keypoints, descriptors, self.source_id, elapsed_time)
+
+
+class MatchingWorker(QObject):
+    def __init__(self, source1: np.ndarray, source2: np.ndarray,
+                 desc1: np.ndarray, desc2: np.ndarray,
+                 keypoints1: list, keypoints2: list,
+                 match_calculator: Callable, num_matches: int,
+                 source_id: int, start_time: float):
+        """
+
+        :param source:
+        :param source_id:
+        :param start_time:
+        """
+        super().__init__()
+        self.img1 = source1
+        self.img2 = source2
+        self.desc1 = desc1
+        self.desc2 = desc2
+        self.match_calculator = match_calculator
+        self.keypoints1 = keypoints1
+        self.keypoints2 = keypoints2
+        self.num_matches = num_matches
+        self.source_id = source_id
+        self.start_time = start_time
+        self.end_time = 0
+
+    # Create 2 signals
+    finished = pyqtSignal(np.ndarray, int, float)
+    progress = pyqtSignal(int)
+
+    def run(self):
+        """
+        Function to run a long task
+        This is executed when calling MatchingWorker.start() in the main application
+        :return:
+        """
+
+        matches = FeatureMatching.apply_feature_matching(desc1=self.desc1,
+                                                         desc2=self.desc2,
+                                                         match_calculator=self.match_calculator)
+
+        matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+
+        matched_image = cv2.drawMatches(self.img1, self.keypoints1,
+                                        self.img2, self.keypoints2,
+                                        matches[:self.num_matches], self.img2, flags=2)
+
+        # Function end
+        end_time = timeit.default_timer()
+
+        # # Show only 3 digits after floating point
+        elapsed_time = float(format(end_time - self.start_time, '.5f'))
+
+        # Emit finished signal to end the thread
+        self.finished.emit(matched_image, self.source_id, elapsed_time)
 
 
 class MedianFilterWorker(QObject):
@@ -713,7 +792,7 @@ class ImageProcessor(m.Ui_MainWindow):
         end_time = timeit.default_timer()
 
         # Show only 3 digits after floating point
-        elapsed_time = format(end_time - start_time, '.3f')
+        elapsed_time = format(end_time - start_time, '.5f')
         self.label_snake_time.setText(str(elapsed_time))
 
     def clear_anchors(self):
@@ -764,7 +843,7 @@ class ImageProcessor(m.Ui_MainWindow):
         end_time = timeit.default_timer()
 
         # Show only 3 digits after floating point
-        elapsed_time = format(end_time - start_time, '.3f')
+        elapsed_time = format(end_time - start_time, '.5f')
         self.label_harris_time.setText(str(elapsed_time))
 
         self.display_image(source=img_corners, widget=self.img5_output)
@@ -839,29 +918,35 @@ class ImageProcessor(m.Ui_MainWindow):
             # Calculate function run time
             start_time = timeit.default_timer()
 
-            matches = FeatureMatching.apply_feature_matching(desc1=self.sift_results[0]["descriptors"],
-                                                             desc2=self.sift_results[1]["descriptors"],
-                                                             match_calculator=match_method)
-            matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+            self.create_matching_thread(source1=img1, source2=img2,
+                                        desc1=self.sift_results[0]["descriptors"], desc2=self.sift_results[1]["descriptors"],
+                                        keypoints1=self.sift_results[0]["keypoints"], keypoints2=self.sift_results[1]["keypoints"],
+                                        match_calculator=match_method, num_matches=num_matches,
+                                        source_id=3, start_time=start_time)
 
-            matched_image = cv2.drawMatches(img1, self.sift_results[0]["keypoints"],
-                                            img2, self.sift_results[1]["keypoints"],
-                                            matches[:num_matches], img2, flags=2)
-
-            # Function end
-            end_time = timeit.default_timer()
-
-            # Show only 3 digits after floating point
-            elapsed_time = format(end_time - start_time, '.3f')
-
-            self.label_feature_matching_time.setText(str(elapsed_time))
-
-            # Update Total Time
-            max_sift_time = max(float(self.label_sift_A_time.text()), float(self.label_sift_B_time.text()))
-            total_time = max_sift_time + float(self.label_feature_matching_time.text())
-            self.label_total_matching_time.setText(str(total_time))
-
-            self.display_image(source=matched_image, widget=self.img6_output)
+            # matches = FeatureMatching.apply_feature_matching(desc1=self.sift_results[0]["descriptors"],
+            #                                                  desc2=self.sift_results[1]["descriptors"],
+            #                                                  match_calculator=match_method)
+            # matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+            #
+            # matched_image = cv2.drawMatches(img1, self.sift_results[0]["keypoints"],
+            #                                 img2, self.sift_results[1]["keypoints"],
+            #                                 matches[:num_matches], img2, flags=2)
+            #
+            # # Function end
+            # end_time = timeit.default_timer()
+            #
+            # # Show only 3 digits after floating point
+            # elapsed_time = format(end_time - start_time, '.5f')
+            #
+            # self.label_feature_matching_time.setText(str(elapsed_time))
+            #
+            # # Update Total Time
+            # max_sift_time = max(float(self.label_sift_A_time.text()), float(self.label_sift_B_time.text()))
+            # total_time = max_sift_time + float(self.label_feature_matching_time.text())
+            # self.label_total_matching_time.setText(str(total_time))
+            #
+            # self.display_image(source=matched_image, widget=self.img6_output)
 
     def save_median_result(self, source: np.ndarray):
         """
@@ -872,6 +957,25 @@ class ImageProcessor(m.Ui_MainWindow):
         """
         print("Median Filter is Finished")
         self.display_image(source=source, widget=self.filtersImages[1])
+
+    def save_matching_result(self, source: np.ndarray, source_id: int, elapsed_time: float):
+        """
+        Save the output from Matching Features QThread
+
+        :param source:
+        :return:
+        """
+
+        print(f"Matching Thread {source_id} finished")
+
+        self.label_feature_matching_time.setText(str(elapsed_time))
+
+        # Update Total Time
+        max_sift_time = max(float(self.label_sift_A_time.text()), float(self.label_sift_B_time.text()))
+        total_time = max_sift_time + float(self.label_feature_matching_time.text())
+        self.label_total_matching_time.setText(str(total_time))
+
+        self.display_image(source=source, widget=self.img6_output)
 
     def create_sift_thread(self, source: np.ndarray, source_id: int, start_time: float):
         """
@@ -897,6 +1001,46 @@ class ImageProcessor(m.Ui_MainWindow):
         self.workers[source_id].finished.connect(self.workers[source_id].deleteLater)
         self.threads[source_id].finished.connect(self.threads[source_id].deleteLater)
         self.workers[source_id].finished.connect(self.save_sift_result)
+        # self.worker.progress.connect(self.reportProgress)
+
+        # Step 6: Start the thread
+        self.threads[source_id].start()
+
+        # Final resets
+        self.btn_match_features.setEnabled(False)
+        self.threads[source_id].finished.connect(lambda: self.btn_match_features.setEnabled(True))
+
+    def create_matching_thread(self, source1: np.ndarray, source2: np.ndarray,
+                               desc1: np.ndarray, desc2: np.ndarray,
+                               keypoints1: list, keypoints2: list,
+                               match_calculator: Callable, num_matches: int,
+                               source_id: int, start_time: float):
+        """
+
+        :param source:
+        :param source_id:
+        :param start_time:
+        :return:
+        """
+
+        # Step 2: Create a QThread object
+        self.threads[source_id] = QThread()
+
+        # Step 3: Create a worker object
+        self.workers[source_id] = MatchingWorker(source1=source1, source2=source2, desc1=desc1, desc2=desc2,
+                                                 keypoints1=keypoints1, keypoints2=keypoints2,
+                                                 match_calculator=match_calculator, num_matches=num_matches,
+                                                 source_id=source_id, start_time=start_time)
+
+        # Step 4: Move worker to the thread
+        self.workers[source_id].moveToThread(self.threads[source_id])
+
+        # Step 5: Connect signals and slots
+        self.threads[source_id].started.connect(self.workers[source_id].run)
+        self.workers[source_id].finished.connect(self.threads[source_id].quit)
+        self.workers[source_id].finished.connect(self.workers[source_id].deleteLater)
+        self.threads[source_id].finished.connect(self.threads[source_id].deleteLater)
+        self.workers[source_id].finished.connect(self.save_matching_result)
         # self.worker.progress.connect(self.reportProgress)
 
         # Step 6: Start the thread

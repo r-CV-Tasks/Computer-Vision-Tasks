@@ -51,7 +51,7 @@ def calculateOrientation(keypoint: KeyPoint, source: np.ndarray) -> list:
                 weight = np.exp(-0.5 * (i ** 2 + j**2))
 
                 # Add the Magnitude to the right bin in histogram
-                hist_index = int((theta * bins) / 360.0)
+                hist_index = abs(int((theta * bins) / 360.0))
                 raw_histogram[hist_index % bins] += mag * weight
 
     for n in range(bins):

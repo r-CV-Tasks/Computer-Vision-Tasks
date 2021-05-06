@@ -48,7 +48,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>6</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -4012,7 +4012,7 @@
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>40</width>
+                    <width>55</width>
                     <height>25</height>
                    </size>
                   </property>
@@ -4064,7 +4064,7 @@
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>40</width>
+                    <width>55</width>
                     <height>25</height>
                    </size>
                   </property>
@@ -4116,7 +4116,7 @@
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>40</width>
+                    <width>55</width>
                     <height>25</height>
                    </size>
                   </property>
@@ -4168,7 +4168,7 @@
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>40</width>
+                    <width>55</width>
                     <height>25</height>
                    </size>
                   </property>

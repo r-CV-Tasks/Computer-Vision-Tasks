@@ -1,7 +1,7 @@
 import numpy as np
 from cv2 import KeyPoint
 import cv2
-from Harris import apply_harris_operator, get_harris_indices
+import Harris
 
 
 #########################
@@ -26,7 +26,6 @@ def calculateOrientation(keypoint: KeyPoint, source: np.ndarray) -> list:
     """
     Calculates the Orientation of a given keypoint
     :param keypoint: Keypoint class
-    :param index: a tuple of (x, y) keypoint index
     :param source: Source Image
     :return: list of all Keypoints after orientation addition
     """
@@ -108,17 +107,19 @@ def generateDescriptors(keypoint: KeyPoint, source: np.ndarray):
 #########################
 # SIFT+Harris Algorithm #
 #########################
-def siftHarris(source: np.ndarray, n_feats: int = 100):
+def siftHarris(source: np.ndarray, n_feats: int = 100, threshold: float = 0.1):
     """
     Using Harris Operator to Calculate Image Features and using the Sift
     Algorithm to generate a Descriptor
 
     :param source: Input Image
-    :param n_feats: Number of Features Selected from Harris
+    :param n_feats: Down sampling factor of the Number of
+                    Features Selected from Harris
+    :param threshold: Harris Operator Threshold
     :return: (n_feats, 128) Unique Features Descriptors
     """
-    harris = apply_harris_operator(source)
-    indices = get_harris_indices(harris, 0.01)[0]  # Get only Corners
+    harris = Harris.apply_harris_operator(source)
+    indices = Harris.get_harris_indices(harris, threshold)[0]  # Get only Corners
     indices = np.transpose(np.nonzero(indices))
     kps = []
     for idx in indices:
@@ -137,7 +138,6 @@ def siftHarris(source: np.ndarray, n_feats: int = 100):
 
 
 if __name__ == '__main__':
-    import cv2
     img = cv2.imread("../resources/Images/cat256.jpg")
-    dscs = siftHarris(img, 50)
+    _, dscs = siftHarris(img, 1, 0.4)
     print(len(dscs))

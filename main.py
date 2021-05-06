@@ -54,28 +54,28 @@ class SIFTWorker(QObject):
         This is executed when calling SIFTWorker.start() in the main application
         :return:
         """
-        harris = Harris.apply_harris_operator(self.img)
-        indices = Harris.get_harris_indices(harris, 0.4)[0]  # Get only Corners
-        indices = np.transpose(np.nonzero(indices))
-        kps = []
-        for idx in indices:
-            k = (idx[0], idx[1])
-            kps.append(k)
+        # harris = Harris.apply_harris_operator(self.img)
+        # indices = Harris.get_harris_indices(harris, 0.4)[0]  # Get only Corners
+        # indices = np.transpose(np.nonzero(indices))
+        # kps = []
+        # for idx in indices:
+        #     k = (idx[0], idx[1])
+        #     kps.append(k)
+        #
+        # img_src = np.copy(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY))
+        #
+        # print(f"Harris kps {self.source_id}: {kps}")
+        # print("-------")
+        # new_key_points = sift_remo.main_orientation(img_src, kps)
+        # keypoints, descriptors = sift_remo.local_descriptors(img_src, new_key_points)
+        # print(f"keypoints {self.source_id}: {keypoints}")
+        # print(f"len keypoints {self.source_id}: {len(keypoints)}")
+        # print("----")
+        # print(f"descriptors {self.source_id}: {descriptors}")
+        # print(f"len keypoints {self.source_id}: {len(keypoints)}")
+        # print("----")
 
-        img_src = np.copy(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY))
-
-        print(f"Harris kps {self.source_id}: {kps}")
-        print("-------")
-        new_key_points = sift_remo.main_orientation(img_src, kps)
-        keypoints, descriptors = sift_remo.local_descriptors(img_src, new_key_points)
-        print(f"keypoints {self.source_id}: {keypoints}")
-        print(f"len keypoints {self.source_id}: {len(keypoints)}")
-        print("----")
-        print(f"descriptors {self.source_id}: {descriptors}")
-        print(f"len keypoints {self.source_id}: {len(keypoints)}")
-        print("----")
-
-        # keypoints, descriptors = SIFT.siftHarris(source=self.img, n_feats=1, threshold=0.4)
+        keypoints, descriptors = SIFT.siftHarris(source=self.img, n_feats=1, threshold=0.4)
 
         # Function end
         end_time = timeit.default_timer()
@@ -95,7 +95,14 @@ class MatchingWorker(QObject):
                  source_id: int, start_time: float):
         """
 
-        :param source:
+        :param source1:
+        :param source2:
+        :param desc1:
+        :param desc2:
+        :param keypoints1:
+        :param keypoints2:
+        :param match_calculator:
+        :param num_matches:
         :param source_id:
         :param start_time:
         """
@@ -919,8 +926,10 @@ class ImageProcessor(m.Ui_MainWindow):
             start_time = timeit.default_timer()
 
             self.create_matching_thread(source1=img1, source2=img2,
-                                        desc1=self.sift_results[0]["descriptors"], desc2=self.sift_results[1]["descriptors"],
-                                        keypoints1=self.sift_results[0]["keypoints"], keypoints2=self.sift_results[1]["keypoints"],
+                                        desc1=self.sift_results[0]["descriptors"],
+                                        desc2=self.sift_results[1]["descriptors"],
+                                        keypoints1=self.sift_results[0]["keypoints"],
+                                        keypoints2=self.sift_results[1]["keypoints"],
                                         match_calculator=match_method, num_matches=num_matches,
                                         source_id=3, start_time=start_time)
 
@@ -963,6 +972,8 @@ class ImageProcessor(m.Ui_MainWindow):
         Save the output from Matching Features QThread
 
         :param source:
+        :param source_id:
+        :param elapsed_time:
         :return:
         """
 
@@ -1017,12 +1028,18 @@ class ImageProcessor(m.Ui_MainWindow):
                                source_id: int, start_time: float):
         """
 
-        :param source:
+        :param source1:
+        :param source2:
+        :param desc1:
+        :param desc2:
+        :param keypoints1:
+        :param keypoints2:
+        :param match_calculator:
+        :param num_matches:
         :param source_id:
         :param start_time:
         :return:
         """
-
         # Step 2: Create a QThread object
         self.threads[source_id] = QThread()
 

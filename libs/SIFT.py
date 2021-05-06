@@ -134,10 +134,12 @@ def siftHarris(source: np.ndarray, n_feats: int = 100, threshold: float = 0.1):
     print(len(kps_orientation))
     for kp in kps_orientation[::n_feats]:
         dsc.append(generateDescriptors(kp, source))
-    return kps_orientation, dsc
+    return np.array(kps_orientation), np.array(dsc)
 
 
 if __name__ == '__main__':
-    img = cv2.imread("../resources/Images/cat256.jpg")
+    img = cv2.imread("../resources/Images/cat256_edited_v2.png")
     _, dscs = siftHarris(img, 1, 0.4)
+    for d in dscs:
+        print(len(d))
     print(len(dscs))

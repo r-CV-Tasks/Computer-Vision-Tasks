@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QMessageBox
 from UI import mainGUI as m
 from UI import breeze_resources
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
-                 Hough, Contour, Harris, SIFT, FeatureMatching
+                 Hough, Contour, Harris, SIFTDescriptor, FeatureMatching
 from libs import sift_remo
 
 # Create and configure logger
@@ -75,7 +75,7 @@ class SIFTWorker(QObject):
         # print(f"len keypoints {self.source_id}: {len(keypoints)}")
         # print("----")
 
-        keypoints, descriptors = SIFT.siftHarris(source=self.img, n_feats=1, threshold=0.4)
+        keypoints, descriptors = SIFTDescriptor.siftHarris(source=self.img, n_feats=1, threshold=0.4)
 
         # Function end
         end_time = timeit.default_timer()

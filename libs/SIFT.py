@@ -64,11 +64,29 @@ def calculateOrientation(keypoint: KeyPoint, source: np.ndarray) -> list:
     keypoint.angle = max_orientation
     kp_oriented.append(keypoint)
 
-    for __bin in smooth_histogram:
-        if __bin >= 0.8 * max_orientation:
-            new_kp = KeyPoint(*keypoint.pt, keypoint.size, __bin, keypoint.response, keypoint.octave)
-            kp_oriented.append(new_kp)
+    orientation_peaks = np.where(np.logical_and(smooth_histogram > np.roll(smooth_histogram, 1), smooth_histogram > np.roll(smooth_histogram, -1)))[0]
+
+    for peak_index in orientation_peaks:
+        peak_value = smooth_histogram[peak_index]
+        if peak_value >= 0.8 * max_orientation:
+            # Quadratic peak interpolation
+            # The interpolation update is given by equation (6.30)
+            # in https://ccrma.stanford.edu/~jos/sasp/Quadratic_Interpolation_Spectral_Peaks.html
+            left_value = smooth_histogram[(peak_index - 1) % bins]
+            right_value = smooth_histogram[(peak_index + 1) % bins]
+            interpolated_peak_index = (peak_index + 0.5 * (left_value - right_value) / (left_value - 2 * peak_value + right_value)) % bins
+            orientation = 360. - interpolated_peak_index * 360. / bins
+            if abs(orientation - 360.) < 1e-7:
+                orientation = 0
+            new_keypoint = KeyPoint(*keypoint.pt, keypoint.size, orientation, keypoint.response, keypoint.octave)
+            kp_oriented.append(new_keypoint)
     return kp_oriented
+
+    # for __bin in smooth_histogram:
+    #     if __bin >= 0.8 * max_orientation:
+    #         new_kp = KeyPoint(*keypoint.pt, keypoint.size, __bin, keypoint.response, keypoint.octave)
+    #         kp_oriented.append(new_kp)
+    # return kp_oriented
 
 
 #########################
@@ -147,7 +165,7 @@ def siftHarris(source: np.ndarray, n_feats: int = 100, threshold: float = 0.1):
 if __name__ == '__main__':
     img = cv2.imread("../resources/Images/cat256_edited_v2.png")
     imgx = cv2.imread("../resources/Images/cat256.jpg")
-    _, dscs = siftHarris(img, 1, 0.4)
-    _, dscsx = siftHarris(imgx, 1, 0.4)
+    _, dscs = siftHarris(img, 1, 0.3)
+    _, dscsx = siftHarris(imgx, 1, 0.3)
     print(dscs.shape)
     print(dscsx.shape)

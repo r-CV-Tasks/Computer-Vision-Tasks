@@ -123,7 +123,7 @@ def generateDescriptors(keypoint: KeyPoint, source: np.ndarray):
                     yy = int(src[window_j + 1, window_i] * weight) - int(src[window_j - 1, window_j] * weight)
                     mag = np.sqrt(xx * xx + yy * yy)
                     theta = np.rad2deg(np.arctan2(yy, xx)) - keypoint.angle
-                    hist_indx = int((theta * bins) / 360.0)
+                    hist_indx = abs(int((theta * bins) / 360.0))
                     hist[hist_indx % bins] += mag
             feature.extend(hist)
     return np.array(feature)

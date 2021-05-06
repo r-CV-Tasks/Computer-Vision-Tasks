@@ -49,7 +49,7 @@ def calculateOrientation(keypoint: KeyPoint, source: np.ndarray) -> list:
 
             # Add the Magnitude to the right bin in histogram
             hist_index = int((theta * bins)/360.0)
-            raw_histogram[hist_index] = mag
+            raw_histogram[hist_index % bins] += mag
 
     # Finding New points with Orientation higher
     # than 80% of the maximum peak in histogram
@@ -99,7 +99,7 @@ def generateDescriptors(keypoint: KeyPoint, source: np.ndarray):
                     mag = np.sqrt(xx*xx + yy*yy)
                     theta = np.rad2deg(np.arctan2(yy, xx)) - keypoint.angle
                     hist_indx = int((theta*bins)/360.0)
-                    hist[hist_indx] = mag
+                    hist[hist_indx % bins] += mag
             feature.extend(hist)
     return np.array(feature)
 

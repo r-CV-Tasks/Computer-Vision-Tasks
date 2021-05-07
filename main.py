@@ -15,8 +15,7 @@ from PyQt5.QtWidgets import QMessageBox
 from UI import mainGUI as m
 from UI import breeze_resources
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
-                 Hough, Contour, Harris, SIFTDescriptor, FeatureMatching
-from libs import sift_remo
+                 Hough, Contour, Harris, SIFT, FeatureMatching
 
 # Create and configure logger
 logging.basicConfig(level=logging.DEBUG,
@@ -52,30 +51,10 @@ class SIFTWorker(QObject):
         """
         Function to run a long task
         This is executed when calling SIFTWorker.start() in the main application
+
         :return:
         """
-        # harris = Harris.apply_harris_operator(self.img)
-        # indices = Harris.get_harris_indices(harris, 0.4)[0]  # Get only Corners
-        # indices = np.transpose(np.nonzero(indices))
-        # kps = []
-        # for idx in indices:
-        #     k = (idx[0], idx[1])
-        #     kps.append(k)
-        #
-        # img_src = np.copy(cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY))
-        #
-        # print(f"Harris kps {self.source_id}: {kps}")
-        # print("-------")
-        # new_key_points = sift_remo.main_orientation(img_src, kps)
-        # keypoints, descriptors = sift_remo.local_descriptors(img_src, new_key_points)
-        # print(f"keypoints {self.source_id}: {keypoints}")
-        # print(f"len keypoints {self.source_id}: {len(keypoints)}")
-        # print("----")
-        # print(f"descriptors {self.source_id}: {descriptors}")
-        # print(f"len keypoints {self.source_id}: {len(keypoints)}")
-        # print("----")
-
-        keypoints, descriptors = SIFTDescriptor.siftHarris(source=self.img, n_feats=1, threshold=0.4)
+        keypoints, descriptors = SIFT.Sift(src=self.img)
 
         # Function end
         end_time = timeit.default_timer()

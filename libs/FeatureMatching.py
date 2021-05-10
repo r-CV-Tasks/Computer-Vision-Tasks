@@ -214,8 +214,9 @@ def match_features_ratio_test(desc1, desc2):
 
 def main():
     # read images
-    img1 = cv2.imread("../resources/Images/cat512.jpg")
-    img2 = cv2.imread("../resources/Images/cat512_edited_v2.png")
+    img1 = cv2.imread("../resources/Images/cat256.jpg")
+    img2 = cv2.imread("../resources/Images/cat512_edited_v3.png")
+    # img2 = cv2.imread("../resources/Images/cat256_edited_v2.png")
 
     img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
@@ -227,13 +228,15 @@ def main():
     keypoints_2, descriptors_2 = sift.detectAndCompute(img2, None)
 
     # feature matching
-    # bf = cv2.BFMatcher(cv2.NORM_L1, crossCheck=True)
+    bf = cv2.BFMatcher(cv2.NORM_L1, crossCheck=True)
 
-    # matches = bf.match(descriptors_1, descriptors_2)
-    # matches = sorted(matches, key=lambda x: x.distance)
+    matches = bf.match(descriptors_1, descriptors_2)
+    matches = sorted(matches, key=lambda x: x.distance)
 
-    matches = apply_feature_matching(descriptors_1, descriptors_2, calculate_ncc)
-    matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+    # matches = apply_feature_matching(descriptors_1, descriptors_2, calculate_ncc)
+    # matches = sorted(matches, key=lambda x: x.distance, reverse=True)
+
+    # matches = sorted(matches, key=lambda x: x.distance, reverse=True)
 
     matched_image = cv2.drawMatches(img1, keypoints_1, img2, keypoints_2,
                                     matches[:30], img2, flags=2)

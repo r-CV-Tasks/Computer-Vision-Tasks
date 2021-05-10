@@ -3,7 +3,8 @@
 import logging
 import sys
 import timeit
-from typing import Callable
+import typing
+from typing import Callable, Type
 
 import cv2
 import numpy as np
@@ -15,7 +16,7 @@ from PyQt5.QtWidgets import QMessageBox
 from UI import mainGUI as m
 from UI import breeze_resources
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
-                 Hough, Contour, Harris, SIFT, FeatureMatching
+    Hough, Contour, Harris, SIFT, FeatureMatching
 
 # Create and configure logger
 logging.basicConfig(level=logging.DEBUG,
@@ -23,7 +24,7 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(lineno)s - %(levelname)s - %(message)s',
                     filemode='w')
 
-# Creating an object
+# Creating a logger object
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -54,12 +55,19 @@ class SIFTWorker(QObject):
 
         :return:
         """
+
+        # Apply SIFT Detector and Descriptor
         keypoints, descriptors = SIFT.Sift(src=self.img)
+        print(f"keypoints {self.source_id}: {keypoints}")
+        print(f"keypoints len {self.source_id}: {len(keypoints)}")
+
+        print(f"descriptors {self.source_id}: {descriptors}")
+        print(f"descriptors shape {self.source_id}: {descriptors.shape}")
 
         # Function end
         end_time = timeit.default_timer()
 
-        # # Show only 3 digits after floating point
+        # # Show only 5 digits after floating point
         elapsed_time = float(format(end_time - self.start_time, '.5f'))
 
         # Emit finished signal to end the thread
@@ -122,7 +130,7 @@ class MatchingWorker(QObject):
         # Function end
         end_time = timeit.default_timer()
 
-        # # Show only 3 digits after floating point
+        # # Show only 5 digits after floating point
         elapsed_time = float(format(end_time - self.start_time, '.5f'))
 
         # Emit finished signal to end the thread
@@ -220,16 +228,16 @@ class ImageProcessor(m.Ui_MainWindow):
         self.weights = {}
 
         # Images Labels and Sizes
-        self.imagesLabels = {"0_1": self.label_imgName_0,   "1_1": self.label_imgName_1,
+        self.imagesLabels = {"0_1": self.label_imgName_0, "1_1": self.label_imgName_1,
                              "2_1": self.label_imgName_2_1, "2_2": self.label_imgName_2_2,
-                             "3_1": self.label_imgName_3,   "4_1": self.label_imgName_4,
+                             "3_1": self.label_imgName_3, "4_1": self.label_imgName_4,
                              "5_1": self.label_imgName_5,
                              "6_1": self.label_imgName_6_1, "6_2": self.label_imgName_6_2,
                              "7_1": self.label_imgName_7_1, "7_2": self.label_imgName_7_2}
 
-        self.imagesSizes = {"0_1": self.label_imgSize_0,   "1_1": self.label_imgSize_1,
+        self.imagesSizes = {"0_1": self.label_imgSize_0, "1_1": self.label_imgSize_1,
                             "2_1": self.label_imgSize_2_1, "2_2": self.label_imgSize_2_2,
-                            "3_1": self.label_imgSize_3,   "4_1": self.label_imgSize_4,
+                            "3_1": self.label_imgSize_3, "4_1": self.label_imgSize_4,
                             "5_1": self.label_imgSize_5,
                             "6_1": self.label_imgSize_6_1, "6_2": self.label_imgSize_6_2,
                             "7_1": self.label_imgSize_7_1, "7_2": self.label_imgSize_7_2}
@@ -777,7 +785,7 @@ class ImageProcessor(m.Ui_MainWindow):
         # Function end
         end_time = timeit.default_timer()
 
-        # Show only 3 digits after floating point
+        # Show only 5 digits after floating point
         elapsed_time = format(end_time - start_time, '.5f')
         self.label_snake_time.setText(str(elapsed_time))
 
@@ -810,17 +818,9 @@ class ImageProcessor(m.Ui_MainWindow):
         start_time = timeit.default_timer()
 
         harris_response = Harris.apply_harris_operator(source=self.imagesData["5_1"], k=sensitivity)
-        # harris_response = Harris.apply_harris_operator2(source=self.imagesData["5_1"], k=sensitivity)
 
         corner_indices, edges_indices, flat_indices = Harris.get_harris_indices(harris_response=harris_response,
                                                                                 threshold=threshold)
-
-        unique_corners, counts_corners = np.unique(corner_indices, return_counts=True)
-        unique_edges, counts_edges = np.unique(edges_indices, return_counts=True)
-        unique_flat, counts_flat = np.unique(flat_indices, return_counts=True)
-        # print(f"Corners points: {counts_corners[1]}")
-        # print(f"Edges points: {counts_edges[1]}")
-        # print(f"Flat points: {counts_flat[1]}")
 
         img_corners = Harris.map_indices_to_image(source=self.imagesData["5_1"], indices=corner_indices,
                                                   color=[255, 0, 0])
@@ -828,7 +828,7 @@ class ImageProcessor(m.Ui_MainWindow):
         # Function end
         end_time = timeit.default_timer()
 
-        # Show only 3 digits after floating point
+        # Show only 5 digits after floating point
         elapsed_time = format(end_time - start_time, '.5f')
         self.label_harris_time.setText(str(elapsed_time))
 
@@ -912,30 +912,6 @@ class ImageProcessor(m.Ui_MainWindow):
                                         match_calculator=match_method, num_matches=num_matches,
                                         source_id=3, start_time=start_time)
 
-            # matches = FeatureMatching.apply_feature_matching(desc1=self.sift_results[0]["descriptors"],
-            #                                                  desc2=self.sift_results[1]["descriptors"],
-            #                                                  match_calculator=match_method)
-            # matches = sorted(matches, key=lambda x: x.distance, reverse=True)
-            #
-            # matched_image = cv2.drawMatches(img1, self.sift_results[0]["keypoints"],
-            #                                 img2, self.sift_results[1]["keypoints"],
-            #                                 matches[:num_matches], img2, flags=2)
-            #
-            # # Function end
-            # end_time = timeit.default_timer()
-            #
-            # # Show only 3 digits after floating point
-            # elapsed_time = format(end_time - start_time, '.5f')
-            #
-            # self.label_feature_matching_time.setText(str(elapsed_time))
-            #
-            # # Update Total Time
-            # max_sift_time = max(float(self.label_sift_A_time.text()), float(self.label_sift_B_time.text()))
-            # total_time = max_sift_time + float(self.label_feature_matching_time.text())
-            # self.label_total_matching_time.setText(str(total_time))
-            #
-            # self.display_image(source=matched_image, widget=self.img6_output)
-
     def save_median_result(self, source: np.ndarray):
         """
         Save the output from Median QThread to view median filter result
@@ -966,6 +942,9 @@ class ImageProcessor(m.Ui_MainWindow):
         self.label_total_matching_time.setText(str(total_time))
 
         self.display_image(source=source, widget=self.img6_output)
+
+    def create_thread(self, thread_num: int, worker_class: object):
+        pass
 
     def create_sift_thread(self, source: np.ndarray, source_id: int, start_time: float):
         """

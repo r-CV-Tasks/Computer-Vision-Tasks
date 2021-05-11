@@ -1,6 +1,4 @@
-<h1 style="text-align: center;"> Features Detection and Image Matching</h1>
-<h3 style="text-align: center;"> Submitted to: Dr. Ahmed Badawi</h3>
-<h3 style="text-align: center;"> 2020 - 2021</h3>
+<h1 style="text-align: center;"> Computer Vision Tasks</h1>
 
 | Name                    | Section | B.N Number   |
 |-------------------------|---------|--------------|
@@ -9,11 +7,40 @@
 | Ahmad Mahdy Mohammed    | 1       |            9 |
 | Abdullah Mohammed Sabry | 2       |            7 |
 
+<br>
 
-# Image Filtering & Edge Detection Techniques
+This repository is created by 
 
-In this Repository we present a variety of Image processing Techniques implemented from scratch using Numpy and Pure Python. Each Category of Algorithms is presented in its tab in the UI which we will discover next. 
+In this Repository we present a variety of Image processing Techniques implemented from scratch using `Python` programming language with Numpy and Pure Python. Each Category of Algorithms is presented in its tab in the UI which we will discover next.
 
+
+Our UI present a tab for each category of the implemented algorithms. We first load our image and apply the selected algorithm.
+
+## Table of contents
+### [1. Image Processing](#Image-Processing)
+* [1.1 Adding Noise To an Image](#Adding-Noise-To-an-Image)
+* [1.2 Image Filtering](#Image-Filtering)
+* [1.3 Edge Detection Using Various Masks](#Edge-Detection-Using-Various-Masks)
+* [1.4 Image Histogram and Thresholding](#Image-Histogram-and-Thresholding)
+* [1.5 Hybrid Images](#Hybrid-Images)
+
+### [2. Boundary Detection](#Boundary-Detection)
+* [2.1 Hough Transformation (Lines and Circles Detection)](#Hough-Transformation)
+* [2.2 Active Contour Model (Snake)](#Active-Contour)
+
+### [3. Features Detection and Image Matching](#Features-Detection-and-Image-Matching)
+* [3.1 Extract the unique features in all images using Harris operator](#Harris-Operator)
+* [3.2 Generate feature descriptors using scale invariant features (SIFT)](#SIFT)
+* [3.3 Match the image set features using sum of squared differences (SSD) and normalized cross correlations](#Image-Matching)
+
+<div style="page-break-after: always;"></div>
+
+<!-- Task #1 Readme -->
+
+# 1. Image Processing
+## 1.1 Adding Noise To an Image
+We implemented 3 types of noise: `Uniform`, `Gaussian` and `Salt & Pepper` Noise. 
+ 
 ## Implementations Added:
 
 1. Noise Functions (Simulation of Different Noise Types): Uniform, Gaussian and Salt & Pepper.
@@ -27,7 +54,6 @@ In addition to histogram and distribution curve drawing for the loaded image and
 
 ## Results:
 
-Our UI present a tab for each category of the implemented algorithms. We first load our image and apply the selected algorithm.
 
 #### 1. Noise Addition: 
 
@@ -168,7 +194,7 @@ Active contour defines a separate boundary or curvature for the regions of targe
 ![harris_v2](./resources/results/task3/harris_v2.png)
 
 
-[comment]: <> (<img src="resources/results/task2/canny_edges_result2.png" alt="Canny Edges Result2" width="700" height="400">)
+<img src="resources/results/task2/canny_edges_result2.png" alt="Canny Edges Result2" width="700" height="400">)
 <div style="page-break-after: always;"></div>
 
 ### Using Sift Descriptors and Harris Operator to Match the image set features 

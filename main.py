@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QMessageBox
 from UI import mainGUI as m
 from UI import breeze_resources
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
-    Hough, Contour, Harris, SIFT, FeatureMatching
+    Hough, Contour, Harris, SIFT, FeatureMatching, SegmentationThresholding, SegmentationClustering
 
 # Create and configure logger
 logging.basicConfig(level=logging.DEBUG,
@@ -194,7 +194,6 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img4_output, self.img5_output, self.img6_output,
                              [self.img7_1_output, self.img7_2_output]]
 
-        # self.filtersImages = [self.img0_noisy, self.img0_filtered, self.img0_edged]
         self.processedImages = {"0_1": self.img0_noisy, "0_2": self.img0_filtered, "0_3": self.img0_edged,
                                 "7_1": self.img7_1_output, "7_2": self.img7_2_output}
 
@@ -254,9 +253,6 @@ class ImageProcessor(m.Ui_MainWindow):
             slider.id = self.sliders.index(slider)
             slider.signal.connect(self.slider_changed)
 
-        # Combo Lists
-        # self.updateCombos = [self.combo_noise, self.combo_filter, self.combo_edges, self.combo_histogram]
-
         # Combo Boxes Dictionary
         self.comboBoxes = {"0_1": self.combo_noise, "0_2": self.combo_filter,
                            "0_3": self.combo_edges,
@@ -282,6 +278,12 @@ class ImageProcessor(m.Ui_MainWindow):
         self.combo_filter.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_2"))
         self.combo_edges.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_3"))
         self.combo_histogram.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="1_1"))
+
+        self.combo_thresholding_methods.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index,
+                                                                                         combo_id="7_1"))
+
+        self.combo_clustering_methods.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index,
+                                                                                       combo_id="7_2"))
 
         # Setup Hybrid Button
         self.btn_hybrid.clicked.connect(self.hybrid_image)
@@ -677,32 +679,32 @@ class ImageProcessor(m.Ui_MainWindow):
         # If Segmentation Tab is selected
         elif tab_id == 7:
             # Get Values from combo box
-            # selected_component = self.updateCombos[combo_id].currentText().lower()
             selected_component = self.comboBoxes[combo_id].currentText().lower()
-            segmented_image = np.ones((256, 256))*255
+            source = np.copy(self.imagesData[combo_id])
+            segmented_image = None
 
             if combo_id == "7_1":
                 if selected_component == "optimal thresholding":
-                    pass
+                    segmented_image = SegmentationThresholding.apply_optimal_threshold(source=source)
 
                 elif selected_component == "otsu thresholding":
-                    pass
+                    segmented_image = SegmentationThresholding.apply_otsu_threshold(source=source)
 
                 elif selected_component == "spectral thresholding":
-                    pass
+                    segmented_image = SegmentationThresholding.apply_spectral_threshold(source=source)
 
             elif combo_id == "7_2":
                 if selected_component == "k-means":
-                    pass
+                    segmented_image = SegmentationClustering.apply_k_means(source=source)
 
                 elif selected_component == "region growing":
-                    pass
+                    segmented_image = SegmentationClustering.apply_region_growing(source=source)
 
                 elif selected_component == "agglomerative clustering":
-                    pass
+                    segmented_image = SegmentationClustering.apply_agglomerative(source=source)
 
                 elif selected_component == "mean-shift clustering":
-                    pass
+                    segmented_image = SegmentationClustering.apply_mean_shift(source=source)
 
             try:
                 self.display_image(source=segmented_image, widget=self.processedImages[combo_id])
@@ -983,6 +985,7 @@ class ImageProcessor(m.Ui_MainWindow):
         Save the output from Median QThread to view median filter result
 
         :param source:
+        :param combo_id:
         :return:
         """
         print("Median Filter is Finished")

@@ -36,7 +36,7 @@ def equalize_histogram(source: np.ndarray, bins_num: int = 255):
 
     # Normalize Resulted array
     px_count = np.sum(hist_array)
-    hist_array = hist_array/px_count
+    hist_array = hist_array / px_count
 
     # Calculate the Cumulative Sum
     hist_array = np.cumsum(hist_array)
@@ -94,7 +94,6 @@ def local_threshold(source: np.ndarray, divs: int) -> np.ndarray:
     try:
         for sp in v_splits:
             splits.append(np.split(sp, s, -1))
-
 
         c1 = []
         # Calculate the mean and threshold for each split

@@ -168,7 +168,7 @@ def DoubleThreshold(Image, LowRatio, HighRatio, Weak):
        :param LowRatio: Low Threshold Ratio, Used to Get Lowest Allowed Value
        :param HighRatio: High Threshold Ratio, Used to Get Minimum Value To Be Boosted
        :param Weak: Pixel Value For Pixels Between The Two Thresholds
-       :return: Thresholded Image
+       :return: Threshold Image
        """
 
     # Get Threshold Values

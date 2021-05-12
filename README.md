@@ -37,7 +37,7 @@ Our UI present a tab for each category of the implemented algorithms. We first l
 
 <!-- Task #1 Readme -->
 
-# [1. Image Processing](#image-processing)
+# 1. Image Processing
 
 ## 1.1 Adding Noise To an Image
 We implemented 3 types of noise: `Uniform`, `Gaussian` and `Salt & Pepper` Noise. 

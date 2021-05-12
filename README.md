@@ -93,6 +93,7 @@ Here's the view of the UI tabs without loading any images or applying any algori
   
 </details>
 
+<div style="page-break-after: always;"></div>
 
 <!-- Task #1 Report -->
 

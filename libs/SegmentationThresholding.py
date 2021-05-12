@@ -57,10 +57,14 @@ def GetOptimalThreshold(source: np.ndarray, Threshold):
     :param Threshold: Initial Threshold
     :return OptimalThreshold: Optimal Threshold Based on Given Initial Threshold
     """
+    # Get Background Array, Consisting of All Pixels With Intensity Lower Than The Given Threshold
     Back = source[np.where(source < Threshold)]
+    # Get Foreground Array, Consisting of All Pixels With Intensity Higher Than The Given Threshold
     Fore = source[np.where(source > Threshold)]
+    # Mean of Background & Foreground Intensities
     BackMean = np.mean(Back)
     ForeMean = np.mean(Fore)
+    # Calculate Optimal Threshold
     OptimalThreshold = (BackMean + ForeMean) / 2
     return OptimalThreshold
 

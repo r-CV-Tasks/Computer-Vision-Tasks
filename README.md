@@ -29,7 +29,7 @@ In this Repository we present a variety of Image Processing Techniques implement
 <div style="page-break-after: always;"></div>
 
 
-# <a name="installation_h">Installation</a>
+# <a name="installation_h">Installation</a> (Not Implemented Yet!!)
 You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies.
 
 ### Windows
@@ -65,7 +65,6 @@ Here's the view of the UI tabs without loading any images or applying any algori
 
 <details>
   <h4><summary>Main UI Tabs</summary></h4>
-  <br>
   
   <img src="resources/UI/Noise_Filters_Edges_Tab.png" alt="Noise_Filters_Edges_Tab"
   name="Noise_Filters_Edges_Tab" target="_blank" width="500" height="400">
@@ -90,7 +89,6 @@ Here's the view of the UI tabs without loading any images or applying any algori
   
   <img src="resources/UI/Segmentation_Tab.png" alt="Segmentation_Tab" 
   name="Segmentation_Tab" width="500" height="400">
-  
 </details>
 
 <div style="page-break-after: always;"></div>

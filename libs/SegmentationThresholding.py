@@ -24,29 +24,45 @@ def apply_optimal_threshold(source: np.ndarray):
 
 
 def GetInitialThreshold(source: np.ndarray):
+    """
+    Gets The Initial Threshold Used in The Optimal Threshold Method
+    :param source: Source Image NumPy Array
+    :return Threshold: Initial Threshold Value
+    """
+    # Maximum X & Y Values For The Image
     MaxX = source.shape[1] - 1
     MaxY = source.shape[0] - 1
+    # Mean Value of Background Intensity, Calculated From The Four Corner Pixels
     BackMean = (source[0, 0] + source[0, MaxX] + source[MaxY, 0] + source[MaxY, MaxX]) / 4
     Sum = 0
     Length = 0
+    # Loop To Calculate Mean Value of Foreground Intensity
     for i in range(0, source.shape[1]):
         for j in range(0, source.shape[0]):
+            # Skip The Four Corner Pixels
             if not ((i == 0 and j == 0) or (i == MaxX and j == 0) or (i == 0 and j == MaxY) or (
                     i == MaxX and j == MaxY)):
                 Sum += source[j, i]
                 Length += 1
     ForeMean = Sum / Length
+    # Get The Threshold, The Average of The Mean Background & Foreground Intensities
     Threshold = (BackMean + ForeMean) / 2
     return Threshold
 
 
 def GetOptimalThreshold(source: np.ndarray, Threshold):
+    """
+    Calculates Optimal Threshold Based on Given Initial Threshold
+    :param source: Source Image NumPy Array
+    :param Threshold: Initial Threshold
+    :return OptimalThreshold: Optimal Threshold Based on Given Initial Threshold
+    """
     Back = source[np.where(source < Threshold)]
     Fore = source[np.where(source > Threshold)]
     BackMean = np.mean(Back)
     ForeMean = np.mean(Fore)
-    Threshold = (BackMean + ForeMean) / 2
-    return Threshold
+    OptimalThreshold = (BackMean + ForeMean) / 2
+    return OptimalThreshold
 
 
 def apply_otsu_threshold(source: np.ndarray):

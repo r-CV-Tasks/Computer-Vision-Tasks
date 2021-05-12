@@ -3,9 +3,11 @@
 In this Repository we present a variety of Image Processing Techniques implemented from scratch using `Python` with help of some helpful packages.
 
 ## Table of contents
-### [Installation](#installation-)
+<!--### [Installation](#installation-)-->
+### <a href="#Installation">Installation</a>
 
-### [Usage](#usage)
+### <a href="#Usage">Usage</a>
+<!--### [Usage](#usage)-->
 
 ### [Image Processing](#image-processing)
 * [Adding Noise To Image](#1-adding-noise-to-image)
@@ -28,7 +30,7 @@ In this Repository we present a variety of Image Processing Techniques implement
 <div style="page-break-after: always;"></div>
 
 
-# Installation 
+# Installation
 You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies.
 
 ### Windows

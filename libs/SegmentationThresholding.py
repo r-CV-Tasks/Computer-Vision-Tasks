@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from Histogram import global_threshold
+from Histogram import global_threshold, histogram
 
 
 def apply_optimal_threshold(source: np.ndarray):
@@ -35,7 +35,7 @@ def GetInitialThreshold(source: np.ndarray):
     MaxX = source.shape[1] - 1
     MaxY = source.shape[0] - 1
     # Mean Value of Background Intensity, Calculated From The Four Corner Pixels
-    BackMean = (source[0, 0] + source[0, MaxX] + source[MaxY, 0] + source[MaxY, MaxX]) / 4
+    BackMean = (int(source[0, 0]) + int(source[0, MaxX]) + int(source[MaxY, 0]) + int(source[MaxY, MaxX])) / 4
     Sum = 0
     Length = 0
     # Loop To Calculate Mean Value of Foreground Intensity
@@ -77,10 +77,33 @@ def apply_otsu_threshold(source: np.ndarray):
     :param source:
     :return:
     """
-
     src = np.copy(source)
-
-    return src
+    # Get Image Dimensions
+    YRange, XRange = src.shape
+    # Get The Values of The Histogram Bins
+    HistValues = histogram(src)[0]
+    # Calculate The Probability Density Function
+    PDF = HistValues / (YRange * XRange)
+    # Calculate The Cumulative Density Function
+    CDF = np.cumsum(PDF)
+    OptimalThreshold = 1
+    MaxVariance = 0
+    # Loop Over All Possible Thresholds, Select One With Maximum Variance Between Background & The Object (Foreground)
+    for t in range(1, 255):
+        # Background Intensities Array
+        Back = np.arange(0, t)
+        # Object/Foreground Intensities Array
+        Fore = np.arange(t, 256)
+        # Calculation Mean of Background & The Object (Foreground), Based on CDF & PDF
+        BackMean = sum(Back * PDF[0:t]) / CDF[t]
+        ForeMean = sum(Fore * PDF[t:256]) / (1 - CDF[t])
+        # Calculate Cross-Class Variance
+        Variance = CDF[t] * (1 - CDF[t]) * (ForeMean - BackMean) ** 2
+        # Filter Out Max Variance & It's Threshold
+        if Variance > MaxVariance:
+            MaxVariance = Variance
+            OptimalThreshold = t
+    return global_threshold(src, OptimalThreshold)
 
 
 def apply_spectral_threshold(source: np.ndarray):
@@ -108,10 +131,12 @@ def IsolatedTests():
     x = img.shape[1]
     y = img.shape[0]
     OptImg = apply_optimal_threshold(img)
-    fig, ax = plt.subplots(1, 2)
-    ax[0].imshow(source, cmap='gray')
-    ax[1].imshow(OptImg, cmap='gray')
-    print()
+    OtsuImg = apply_otsu_threshold(img)
+    fig, ax = plt.subplots(2, 2)
+    ax[0][0].imshow(source, cmap='gray')
+    ax[0][1].imshow(OptImg, cmap='gray')
+    ax[1][0].imshow(source, cmap='gray')
+    ax[1][1].imshow(OtsuImg, cmap='gray')
     plt.show()
 
 

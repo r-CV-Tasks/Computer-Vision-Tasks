@@ -3,24 +3,23 @@
 In this Repository we present a variety of Image Processing Techniques implemented from scratch using `Python` with help of some helpful packages.
 
 ## Table of contents
-<!--### [Installation](#installation-)-->
 ### <a href="#installation_h">Installation</a>
 
 ### <a href="#usage_h">Usage</a>
-<!--### [Usage](#usage)-->
 
-### [Image Processing](#image-processing)
+### <a href="#image-processing_h">Image Processing</a>
 * [Adding Noise To Image](#1-adding-noise-to-image)
 * [Image Filtering](#2-image-filtering)
 * [Edge Detection](#3-edge-detection)
 * [Image Histogram and Thresholding](#4-image-histogram-and-thresholding)
 * [Hybrid Images](#5-hybrid-images)
 
-### [Boundary Detection](#boundary-detection)
+
+### <a href="#boundary-detection_h">Boundary Detection</a>
 * [Hough Transformation (Lines and Circles Detection)](#1-hough-transformation)
 * [Active Contour Model (Snake)](#2-active-contour-model)
 
-### [Features Detection and Image Matching](#features-detection-and-image-matching)
+### <a href="#features-detection-and-image-matching_h">Features Detection and Image Matching</a>
 * [Feature Extraction In Images Using Harris Operator](#1-extract-the-unique-features-in-all-images-using-harris-operator)
 
 * [Feature Descriptors Using Scale Invariant Features (SIFT) Algorithm](#2-feature-descriptors-using-scale-invariant-features-sift-algorithm)
@@ -30,7 +29,6 @@ In this Repository we present a variety of Image Processing Techniques implement
 <div style="page-break-after: always;"></div>
 
 
-<!--# Installation-->
 # <a name="installation_h">Installation</a>
 You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies.
 
@@ -56,7 +54,6 @@ Script will install these Libraries , if already installed the installation will
 This is a completely optional, but it is a recommended way to install all the required dependencies. 
 
 
-<!--# Usage-->
 # <a name="usage_h">Usage</a>
 The **GUI** is composed of many tabs; each tab contains some push buttons, combo boxes or sliders, input texts and some widgets to view the images.
 
@@ -100,8 +97,7 @@ Here's the view of the UI tabs without loading any images or applying any algori
 
 <!-- Task #1 Report -->
 
-# Image Processing
-
+# <a name="image-processing_h">Image Processing</a>
 In this section we present some implementations such as adding noise to image, filtering the added noise, viewing different types of histograms, applying threshold to image and hybrid images.
 
 ## 1. Adding Noise To Image
@@ -218,7 +214,7 @@ If you zoomed in the image you would see more details from the dog, if you zoome
 
 <!-- Task #2 Report -->
 
-# Boundary Detection
+# <a name="boundary-detection_h">Boundary Detection</a>
 In this section we present 2 algorithms implementations; `Hough Transformation` and Active Contour Model, aka `'Snake Algorithm'`.
 
 
@@ -274,7 +270,7 @@ The parameters' values of `alpha`, `beta`, `gamma` and `number of iterations` ar
 
 <!-- Task #3 Report -->
 
-# Features Detection and Image Matching
+# <a name="features-detection-and-image-matching_h">Features Detection and Image Matching</a>
 In this section we present 3 algorithms implementations; `Feature Extraction Using Harris Operator`, `Scale Invariant Features (SIFT)` and `Feature Matching`.
 
 

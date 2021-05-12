@@ -11,14 +11,17 @@ def apply_optimal_threshold(source: np.ndarray):
     :return: Thresholded Image
     """
     src = np.copy(source)
+    # Calculate Initial Thresholds Used in Iteration
     OldThreshold = GetInitialThreshold(src)
     NewThreshold = GetOptimalThreshold(src, OldThreshold)
     iteration = 0
+    # Iterate Till The Threshold Value is Constant Across Two Interations
     while OldThreshold != NewThreshold:
         OldThreshold = NewThreshold
         NewThreshold = GetOptimalThreshold(src, OldThreshold)
         iteration += 1
     # src[src >= 25] = 0
+    # Return Thresholded Image Using Global Thresholding
     return global_threshold(src, NewThreshold)
 
 

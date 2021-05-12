@@ -4,9 +4,9 @@ In this Repository we present a variety of Image Processing Techniques implement
 
 ## Table of contents
 <!--### [Installation](#installation-)-->
-### <a name="installation" href="installation">Installation</a>
+### <a href="installation">Installation</a>
 
-### <a name="usage" href="usage">Usage</a>
+### <a href="usage">Usage</a>
 <!--### [Usage](#usage)-->
 
 ### [Image Processing](#image-processing)
@@ -30,8 +30,8 @@ In this Repository we present a variety of Image Processing Techniques implement
 <div style="page-break-after: always;"></div>
 
 
-# Installation
-<!--# <a style=";">Installation</a>-->
+<!--# Installation-->
+# <a name="installation">Installation</a>
 You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies.
 
 ### Windows
@@ -56,8 +56,8 @@ Script will install these Libraries , if already installed the installation will
 This is a completely optional, but it is a recommended way to install all the required dependencies. 
 
 
-# Usage
-
+<!--# Usage-->
+# <a name="usage">Usage</a>
 The **GUI** is composed of many tabs; each tab contains some push buttons, combo boxes or sliders, input texts and some widgets to view the images.
 
 Each category of implemented Algorithms is displayed in a separate tab in the GUI.

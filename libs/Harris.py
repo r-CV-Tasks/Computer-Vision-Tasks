@@ -1,6 +1,6 @@
 import cv2
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def apply_harris_operator(source: np.ndarray, k: float = 0.05) -> np.ndarray:

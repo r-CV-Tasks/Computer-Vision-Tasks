@@ -1,7 +1,8 @@
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
 from typing import Callable
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def apply_feature_matching(desc1: np.ndarray, desc2: np.ndarray,

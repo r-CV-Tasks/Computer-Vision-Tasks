@@ -1,5 +1,6 @@
 import timeit
 from typing import Callable
+
 import cv2
 import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal

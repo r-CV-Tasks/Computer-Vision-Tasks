@@ -1,12 +1,12 @@
 import itertools
 from typing import Tuple
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
 from libs.EdgeDetection import sobel_edge
 from libs.LowPass import gaussian_filter
-from libs.FrequencyFilters import square_pad
 
 
 def iterate_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndarray,

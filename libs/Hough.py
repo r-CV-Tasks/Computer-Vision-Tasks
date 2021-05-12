@@ -1,6 +1,7 @@
+import math
+
 import cv2
 import numpy as np
-import math
 
 
 def hough_peaks(H, num_peaks, nhood_size=3):

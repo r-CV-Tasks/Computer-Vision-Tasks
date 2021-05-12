@@ -3,8 +3,8 @@
 #
 
 import numpy as np
-from scipy.signal import convolve2d
 import scipy.stats as st
+from scipy.signal import convolve2d
 
 
 def zero_pad_image(source: np.ndarray, f: int) -> np.ndarray:

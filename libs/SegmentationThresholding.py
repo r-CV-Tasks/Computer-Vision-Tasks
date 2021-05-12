@@ -73,10 +73,10 @@ def GetOptimalThreshold(source: np.ndarray, Threshold):
 
 def apply_otsu_threshold(source: np.ndarray):
     """
-
-    :param source:
-    :return:
-    """
+     Applies Thresholding To The Given Grayscale Image Using Otsu's Thresholding Method
+     :param source: NumPy Array of The Source Grayscale Image
+     :return: Thresholded Image
+     """
     src = np.copy(source)
     # Get Image Dimensions
     YRange, XRange = src.shape

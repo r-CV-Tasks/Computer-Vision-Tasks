@@ -17,7 +17,7 @@ In this Repository we present a variety of Image processing Techniques implement
 Our UI present a tab for each category of the implemented algorithms. We first load our image and apply the selected algorithm.
 
 ## Table of contents
-### [1. Image Processing](#1.-image-processing)
+### [1. Image Processing](#-1.-image-processing)
 * [1.1 Adding Noise To an Image](#-Adding-Noise-To-an-Image)
 * [1.2 Image Filtering](#-Image-Filtering)
 * [1.3 Edge Detection Using Various Masks](#Edge-Detection-Using-Various-Masks)

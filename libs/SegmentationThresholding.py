@@ -16,7 +16,7 @@ def apply_optimal_threshold(source: np.ndarray):
     OldThreshold = GetInitialThreshold(src)
     NewThreshold = GetOptimalThreshold(src, OldThreshold)
     iteration = 0
-    # Iterate Till The Threshold Value is Constant Across Two Interations
+    # Iterate Till The Threshold Value is Constant Across Two Iterations
     while OldThreshold != NewThreshold:
         OldThreshold = NewThreshold
         NewThreshold = GetOptimalThreshold(src, OldThreshold)

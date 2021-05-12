@@ -65,9 +65,9 @@ def apply_feature_matching(desc1: np.ndarray, desc2: np.ndarray,
                 y_index = kp2
 
         # Create a cv2.DMatch object for each match and set attributes:
-            # queryIdx: The index of the feature in the first image
-            # trainIdx: The index of the feature in the second image
-            # distance: The distance between the two features
+        # queryIdx: The index of the feature in the first image
+        # trainIdx: The index of the feature in the second image
+        # distance: The distance between the two features
         cur = cv2.DMatch()
         cur.queryIdx = kp1
         cur.trainIdx = y_index

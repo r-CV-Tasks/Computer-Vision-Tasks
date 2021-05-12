@@ -6,12 +6,12 @@ import numpy as np
 
 from libs.EdgeDetection import sobel_edge
 from libs.LowPass import gaussian_filter
-from libs.FrequencyFilters import square_pad 
+from libs.FrequencyFilters import square_pad
+
 
 def iterate_contour(source: np.ndarray, contour_x: np.ndarray, contour_y: np.ndarray,
                     external_energy: np.ndarray, window_coordinates: list,
                     alpha: float, beta: float) -> Tuple[np.ndarray, np.ndarray]:
-
     """
     :param source: image source
     :param contour_x: list of x coordinates of the contour
@@ -72,14 +72,14 @@ def create_square_contour(source, num_xpoints, num_ypoints):
 
     # Create x points lists
     t1_x = np.arange(0, num_xpoints, step)
-    t2_x = np.repeat((num_xpoints)-step, num_xpoints//step)
+    t2_x = np.repeat((num_xpoints) - step, num_xpoints // step)
     t3_x = np.flip(t1_x)
-    t4_x = np.repeat(0, num_xpoints//step)
+    t4_x = np.repeat(0, num_xpoints // step)
 
     # Create y points list
-    t1_y = np.repeat(0, num_ypoints//step)
+    t1_y = np.repeat(0, num_ypoints // step)
     t2_y = np.arange(0, num_ypoints, step)
-    t3_y = np.repeat(num_ypoints-step, num_ypoints//step)
+    t3_y = np.repeat(num_ypoints - step, num_ypoints // step)
     t4_y = np.flip(t2_y)
 
     # Concatenate all the lists in one array
@@ -95,6 +95,7 @@ def create_square_contour(source, num_xpoints, num_ypoints):
     WindowCoordinates = GenerateWindowCoordinates(5)
 
     return contour_x, contour_y, WindowCoordinates
+
 
 def create_elipse_contour(source, num_points):
     """
@@ -123,6 +124,7 @@ def create_elipse_contour(source, num_points):
     WindowCoordinates = GenerateWindowCoordinates(5)
 
     return contour_x, contour_y, WindowCoordinates
+
 
 def GenerateWindowCoordinates(Size: int):
     """
@@ -268,16 +270,15 @@ def main():
     # num_iterations = 75
 
     # Parameters For hand_256.png image
-    alpha = 20          # Continuous
-    beta = 0.01         # Curvature
-    gamma = 2           # External
-    w_line = 1          # E_line
-    w_edge = 8          # E_edge
+    alpha = 20  # Continuous
+    beta = 0.01  # Curvature
+    gamma = 2  # External
+    w_line = 1  # E_line
+    w_edge = 8  # E_edge
     num_points_circle = 65
     num_xpoints = 180
     num_ypoints = 180
     num_iterations = 60
-
 
     # img = cv2.imread("../resources/Images/circles_v2.png", 0)
     # img = cv2.imread("../resources/Images/fish.png", 0)
@@ -326,6 +327,7 @@ def main():
     ax.plot(np.r_[cont_x, cont_x[0]],
             np.r_[cont_y, cont_y[0]], c=(0, 1, 0), lw=2)
     plt.show()
+
 
 if __name__ == "__main__":
     main()

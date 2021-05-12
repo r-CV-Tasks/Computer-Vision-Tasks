@@ -3,7 +3,6 @@ from cv2 import KeyPoint
 import cv2
 import Harris
 
-
 #########################
 #    Gaussian Filter    #
 #########################
@@ -51,7 +50,7 @@ def calculateOrientation(keypoint: KeyPoint, source: np.ndarray) -> list:
                 yy = int(src[y + 1, x]) - int(src[y - 1, x])
                 mag = np.sqrt(xx * xx + yy * yy)
                 theta = np.rad2deg(np.arctan2(yy, xx))
-                weight = np.exp(-0.5 * (i ** 2 + j**2))
+                weight = np.exp(-0.5 * (i ** 2 + j ** 2))
 
                 # Add the Magnitude to the right bin in histogram
                 hist_index = abs(int((theta * bins) / 360.0))
@@ -67,7 +66,8 @@ def calculateOrientation(keypoint: KeyPoint, source: np.ndarray) -> list:
     keypoint.angle = max_orientation
     kp_oriented.append(keypoint)
 
-    orientation_peaks = np.where(np.logical_and(smooth_histogram > np.roll(smooth_histogram, 1), smooth_histogram > np.roll(smooth_histogram, -1)))[0]
+    orientation_peaks = np.where(np.logical_and(smooth_histogram > np.roll(smooth_histogram, 1),
+                                                smooth_histogram > np.roll(smooth_histogram, -1)))[0]
 
     for peak_index in orientation_peaks:
         peak_value = smooth_histogram[peak_index]
@@ -77,7 +77,8 @@ def calculateOrientation(keypoint: KeyPoint, source: np.ndarray) -> list:
             # in https://ccrma.stanford.edu/~jos/sasp/Quadratic_Interpolation_Spectral_Peaks.html
             left_value = smooth_histogram[(peak_index - 1) % bins]
             right_value = smooth_histogram[(peak_index + 1) % bins]
-            interpolated_peak_index = (peak_index + 0.5 * (left_value - right_value) / (left_value - 2 * peak_value + right_value)) % bins
+            interpolated_peak_index = (peak_index + 0.5 * (left_value - right_value) / (
+                        left_value - 2 * peak_value + right_value)) % bins
             orientation = 360. - interpolated_peak_index * 360. / bins
             if abs(orientation - 360.) < 1e-7:
                 orientation = 0

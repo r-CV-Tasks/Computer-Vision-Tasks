@@ -33,7 +33,7 @@ def uniform_noise(source: np.ndarray, snr: float) -> np.ndarray:
     src = np.copy(source)
 
     # Apply Uniform Noise Mask
-    out = src*snr + noise*(1-snr)
+    out = src * snr + noise * (1 - snr)
 
     # CLipping Image in range 0, 255
     out = clip(out, 255, 0)
@@ -52,7 +52,7 @@ def gaussian_noise(source: np.ndarray, sigma: [int, float], snr: float) -> np.nd
     # Create Noise Mask, Following the Gaussian Distribution
     noise = np.random.normal(0, sigma, size=source.shape)
     src = np.copy(source)
-    out = src*snr + noise * (1-snr)
+    out = src * snr + noise * (1 - snr)
 
     # CLipping Image in range 0, 255
     out = clip(out, 255, 0)
@@ -67,7 +67,7 @@ def salt_pepper_noise(source: np.ndarray, snr: float) -> np.ndarray:
     :return: Noisy Image
     """
     # Create Noise Mask, Randomly select pixels to be either 0 or 255
-    noise = np.random.choice((0, 1, 2), size=source.shape, p=[snr, (1-snr)/2, (1-snr)/2])
+    noise = np.random.choice((0, 1, 2), size=source.shape, p=[snr, (1 - snr) / 2, (1 - snr) / 2])
     src = np.copy(source)
 
     # Apply Noise Mask

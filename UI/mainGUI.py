@@ -991,7 +991,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(8)
         self.hough_settings_layout.setFont(font)
-        self.hough_settings_layout.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.hough_settings_layout.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.hough_settings_layout.setCheckable(False)
         self.hough_settings_layout.setObjectName("hough_settings_layout")
         self.gridLayout_23 = QtWidgets.QGridLayout(self.hough_settings_layout)
@@ -2386,7 +2386,8 @@ class Ui_MainWindow(object):
         self.combo_edges.setItemText(2, _translate("MainWindow", "Roberts Mask"))
         self.combo_edges.setItemText(3, _translate("MainWindow", "Prewitt Mask"))
         self.combo_edges.setItemText(4, _translate("MainWindow", "Canny Mask"))
-        self.Main_TabWidget.setTabText(self.Main_TabWidget.indexOf(self.Filters_Tab), _translate("MainWindow", "Filters"))
+        self.Main_TabWidget.setTabText(self.Main_TabWidget.indexOf(self.Filters_Tab),
+                                       _translate("MainWindow", "Filters"))
         self.btn_load_1.setText(_translate("MainWindow", "Load Image"))
         self.label_13.setText(_translate("MainWindow", "Name:"))
         self.label_imgName_1.setText(_translate("MainWindow", "No Image"))
@@ -2403,7 +2404,8 @@ class Ui_MainWindow(object):
         self.groupBox_5.setTitle(_translate("MainWindow", "Output Histogram"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Input Image"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Original Histogram"))
-        self.Main_TabWidget.setTabText(self.Main_TabWidget.indexOf(self.Histograms_Tab), _translate("MainWindow", "Histograms"))
+        self.Main_TabWidget.setTabText(self.Main_TabWidget.indexOf(self.Histograms_Tab),
+                                       _translate("MainWindow", "Histograms"))
         self.btn_load_2_1.setText(_translate("MainWindow", "Load Image A"))
         self.label_8.setText(_translate("MainWindow", "Name:"))
         self.label_imgName_2_1.setText(_translate("MainWindow", "No Image"))
@@ -2463,7 +2465,8 @@ class Ui_MainWindow(object):
         self.label_41.setText(_translate("MainWindow", "seconds"))
         self.groupBox_25.setTitle(_translate("MainWindow", "Input Image"))
         self.groupBox_26.setTitle(_translate("MainWindow", "Processed Image"))
-        self.Main_TabWidget.setTabText(self.Main_TabWidget.indexOf(self.Active_Contour_Tab), _translate("MainWindow", "Active Contour"))
+        self.Main_TabWidget.setTabText(self.Main_TabWidget.indexOf(self.Active_Contour_Tab),
+                                       _translate("MainWindow", "Active Contour"))
         self.btn_load_5.setText(_translate("MainWindow", "Load Image"))
         self.label_57.setText(_translate("MainWindow", "Name:"))
         self.label_imgName_5.setText(_translate("MainWindow", "No Image"))
@@ -2547,8 +2550,11 @@ class Ui_MainWindow(object):
         self.groupBox_16.setTitle(_translate("MainWindow", "Output Image B"))
         self.groupBox_17.setTitle(_translate("MainWindow", "Output Image A"))
         self.groupBox_18.setTitle(_translate("MainWindow", "Input Image B"))
-        self.Main_TabWidget.setTabText(self.Main_TabWidget.indexOf(self.Segmentation_Tab), _translate("MainWindow", "Segmentation"))
+        self.Main_TabWidget.setTabText(self.Main_TabWidget.indexOf(self.Segmentation_Tab),
+                                       _translate("MainWindow", "Segmentation"))
         self.actionImage_1.setText(_translate("MainWindow", "Image 1"))
         self.actionImage_2.setText(_translate("MainWindow", "Image 2"))
+
+
 from UI.mySliderClass import MySlider
 from pyqtgraph import ImageView, PlotWidget

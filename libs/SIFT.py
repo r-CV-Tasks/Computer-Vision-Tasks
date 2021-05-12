@@ -259,9 +259,9 @@ def localizeExtremumViaQuadraticFit(i, j, image_index, octave_index, num_interva
             keypoint.pt = ((j + extremum_update[0]) * (2 ** octave_index),
                            (i + extremum_update[1]) * (2 ** octave_index))
             keypoint.octave = octave_index + image_index * (2 ** 8) + int(round((extremum_update[2] + 0.5) * 255)) * (
-                        2 ** 16)
+                    2 ** 16)
             keypoint.size = sigma * (2 ** ((image_index + extremum_update[2]) / float32(num_intervals))) * (
-                        2 ** (octave_index + 1))  # octave_index + 1 because the input image was doubled
+                    2 ** (octave_index + 1))  # octave_index + 1 because the input image was doubled
             keypoint.response = abs(functionValueAtUpdatedExtremum)
             return keypoint, image_index
     return None
@@ -345,7 +345,8 @@ def computeKeypointsWithOrientations(keypoint, octave_index, gaussian_image, rad
                                raw_histogram[n - 2] + raw_histogram[(n + 2) % num_bins]) / 16.
     orientation_max = max(smooth_histogram)
     orientation_peaks = \
-    where(logical_and(smooth_histogram > roll(smooth_histogram, 1), smooth_histogram > roll(smooth_histogram, -1)))[0]
+        where(logical_and(smooth_histogram > roll(smooth_histogram, 1), smooth_histogram > roll(smooth_histogram, -1)))[
+            0]
     for peak_index in orientation_peaks:
         peak_value = smooth_histogram[peak_index]
         if peak_value >= peak_ratio * orientation_max:
@@ -355,7 +356,7 @@ def computeKeypointsWithOrientations(keypoint, octave_index, gaussian_image, rad
             left_value = smooth_histogram[(peak_index - 1) % num_bins]
             right_value = smooth_histogram[(peak_index + 1) % num_bins]
             interpolated_peak_index = (peak_index + 0.5 * (left_value - right_value) / (
-                        left_value - 2 * peak_value + right_value)) % num_bins
+                    left_value - 2 * peak_value + right_value)) % num_bins
             orientation = 360. - interpolated_peak_index * 360. / num_bins
             if abs(orientation - 360.) < float_tolerance:
                 orientation = 0
@@ -565,5 +566,3 @@ if __name__ == '__main__':
 
     plt.show()
     print(len(kps), len(kp))
-
-

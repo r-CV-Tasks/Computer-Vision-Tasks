@@ -1,4 +1,3 @@
-
 #
 # Low Pass libs Implementations
 #
@@ -19,7 +18,7 @@ def zero_pad_image(source: np.ndarray, f: int) -> np.ndarray:
     src = np.copy(source)
 
     # Calculate Padding size
-    p = int((f - 1)/2)
+    p = int((f - 1) / 2)
 
     # Apply Zero Padding
     out = np.pad(src, (p, p), 'constant', constant_values=0)
@@ -42,10 +41,10 @@ def create_square_kernel(size: int, mode: str, sigma: [int, float] = None) -> np
     if mode == 'ones':
         return np.ones((size, size))
     elif mode == 'gaussian':
-        space = np.linspace(np.sqrt(sigma), -np.sqrt(sigma), size*size)
+        space = np.linspace(np.sqrt(sigma), -np.sqrt(sigma), size * size)
         kernel1d = np.diff(st.norm.cdf(space))
         kernel2d = np.outer(kernel1d, kernel1d)
-        return kernel2d/kernel2d.sum()
+        return kernel2d / kernel2d.sum()
 
 
 def apply_kernel(source: np.ndarray, kernel: np.ndarray, mode: str) -> np.ndarray:
@@ -134,7 +133,7 @@ def median_filter(source: np.ndarray, shape: int) -> np.ndarray:
         # Looping the Image in the X and Y directions
         # Extracting the Kernel
         # Calculating the Median of the Kernel
-        kernel = src[ix: ix+shape, iy: iy+shape, ic]
+        kernel = src[ix: ix + shape, iy: iy + shape, ic]
         if kernel.shape == (shape, shape):
             result[ix, iy, ic] = np.median(kernel).astype('uint8')
 

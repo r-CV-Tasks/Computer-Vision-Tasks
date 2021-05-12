@@ -1,4 +1,3 @@
-
 #
 # Frequency Domain Filters
 #
@@ -18,10 +17,10 @@ def square_pad(source: np.ndarray, size_x: int, size_y: int, pad_value: int) -> 
     src = np.copy(source)
     x, y = src.shape
 
-    out_x = (size_x-x) // 2
+    out_x = (size_x - x) // 2
     out_xx = size_x - out_x - x
 
-    out_y = (size_y-y) // 2
+    out_y = (size_y - y) // 2
     out_yy = size_y - out_y - y
 
     return np.pad(src, ((out_x, out_xx), (out_y, out_yy)), constant_values=pad_value)

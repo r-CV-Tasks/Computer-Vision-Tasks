@@ -3,27 +3,52 @@
 In this Repository we present a variety of Image Processing Techniques implemented from scratch using `Python` with help of some helpful packages.
 
 ## Table of contents
+### [Installation](#installation)
 ### [Usage](#usage)
 
-### [Installation](#installation)
+### [Image Processing](#image-processing)
+* [Adding Noise To Image](#1-adding-noise-to-image)
+* [Image Filtering](#2-image-filtering)
+* [Edge Detection](#3-edge-detection)
+* [Image Histogram and Thresholding](#4-image-histogram-and-thresholding)
+* [Hybrid Images](#5-hybrid-images)
 
-### [1. Image Processing](#image-processing)
-* [1.1 Adding Noise To Image](#adding-noise-to-image)
-* [1.2 Image Filtering](#image-filtering)
-* [1.3 Edge Detection Using Various Masks](#edge-detection-using-various-masks)
-* [1.4 Image Histogram and Thresholding](#image-histogram-and-thresholding)
-* [1.5 Hybrid Images](#hybrid-images)
+### [Boundary Detection](#boundary-detection)
+* [Hough Transformation (Lines and Circles Detection)](#hough-transformation)
+* [Active Contour Model (Snake)](#active-contour)
 
-### [2. Boundary Detection](#boundary-detection)
-* [2.1 Hough Transformation (Lines and Circles Detection)](#hough-transformation)
-* [2.2 Active Contour Model (Snake)](#active-contour)
-
-### [3. Features Detection and Image Matching](#features-detection-and-image-matching)
-* [3.1 Extract the unique features in all images using Harris operator](#harris-operator)
-* [3.2 Generate feature descriptors using scale invariant features (SIFT)](#sift)
-* [3.3 Match the image set features using sum of squared differences (SSD) and normalized cross correlations](#image-matching)
+### [Features Detection and Image Matching](#features-detection-and-image-matching)
+* [Feature Extraction In Images Using Harris Operator](#harris-operator)
+* [Feature Descriptors Using Scale Invariant Features (SIFT)](#sift)
+* [Matching the Image Set Features Using Sum Of Squared Differences (SSD) and Normalized Cross Correlations (NCC)](#image-matching)
 
 <div style="page-break-after: always;"></div>
+
+
+# Installation
+You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies. Hopefully it works fine :smile:
+
+### Windows
+
+Basic dependencies are needed like `python & pip` , to run setup script you'll need to open Windows Power Shell (Windows User) as an Administrator and type the following:
+
+```
+Set-ExecutionPolicy Unrestricted
+```
+
+then press `'A'`, which will allow execution of the script by pressing right-click on script `setup.ps1` file then `Run with Powershell`.
+
+### Linux
+Added a bash script version `setup.sh`  with which a simple `bash ./setup.sh` will do fine.
+
+### Script's Components
+Script will install these Libraries , if already installed the installation will be skipped:
+- opencv-python
+- PyQt5
+- Pillow
+
+This is a completely optional, but it is a recommended way to install all the required dependencies. 
+
 
 # Usage
 
@@ -35,180 +60,214 @@ Simply you could load the image you want to apply the algorithm on via push butt
 
 Here's the view of the UI tabs without loading any images or applying any algorithms.
 
-<!--<img src="resources/UI/Noise_Filters_Edges_Tab.png" alt="Noise_Filters_Edges_Tab" -->
-<!--width="400" height="300">-->
-
-
 <details>
-  <summary>Main UI Tabs</summary>
+  <h4><summary>Main UI Tabs</summary></h4>
   <br>
   
   <img src="resources/UI/Noise_Filters_Edges_Tab.png" alt="Noise_Filters_Edges_Tab"
-  name="Noise_Filters_Edges_Tab" width="400" height="300">
+  name="Noise_Filters_Edges_Tab" target="_blank" width="500" height="400">
   
   <img src="resources/UI/Histogram_Tab.png" alt="Histogram_Tab" 
-  name="Histogram_Tab" width="400" height="300">
+  name="Histogram_Tab" width="500" height="400">
   
   <img src="resources/UI/Hybrid_Tab.png" alt="Hybrid_Tab" 
-  name="Hybrid_Tab" width="400" height="300">
+  name="Hybrid_Tab" width="500" height="400">
+  
+  <img src="resources/UI/Hough_Tab.png" alt="Hough_Tab.png"
+  name="Hough_Tab" width="500" height="400">
+  
+  <img src="resources/UI/Active_Contour_Tab.png" alt="Active_Contour_Tab" 
+  name="Active_Contour_Tab" width="500" height="400">
+  
+  <img src="resources/UI/Harris_Tab.png" alt="Harris_Tab" 
+  name="Harris_Tab" width="500" height="400">
+  
+  <img src="resources/UI/SIFT_Tab.png" alt="SIFT_Tab" 
+  name="SIFT_Tab" width="500" height="400">
+  
+  <img src="resources/UI/Segmentation_Tab.png" alt="Segmentation_Tab" 
+  name="Segmentation_Tab" width="500" height="400">
   
 </details>
 
 
-# Installation
-1. First you need should have `Python 3` installed on your machine in addition to other used libraries and packages.
-2. Required packages could be installed by running this command in a PowerShell: \
-`This command will be added later`
-
-<!-- Task #1 Readme -->
+<!-- Task #1 Report -->
 
 # Image Processing
-## Adding Noise To Image
-We implemented 3 types of noise: `Uniform`, `Gaussian` and `Salt & Pepper` Noise. 
+
+In this section we present some implementations such as adding noise to image, filtering the added noise, viewing different types of histograms, applying threshold to image and hybrid images.
+
+## 1. Adding Noise To Image
+We implemented 3 types of noise: `Uniform`, `Gaussian` and `Salt & Pepper`. In each type, you could adjust some parameters such as **Signal-To-Noise Ratio (SNR)** and **Sigma** to show different outputs.
+
+The results below were taken with the following setup:
+
+**Noise parameters:**
+- `SNR` = 0.6
+- `Sigma` = 128 (For Gaussian Noise Only)
+
+The whole GUI is displayed to show you the difference between the original and the noisy image.
+
+### 1.1 Uniform Noise
+<img src="resources/results/image_processing/Noise_Uniform_1.png" alt="Noise_Uniform_1" width="600" height="500">
+
+### 1.2 Gaussian Noise
+<img src="resources/results/image_processing/Noise_Gaussian_1.png" alt="Noise_Gaussian_1" width="600" height="500">
+
+### 1.3 Salt & Pepper Noise
+<img src="resources/results/image_processing/Noise_Salt_and_Pepper_1.png" alt="Noise_Salt_and_Pepper_1" width="600" height="500">
+
+To decrease amount of noise, move the SNR slider a little, and this would be the new output with `SNR = 0.9`, which means only 10% of the image is noise.
+
+<img src="resources/results/image_processing/Noise_Salt_and_Pepper_2.png" alt="Noise_Salt_and_Pepper_2" width="600" height="500">
  
-## Implementations Added:
 
-1. Noise Functions (Simulation of Different Noise Types): Uniform, Gaussian and Salt & Pepper.
-2. Edge Detection Techniques:  Prewitt, Sobel and Roberts.
-3. Image Histogram Equalization and Normalization.
-4. Local and Global Thresholding 
-5. Transformation to Gray Scale
-6. Frequency Domain Filters: Low Pass and High Pass Filters
+## 2. Image Filtering
+We implemented 3 types of Filters: `Average`, `Gaussian`, and `Median` filter. In each filter, you could adjust some parameters such as **mask size** and **Sigma** to show different outputs.
 
-In addition to histogram and distribution curve drawing for the loaded image and the option to mix 2 input images.
+The results below were taken with the following setup:
 
-## Results:
+**Noise parameters:**
+- `SNR` = 0.6
+- `Sigma` = 128 (For Gaussian Noise Only)
 
+**Filter Parameters:**
+- `Mask Size`: 5x5
+- `Sigma` = 128 (For Gaussian Filter Only)
 
-#### 1. Noise Addition: 
+The whole GUI is displayed to show you the difference between the noise and the filtered image.
 
-##### 1.1 Uniform Noise
+### 2.1 Average Filter Applied on Uniform Noise
+<img src="resources/results/image_processing/Filter_Average_On_Noise_Uniform_1.png" alt="Filter_Average_On_Noise_Uniform_1" width="600" height="500">
 
-![Uniform Noise](resources/results/task1/1.png)
+### 2.2 Gaussian Filter Applied on Gaussian Noise
+<img src="resources/results/image_processing/Filter_Gaussian_On_Noise_Gaussian_1.png" alt="Filter_Gaussian_On_Noise_Gaussian_1" width="600" height="500">
 
-##### 1.2 Gaussian Noise
+### 2.3 Median Filter Applied on Salt & Pepper Noise
+<img src="resources/results/image_processing/Filter_Median_On_Noise_Salt_And_Pepper_1.png" alt="Filter_Median_On_Noise_Salt_And_Pepper_1" width="600" height="500">
 
-![Gaussian Noise](resources/results/task1/2.png)
+To increase the blurring effect, increase mask size, and this would be the new output with `mask size = 9x9`.
 
-##### 1.3 Salt & Pepper Noise
-
-![Salt & Pepper](resources/results/task1/3.png)
-
-
-#### 2. Noise Filtration:
-
-##### 2.1 Average Filter (Applied on Gaussian Noise)
-![Average Filter](resources/results/task1/4.png)
-
-##### 2.2 Gaussian Filter (Applied on Gaussian Noise)
-![Gaussian Filter](resources/results/task1/5.png)
-
-##### 2.3. Median Filter (Applied on a Salt & Pepper Noisy Image)
-![Gaussian Filter](resources/results/task1/6.png)
+<img src="resources/results/image_processing/Filter_Gaussian_On_Noise_Gaussian_2.png" alt="Filter_Gaussian_On_Noise_Gaussian_2" width="600" height="500">
 
 
-#### 3. Edge Detection Techniques:
+## 3. Edge Detection
+We implemented 4 types of Edge Detection Techniques (Masks): `Prewitt`, `Sobel`, `Roberts` and `Canny`.
 
-##### 3.1 Sobel
-![Sobel](resources/results/task1/sobel.png)
+### 3.1 Sobel Mask
+<img src="resources/results/image_processing/Edges_Sobel_Mask.png" alt="Edges_Sobel_Mask" 
+width="600" height="500">
 
-##### 3.2 Prewitt
-![Prewitt](resources/results/task1/prewitt.png)
+### 3.2 Roberts Mask
+<img src="resources/results/image_processing/Edges_Roberts_Mask.png" alt="Edges_Roberts_Mask" 
+width="600" height="500">
 
-##### 3.3 Roberts
-![Roberts](resources/results/task1/roberts.png)
+### 3.3 Prewitt Mask
+<img src="resources/results/image_processing/Edges_Prweitt_Mask.png" alt="Edges_Prweitt_Mask" 
+width="600" height="500">
 
-##### 3.4 Canny
-![Canny1](resources/results/task2/canny_edges_result1.png)
-
-![Canny2](resources/results/task2/canny_edges_result2.png)
-
-You can apply different SNR ratios and choose the Sigma of Each Algorithm implemented from the sliders added on the left, each cell is marked with its contents and the application of the change in the sliders is instant.
-
-![UI](resources/results/task1/ui.png)
-
-#### 4. Histogram Equalization with input and output histograms
-
-![Equalized Histogram](resources/results/task1/eq.png)
-
-#### 5. Local and Global Thresholding
-
-![Local Histogram](resources/results/task1/local.png)
-
-![Global Histogram](resources/results/task1/global.png)
-
-#### 6. Gray Scale Transformation
-
-![image-20210405164031568](resources/results/task1/grayscale.png)
-
-#### 7. Frequency Domain Mixing
-
-![image-20210405164130406](resources/results/task1/hybrid.png)
-   
-   
-<div style="page-break-after: always;"></div>
-
-
-# Edge and Boundary Detection
-
-## Table of content
-##### 1. Edge Detection Using Canny Mask
-##### 2. Hough Transformation (Lines and Circles Detection)
-##### 3. Active Contour Model (Snake)
-
-
-### Edge Detection Using Canny Edge Detector
+### 3.4 Canny Mask
 The Canny edge detector is an edge detection operator that uses a multi-stage algorithm to detect a wide range of edges in images.
 
+<img src="resources/results/image_processing/Edges_Canny_Mask.png" alt="Edges_Canny_Mask" 
+width="600" height="500">
 
-<img src="resources/results/task2/canny_edges_result1.png" alt="Canny Edges Result1" width="700" height="400">
-<img src="resources/results/task2/canny_edges_result2.png" alt="Canny Edges Result2" width="700" height="400">
+
+## 4. Image Histogram and Thresholding
+We applied `Histogram Equalization and Normalization`, each algorithm is used for specific problem. In addition to `Convert RGB to Gray Image`. We also applied `Local and Global Thresholding` to differentiate between objects in the image and display specific area of interest. .
+
+### 4.1 Histogram Equalization
+<img src="resources/results/image_processing/Histogram_Equalization_1.png" alt="Histogram_Equalization_1"
+width="600" height="500">
+
+### 4.2 Histogram Normalization
+<img src="resources/results/image_processing/Histogram_Normalization_1.png" alt="Histogram_Normalization_1" 
+width="600" height="500">
+
+### 4.3 RGB To Gray
+<img src="resources/results/image_processing/Histogram_RGB_To_Gray.png" alt="Histogram_RGB_To_Gray" 
+width="600" height="500">
+
+### 4.4 Local Thresholding
+<img src="resources/results/image_processing/Thresholding_Local_1.png" alt="Thresholding_Local_1" 
+width="600" height="500">
+
+### 4.5 Global Thresholding
+<img src="resources/results/image_processing/Thresholding_Global_1.png" alt="Thresholding_Global_1" 
+width="600" height="500">
+
+
+## 5. Hybrid Images
+Given 2 images, we apply a Low Pass Filter to the 1st image, and a High Pass Filters to the 2nd image, both in Frequency Domain, and mix the two images to see the output.
+
+### 5.1 Low Pass Filter With High Pass Filter
+<img src="resources/results/image_processing/Hybrid_Images_1.png" alt="Hybrid_Images_1" 
+width="600" height="500">
+
+If you zoomed in the image you would see more details from the dog, if you zoomed out the image you would see more details from the cat.
+
 <div style="page-break-after: always;"></div>
 
 
-### Hough Transformation
+<!-- Task #2 Report -->
+
+# Boundary Detection
+In this section we present 2 algorithms implementations; `Hough Transformation` and Active Contour Model, aka `'Snake Algorithm'`.
+
+
+## 1. Hough Transformation
 The Hough transform is a technique that locates shapes in images. In particular, it has been used to extract lines, circles and ellipses if you can represent that shape in mathematical form.
 
-#### Line Detection
+The results below were taken with the following setup:
 
-<img src="resources/results/task2/hough_lines_result.png" alt="Hough Lines Detection" width="700" height="400">
+### 1.1 Line Detection
+The `Votes` number is basically responsible for determining the amount of output lines. More votes means more detected lines, but this doesn't mean that **5** votes should equal **5** lines, it's not working in that way.
 
-#### Circles Detection
+<img src="resources/results/boundary_detection/Hough_Lines_1.png" alt="Hough_Lines_1" width="600" height="500">
 
-<img src="resources/results/task2/hough_circles_result.png" alt="Hough Circles Detection" width="700" height="400">
+<img src="resources/results/boundary_detection/Hough_Lines_2.png" alt="Hough_Lines_2" width="600" height="500">
+
+
+### 1.2 Circle Detection
+Here there is an option to choose the range of radius you want to detect, minimum and maximum range.
+
+<img src="resources/results/boundary_detection/Hough_Circles_1.png" alt="Hough_Circles_1" width="600" height="500">
+
+<img src="resources/results/boundary_detection/Hough_Circles_2.png" alt="Hough_Circles_2" width="600" height="500">
+
+In the 2nd image the maximum radius is less than the bigger circle, so it wasn't detected.
+
+
 <div style="page-break-after: always;"></div>
 
-### Active Contour Model (Using Greedy Algorithm)
+## 2. Active Contour Model (Using Greedy Algorithm)
 Active contour is one of the active models in segmentation techniques, which makes use of the energy constraints and forces in the image for separation of region of interest.
 
 Active contour defines a separate boundary or curvature for the regions of target object for segmentation.
 
-#### Result of applying the algorithm on hand image
-<img src="resources/results/task2/active_contour_result1.png" alt="Active Contour Model" width="700" height="400">
+### Result of applying Snake Model on a hand image
+<img src="resources/results/boundary_detection/Active_Contour_Snake_1.png" alt="Active_Contour_Snake_1" width="600" height="500">
 
-##### This GIF shows the process in a better way
-<img src="resources/results/task2/Active_Contour_Hand_Result.gif" alt="Active Contour Model" width="700" height="400">
+The parameters' values of `alpha`, `beta`, `gamma` and `number of iterations` are selected by trial and error approach.
+
+### This GIF shows the process in a better way
+<img src="resources/results/boundary_detection/Active_Contour_Snake_1.gif" alt="Active_Contour_Snake_1" width="600" height="500">
+
+<div style="page-break-after: always;"></div>
+
+
+### Result of applying the algorithm on circles image
+<img src="resources/results/boundary_detection/Active_Contour_Snake_2.png" alt="Active_Contour_Snake_2" width="600" height="500">
+
+### This GIF shows the process in a better way
+<img src="resources/results/boundary_detection/Active_Contour_Snake_2.gif" alt="Active_Contour_Snake_2" width="600" height="500">
 
 <div style="page-break-after: always;"></div>
 
 
-#### Result of applying the algorithm on hand image
-<img src="resources/results/task2/active_contour_result2.png" alt="Active Contour Model" width="700" height="400">
-
-##### This GIF shows the process in a better way
-<img src="resources/results/task2/Active_Contour_Circles_Result.gif" alt="Active Contour Model" width="700" height="400">
-
-<div style="page-break-after: always;"></div>
-
+<!-- Task #3 Report -->
 
 # Features Detection and Image Matching
-
-## Table of content
-##### 1. Extract the unique features in all images using Harris operator
-##### 2. Generate feature descriptors using scale invariant features (SIFT)
-##### 3. Match the image set features using sum of squared differences (SSD) and normalized cross correlations
-
-<div style="page-break-after: always;"></div>
 
 **Each Algorithm Applied was thrown onto a thread for faster better experience**
 ### Extract the unique features in all images using Harris operator

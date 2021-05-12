@@ -6,11 +6,10 @@ from Histogram import global_threshold
 
 def apply_optimal_threshold(source: np.ndarray):
     """
-
-    :param source:
-    :return:
+    Applies Thresholding To The Given Grayscale Image Using The Optimal Thresholding Method
+    :param source: NumPy Array of The Source Grayscale Image
+    :return: Thresholded Image
     """
-
     src = np.copy(source)
     OldThreshold = GetInitialThreshold(src)
     NewThreshold = GetOptimalThreshold(src, OldThreshold)
@@ -26,7 +25,7 @@ def apply_optimal_threshold(source: np.ndarray):
 def GetInitialThreshold(source: np.ndarray):
     """
     Gets The Initial Threshold Used in The Optimal Threshold Method
-    :param source: Source Image NumPy Array
+    :param source: NumPy Array of The Source Grayscale Image
     :return Threshold: Initial Threshold Value
     """
     # Maximum X & Y Values For The Image
@@ -53,7 +52,7 @@ def GetInitialThreshold(source: np.ndarray):
 def GetOptimalThreshold(source: np.ndarray, Threshold):
     """
     Calculates Optimal Threshold Based on Given Initial Threshold
-    :param source: Source Image NumPy Array
+    :param source: NumPy Array of The Source Grayscale Image
     :param Threshold: Initial Threshold
     :return OptimalThreshold: Optimal Threshold Based on Given Initial Threshold
     """

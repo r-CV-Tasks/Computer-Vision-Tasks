@@ -1,45 +1,69 @@
-<h1 style="text-align: center;"> Computer Vision Tasks</h1>
+<h1 style="text-align: center;"> Computer Vision Course Tasks</h1>
 
-| Name                    | Section | B.N Number   |
-|-------------------------|---------|--------------|
-| Ahmed Salah El-Dein     | 1       |            5 |
-| Ahmad Abdelmageed Ahmad | 1       |            8 |
-| Ahmad Mahdy Mohammed    | 1       |            9 |
-| Abdullah Mohammed Sabry | 2       |            7 |
-
-<br>
-
-This repository is created by 
-
-In this Repository we present a variety of Image processing Techniques implemented from scratch using `Python` programming language with Numpy and Pure Python. Each Category of Algorithms is presented in its tab in the UI which we will discover next.
-
-
-Our UI present a tab for each category of the implemented algorithms. We first load our image and apply the selected algorithm.
+In this Repository we present a variety of Image Processing Techniques implemented from scratch using `Python` with help of some helpful packages.
 
 ## Table of contents
-### <a href="#1-image-processing">1. Image Processing</a>
-<!--### [1. Image Processing](#1-image-processing)-->
-* [1.1 Adding Noise To an Image](#adding-noise-to-an-image)
-* [1.2 Image Filtering](#-Image-Filtering)
-* [1.3 Edge Detection Using Various Masks](#Edge-Detection-Using-Various-Masks)
-* [1.4 Image Histogram and Thresholding](#Image-Histogram-and-Thresholding)
-* [1.5 Hybrid Images](#Hybrid-Images)
+### [Usage](#usage)
 
-### [2. Boundary Detection](#Boundary-Detection)
-* [2.1 Hough Transformation (Lines and Circles Detection)](#Hough-Transformation)
-* [2.2 Active Contour Model (Snake)](#Active-Contour)
+### [Installation](#installation)
 
-### [3. Features Detection and Image Matching](#Features-Detection-and-Image-Matching)
-* [3.1 Extract the unique features in all images using Harris operator](#Harris-Operator)
-* [3.2 Generate feature descriptors using scale invariant features (SIFT)](#SIFT)
-* [3.3 Match the image set features using sum of squared differences (SSD) and normalized cross correlations](#Image-Matching)
+### [1. Image Processing](#image-processing)
+* [1.1 Adding Noise To Image](#adding-noise-to-image)
+* [1.2 Image Filtering](#image-filtering)
+* [1.3 Edge Detection Using Various Masks](#edge-detection-using-various-masks)
+* [1.4 Image Histogram and Thresholding](#image-histogram-and-thresholding)
+* [1.5 Hybrid Images](#hybrid-images)
+
+### [2. Boundary Detection](#boundary-detection)
+* [2.1 Hough Transformation (Lines and Circles Detection)](#hough-transformation)
+* [2.2 Active Contour Model (Snake)](#active-contour)
+
+### [3. Features Detection and Image Matching](#features-detection-and-image-matching)
+* [3.1 Extract the unique features in all images using Harris operator](#harris-operator)
+* [3.2 Generate feature descriptors using scale invariant features (SIFT)](#sift)
+* [3.3 Match the image set features using sum of squared differences (SSD) and normalized cross correlations](#image-matching)
 
 <div style="page-break-after: always;"></div>
 
+# Usage
+
+The **GUI** is composed of many tabs; each tab contains some push buttons, combo boxes or sliders, input texts and some widgets to view the images.
+
+Each category of implemented Algorithms is displayed in a separate tab in the GUI.
+
+Simply you could load the image you want to apply the algorithm on via push buttons, adjust the required parameters then apply the selected algorithm.
+
+Here's the view of the UI tabs without loading any images or applying any algorithms.
+
+<!--<img src="resources/UI/Noise_Filters_Edges_Tab.png" alt="Noise_Filters_Edges_Tab" -->
+<!--width="400" height="300">-->
+
+
+<details>
+  <summary>Main UI Tabs</summary>
+  <br>
+  
+  <img src="resources/UI/Noise_Filters_Edges_Tab.png" alt="Noise_Filters_Edges_Tab"
+  name="Noise_Filters_Edges_Tab" width="400" height="300">
+  
+  <img src="resources/UI/Histogram_Tab.png" alt="Histogram_Tab" 
+  name="Histogram_Tab" width="400" height="300">
+  
+  <img src="resources/UI/Hybrid_Tab.png" alt="Hybrid_Tab" 
+  name="Hybrid_Tab" width="400" height="300">
+  
+</details>
+
+
+# Installation
+1. First you need should have `Python 3` installed on your machine in addition to other used libraries and packages.
+2. Required packages could be installed by running this command in a PowerShell: \
+`This command will be added later`
+
 <!-- Task #1 Readme -->
 
-# 1. Image Processing
-## Adding Noise To an Image
+# Image Processing
+## Adding Noise To Image
 We implemented 3 types of noise: `Uniform`, `Gaussian` and `Salt & Pepper` Noise. 
  
 ## Implementations Added:
@@ -206,7 +230,19 @@ Applying Two Matching Algorithms SSD And NCC**
 ![ssd](/resources/results/task3/ssd.png)
 
 ### Using Normalized Cross Correlations (NCC)
-![ssd](/resources/results/task3/ncc.png)
+![ncc](/resources/results/task3/ncc.png)
 
 
 <div style="page-break-after: always;"></div>
+
+
+
+This repository is created by a group of 4 students in Biomedical Engineering Department, Cairo University.
+
+
+| Name                    | Section | B.N Number   |
+|-------------------------|---------|--------------|
+| Ahmed Salah El-Dein     | 1       |            5 |
+| Ahmad Abdelmageed Ahmad | 1       |            8 |
+| Ahmad Mahdy Mohammed    | 1       |            9 |
+| Abdullah Mohammed Sabry | 2       |            7 |

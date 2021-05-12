@@ -4,6 +4,7 @@ In this Repository we present a variety of Image Processing Techniques implement
 
 ## Table of contents
 ### [Installation](#installation)
+
 ### [Usage](#usage)
 
 ### [Image Processing](#image-processing)
@@ -14,19 +15,21 @@ In this Repository we present a variety of Image Processing Techniques implement
 * [Hybrid Images](#5-hybrid-images)
 
 ### [Boundary Detection](#boundary-detection)
-* [Hough Transformation (Lines and Circles Detection)](#hough-transformation)
-* [Active Contour Model (Snake)](#active-contour)
+* [Hough Transformation (Lines and Circles Detection)](#1-hough-transformation)
+* [Active Contour Model (Snake)](#active-contour-model)
 
 ### [Features Detection and Image Matching](#features-detection-and-image-matching)
-* [Feature Extraction In Images Using Harris Operator](#harris-operator)
-* [Feature Descriptors Using Scale Invariant Features (SIFT)](#sift)
-* [Matching the Image Set Features Using Sum Of Squared Differences (SSD) and Normalized Cross Correlations (NCC)](#image-matching)
+* [Feature Extraction In Images Using Harris Operator](#1-extract-the-unique-features-in-all-images-using-harris-operator)
+
+* [Feature Descriptors Using Scale Invariant Features (SIFT) Algorithm](#2-feature-descriptors-using-scale-invariant-features-sift-algorithm)
+
+* [Matching the Image Set Features](#matching-the-image-set-features)
 
 <div style="page-break-after: always;"></div>
 
 
 # Installation
-You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies. Hopefully it works fine :smile:
+You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies.
 
 ### Windows
 
@@ -240,12 +243,12 @@ In the 2nd image the maximum radius is less than the bigger circle, so it wasn't
 
 <div style="page-break-after: always;"></div>
 
-## 2. Active Contour Model (Using Greedy Algorithm)
+## 2. Active Contour Model
 Active contour is one of the active models in segmentation techniques, which makes use of the energy constraints and forces in the image for separation of region of interest.
 
-Active contour defines a separate boundary or curvature for the regions of target object for segmentation.
+Active contour defines a separate boundary or curvature for the regions of target object for segmentation. This implementation is based on `Greedy Algorithm`.
 
-### Result of applying Snake Model on a hand image
+### 2.1 Result of applying Snake Model on a hand image
 <img src="resources/results/boundary_detection/Active_Contour_Snake_1.png" alt="Active_Contour_Snake_1" width="600" height="500">
 
 The parameters' values of `alpha`, `beta`, `gamma` and `number of iterations` are selected by trial and error approach.
@@ -256,7 +259,7 @@ The parameters' values of `alpha`, `beta`, `gamma` and `number of iterations` ar
 <div style="page-break-after: always;"></div>
 
 
-### Result of applying the algorithm on circles image
+### 2.2 Result of applying the algorithm on circles image
 <img src="resources/results/boundary_detection/Active_Contour_Snake_2.png" alt="Active_Contour_Snake_2" width="600" height="500">
 
 ### This GIF shows the process in a better way
@@ -268,35 +271,52 @@ The parameters' values of `alpha`, `beta`, `gamma` and `number of iterations` ar
 <!-- Task #3 Report -->
 
 # Features Detection and Image Matching
-
-**Each Algorithm Applied was thrown onto a thread for faster better experience**
-### Extract the unique features in all images using Harris operator
-**Applying a threshold 0.2 it only took about 0.01 second to detect all Image Corners**
-![harris_v1](./resources/results/task3/harris_v1.png)
-
-**We also applied the harris operator on a harder image with the same threshold this time it only took 0.02 seconds** 
-![harris_v2](./resources/results/task3/harris_v2.png)
+In this section we present 3 algorithms implementations; `Feature Extraction Using Harris Operator`, `Scale Invariant Features (SIFT)` and `Feature Matching`.
 
 
-<img src="resources/results/task2/canny_edges_result2.png" alt="Canny Edges Result2" width="700" height="400">)
-<div style="page-break-after: always;"></div>
+## 1. Extract The Unique Features In All Images Using Harris Operator
 
-### Using Sift Descriptors and Harris Operator to Match the image set features 
-**Using Harris Operator to Detect Image Key Points and Applying the SIFT Algorithm to Generate each Feature Descriptor,
-Applying Two Matching Algorithms SSD And NCC**
+There are mainly 2 parameters in Harris Detector:
+- `Threshold`: Value used computing local maxima (Higher threshold means less corners)
+- `Sensitivity`: Sensitivity factor to separate corners from edges. (Small values result in detection of sharp corners).
 
-### using sum of squared differences (SSD)
-![ssd](/resources/results/task3/ssd.png)
+### 1.1 Harris Corners with `0.2` Threshold and `0.01` Sensitivity
+<img src="resources/results/feature_matching/Harris_Corners_1.png" alt="Harris_Corners_1" width="600" height="500">
 
-### Using Normalized Cross Correlations (NCC)
-![ncc](/resources/results/task3/ncc.png)
+### 1.2 Harris Corners with `0.1` Threshold and `0.02` Sensitivity
+<img src="resources/results/feature_matching/Harris_Corners_2.png" alt="Harris_Corners_2" width="600" height="500">
 
+The processing time is barely noticeable, it only took about `0.01 second` to detect all the corners in the first image and `0.02 second` in the second image.
 
 <div style="page-break-after: always;"></div>
 
+## 2. Feature Descriptors Using Scale Invariant Features (SIFT) Algorithm
+Applying SIFT Algorithm to generate features descriptors to use them in matching images with different techniques.
+
+It is not necessary to show the output of SIFT algorithm, the final output is shown in the matching step.
+
+## 3. Matching the Image Set Features 
+We applied two Matching Algorithms, Sum Of Squared Differences `(SSD)` and Normalized Cross Correlations `(NCC)`.
 
 
-This repository is created by a group of 4 students in Biomedical Engineering Department, Cairo University.
+### 3.1 Feature Matching Using Sum of Squared Differences (SSD)
+<img src="resources/results/feature_matching/Feature_Matching_SSD.png" alt="Feature_Matching_SSD" width="600" height="500">
+
+### 3.2 Feature Matching Using Normalized Cross Correlations (NCC)
+<img src="resources/results/feature_matching/Feature_Matching_NCC.png" alt="Feature_Matching_NCC" width="600" height="500">
+
+The computations in this algorithm are heavily and extreme, so as you see it took around `1 minute` to finish the whole process on a small image.
+
+#### Note:
+In the above results, each SIFT Algorithm applied was running on a separate thread for faster and better experience, and to avoid GUI freezing problem.
+
+
+
+<div style="page-break-after: always;"></div>
+
+
+
+This repository is created by a group of 4 students in Biomedical Engineering Department, Cairo University. :copyright:
 
 
 | Name                    | Section | B.N Number   |

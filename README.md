@@ -4,9 +4,9 @@ In this Repository we present a variety of Image Processing Techniques implement
 
 ## Table of contents
 <!--### [Installation](#installation-)-->
-### <a href="#installation">Installation</a>
+### <a name="installation">Installation</a>
 
-### <a href="#usage">Usage</a>
+### <a name="usage">Usage</a>
 <!--### [Usage](#usage)-->
 
 ### [Image Processing](#image-processing)
@@ -18,19 +18,20 @@ In this Repository we present a variety of Image Processing Techniques implement
 
 ### [Boundary Detection](#boundary-detection)
 * [Hough Transformation (Lines and Circles Detection)](#1-hough-transformation)
-* [Active Contour Model (Snake)](#active-contour-model)
+* [Active Contour Model (Snake)](#2-active-contour-model)
 
 ### [Features Detection and Image Matching](#features-detection-and-image-matching)
 * [Feature Extraction In Images Using Harris Operator](#1-extract-the-unique-features-in-all-images-using-harris-operator)
 
 * [Feature Descriptors Using Scale Invariant Features (SIFT) Algorithm](#2-feature-descriptors-using-scale-invariant-features-sift-algorithm)
 
-* [Matching the Image Set Features](#matching-the-image-set-features)
+* [Matching the Image Set Features](#3-matching-the-image-set-features)
 
 <div style="page-break-after: always;"></div>
 
 
 # Installation
+<!--# <a style=";">Installation</a>-->
 You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies.
 
 ### Windows

@@ -4,9 +4,9 @@ In this Repository we present a variety of Image Processing Techniques implement
 
 ## Table of contents
 <!--### [Installation](#installation-)-->
-### <a href="installation">Installation</a>
+### <a href="#installation">Installation</a>
 
-### <a href="usage">Usage</a>
+### <a href="#usage">Usage</a>
 <!--### [Usage](#usage)-->
 
 ### [Image Processing](#image-processing)

@@ -102,7 +102,7 @@ def canny_edge(source: np.ndarray):
     FilteredImage = gaussian_filter(Gray, 3, 9)
 
     # Get Gradient Magnitude & Direction
-    GradientMagnitude, GradientDirection = sobel_edge(FilteredImage, True)
+    GradientMagnitude, GradientDirection = sobel_edge(FilteredImage, GetMagnitude=True, GetDirection=True)
     GradientMagnitude *= 255.0 / GradientMagnitude.max()
 
     # Apply Non-Maximum Suppression

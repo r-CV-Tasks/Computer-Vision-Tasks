@@ -3,20 +3,21 @@
 import logging
 import sys
 import timeit
-import typing
 from typing import Callable, Type
 
 import cv2
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, QFile, QTextStream
+from PyQt5.QtCore import QThread, QFile, QTextStream
 from PyQt5.QtWidgets import QMessageBox
 
 from UI import mainGUI as m
 from UI import breeze_resources
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
-    Hough, Contour, Harris, SIFT, FeatureMatching
+    Hough, Contour, Harris, FeatureMatching, SegmentationThresholding, SegmentationClustering
+
+from WorkersClasses import SIFTWorker, MatchingWorker, MedianFilterWorker
 
 # Create and configure logger
 logging.basicConfig(level=logging.DEBUG,
@@ -27,141 +28,6 @@ logging.basicConfig(level=logging.DEBUG,
 # Creating a logger object
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-
-# Step 1: Create a worker class (subclass of QObject)
-class SIFTWorker(QObject):
-    def __init__(self, source: np.ndarray, source_id: int, start_time: float):
-        """
-
-        :param source:
-        :param source_id:
-        :param start_time:
-        """
-        super().__init__()
-        self.img = source
-        self.source_id = source_id
-        self.start_time = start_time
-        self.end_time = 0
-
-    # Create 2 signals
-    finished = pyqtSignal(list, np.ndarray, int, float)
-    progress = pyqtSignal(int)
-
-    def run(self):
-        """
-        Function to run a long task
-        This is executed when calling SIFTWorker.start() in the main application
-
-        :return:
-        """
-
-        # Apply SIFT Detector and Descriptor
-        keypoints, descriptors = SIFT.Sift(src=self.img)
-        print(f"keypoints {self.source_id}: {keypoints}")
-        print(f"keypoints len {self.source_id}: {len(keypoints)}")
-
-        print(f"descriptors {self.source_id}: {descriptors}")
-        print(f"descriptors shape {self.source_id}: {descriptors.shape}")
-
-        # Function end
-        end_time = timeit.default_timer()
-
-        # # Show only 5 digits after floating point
-        elapsed_time = float(format(end_time - self.start_time, '.5f'))
-
-        # Emit finished signal to end the thread
-        self.finished.emit(keypoints, descriptors, self.source_id, elapsed_time)
-
-
-class MatchingWorker(QObject):
-    def __init__(self, source1: np.ndarray, source2: np.ndarray,
-                 desc1: np.ndarray, desc2: np.ndarray,
-                 keypoints1: list, keypoints2: list,
-                 match_calculator: Callable, num_matches: int,
-                 source_id: int, start_time: float):
-        """
-
-        :param source1:
-        :param source2:
-        :param desc1:
-        :param desc2:
-        :param keypoints1:
-        :param keypoints2:
-        :param match_calculator:
-        :param num_matches:
-        :param source_id:
-        :param start_time:
-        """
-        super().__init__()
-        self.img1 = source1
-        self.img2 = source2
-        self.desc1 = desc1
-        self.desc2 = desc2
-        self.match_calculator = match_calculator
-        self.keypoints1 = keypoints1
-        self.keypoints2 = keypoints2
-        self.num_matches = num_matches
-        self.source_id = source_id
-        self.start_time = start_time
-        self.end_time = 0
-
-    # Create 2 signals
-    finished = pyqtSignal(np.ndarray, int, float)
-    progress = pyqtSignal(int)
-
-    def run(self):
-        """
-        Function to run a long task
-        This is executed when calling MatchingWorker.start() in the main application
-        :return:
-        """
-
-        matches = FeatureMatching.apply_feature_matching(desc1=self.desc1,
-                                                         desc2=self.desc2,
-                                                         match_calculator=self.match_calculator)
-
-        matches = sorted(matches, key=lambda x: x.distance, reverse=True)
-
-        matched_image = cv2.drawMatches(self.img1, self.keypoints1,
-                                        self.img2, self.keypoints2,
-                                        matches[:self.num_matches], self.img2, flags=2)
-
-        # Function end
-        end_time = timeit.default_timer()
-
-        # # Show only 5 digits after floating point
-        elapsed_time = float(format(end_time - self.start_time, '.5f'))
-
-        # Emit finished signal to end the thread
-        self.finished.emit(matched_image, self.source_id, elapsed_time)
-
-
-class MedianFilterWorker(QObject):
-    def __init__(self, source: np.ndarray, shape: int):
-        """
-
-        :param source:
-        :param shape:
-        """
-        super().__init__()
-        self.noisy_image = source
-        self.shape = shape
-
-    # Create 2 signals
-    finished = pyqtSignal(np.ndarray)
-    progress = pyqtSignal(int)
-
-    def run(self):
-        """
-        Function to run a long task
-        This is executed when calling MedianFilterWorker.start() in the main application
-        :return:
-        """
-        filtered_image = LowPass.median_filter(source=self.noisy_image, shape=self.shape)
-
-        # Emit finished signal to end the thread
-        self.finished.emit(filtered_image)
 
 
 class ImageProcessor(m.Ui_MainWindow):
@@ -194,9 +60,10 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img4_output, self.img5_output, self.img6_output,
                              [self.img7_1_output, self.img7_2_output]]
 
-        self.filtersImages = [self.img0_noisy, self.img0_filtered, self.img0_edged]
+        self.processedImages = {"0_1": self.img0_noisy, "0_2": self.img0_filtered, "0_3": self.img0_edged,
+                                "7_1": self.img7_1_output, "7_2": self.img7_2_output}
 
-        self.histoImages = [self.img1_input_histo, self.img1_output, self.img1_output_histo]
+        self.histogramImages = {"1_1": self.img1_input_histo, "1_2": self.img1_output, "1_3": self.img1_output_histo}
 
         # This contains all the widgets to setup them in one loop
         self.imageWidgets = [self.img0_input, self.img0_noisy, self.img0_filtered, self.img0_edged,
@@ -215,7 +82,8 @@ class ImageProcessor(m.Ui_MainWindow):
         self.output_hist_image = None
         self.updated_image = None
 
-        # Threads and workers we will use in QThread for SIFT Algorithm
+        # Threads and workers we will use in QThread
+        # Used for SIFT Algorithm, Feature Matching and Median Filter
         self.threads = {}
         self.workers = {}
 
@@ -251,8 +119,12 @@ class ImageProcessor(m.Ui_MainWindow):
             slider.id = self.sliders.index(slider)
             slider.signal.connect(self.slider_changed)
 
-        # Combo Lists
-        self.updateCombos = [self.combo_noise, self.combo_filter, self.combo_edges, self.combo_histogram]
+        # Combo Boxes Dictionary
+        self.comboBoxes = {"0_1": self.combo_noise, "0_2": self.combo_filter,
+                           "0_3": self.combo_edges,
+                           "1_1": self.combo_histogram,
+                           "6_1": self.combo_matching_methods,
+                           "7_1": self.combo_thresholding_methods, "7_2": self.combo_clustering_methods}
 
         # Setup Load Buttons Connections
         self.btn_load_0.clicked.connect(lambda: self.load_file(self.tab_index))
@@ -268,10 +140,16 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_load_7_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
 
         # Setup Combo Connections
-        self.combo_noise.activated.connect(lambda: self.combo_box_changed(self.tab_index, 0))
-        self.combo_filter.activated.connect(lambda: self.combo_box_changed(self.tab_index, 1))
-        self.combo_edges.activated.connect(lambda: self.combo_box_changed(self.tab_index, 2))
-        self.combo_histogram.activated.connect(lambda: self.combo_box_changed(self.tab_index, 3))
+        self.combo_noise.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_1"))
+        self.combo_filter.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_2"))
+        self.combo_edges.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_3"))
+        self.combo_histogram.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="1_1"))
+
+        self.combo_thresholding_methods.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index,
+                                                                                         combo_id="7_1"))
+
+        self.combo_clustering_methods.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index,
+                                                                                       combo_id="7_2"))
 
         # Setup Hybrid Button
         self.btn_hybrid.clicked.connect(self.hybrid_image)
@@ -355,7 +233,7 @@ class ImageProcessor(m.Ui_MainWindow):
             self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
 
             # Reset Results
-            self.clear_results(tab_id=img_id)
+            self.clear_results(tab_id=img_id, combo_id=multi_widget)
 
             # Display Original Image
             self.display_image(source=self.imagesData[img_idx], widget=self.inputImages[img_id][multi_widget])
@@ -382,14 +260,17 @@ class ImageProcessor(m.Ui_MainWindow):
         :return:
         """
 
+        # in Filters Tab
         if tab_id == 0:
-            for i in range(len(self.updateCombos)):
-                # Enable Combo Boxes
-                self.updateCombos[i].setEnabled(True)
+            # Enable ComboBoxes
+            self.combo_noise.setEnabled(True)
+            self.combo_edges.setEnabled(True)
 
+        # in Histograms Tab
         elif tab_id == 1:
             self.combo_histogram.setEnabled(True)
 
+        # in Hybrid Tab
         elif tab_id == 2:
             self.btn_load_2_2.setEnabled(True)
             try:
@@ -423,24 +304,29 @@ class ImageProcessor(m.Ui_MainWindow):
             self.text_sift_matches.setEnabled(True)
             self.btn_match_features.setEnabled(True)
 
-        # in Template Matching  Tab
+        # in Segmentation  Tab
         elif tab_id == 7:
-            self.template_matching_settings_layout.setEnabled(True)
-            self.btn_match_template.setEnabled(True)
+            if "7_1" in self.imagesData:
+                self.combo_thresholding_methods.setEnabled(True)
 
-    def clear_results(self, tab_id):
+            if "7_2" in self.imagesData:
+                self.combo_clustering_methods.setEnabled(True)
+
+    def clear_results(self, tab_id: int, combo_id: int = 0):
         """
         Clears previous results when loading a new image
 
         :param tab_id: current tab index
+        :param combo_id:
         :return: void
         """
 
         # Check current tab index
         if tab_id == 0:
             # Clear Filters Images Widgets
-            for i in range(len(self.filtersImages)):
-                self.filtersImages[i].clear()
+            self.img0_noisy.clear()
+            self.img0_filtered.clear()
+            self.img0_edged.clear()
 
             # Reset combo boxes choices
             self.combo_noise.setCurrentIndex(0)
@@ -458,8 +344,10 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif tab_id == 1:
             # Clear Histograms Widgets
-            for widget in self.histoImages:
+            for widget in self.histogramImages.values():
                 widget.clear()
+
+            self.clear_bar_graph(widget=self.histogramImages["1_3"])
 
             # Reset combo box choices
             self.combo_histogram.setCurrentIndex(0)
@@ -480,11 +368,17 @@ class ImageProcessor(m.Ui_MainWindow):
             self.img6_output.clear()
 
         elif tab_id == 7:
-            self.img7_1_input.clear()
-            self.img7_1_output.clear()
-            self.img7_2_output.clear()
+            # Don't clear Output of the other image
 
-    def combo_box_changed(self, tab_id, combo_id):
+            if combo_id == 0:
+                self.img7_1_output.clear()
+                self.combo_thresholding_methods.setCurrentIndex(0)
+
+            elif combo_id == 1:
+                self.img7_2_output.clear()
+                self.combo_clustering_methods.setCurrentIndex(0)
+
+    def combo_box_changed(self, tab_id: int, combo_id: str):
         """
 
         :param tab_id: id of the current tab
@@ -498,7 +392,7 @@ class ImageProcessor(m.Ui_MainWindow):
         # If 1st tab is selected
         if tab_id == 0:
             # Get Values from combo box and sliders
-            selected_component = self.updateCombos[combo_id].currentText().lower()
+            selected_component = self.comboBoxes[combo_id].currentText().lower()
 
             # Adjust Sliders Values
             noise_snr = self.snr_slider_1.value() / 10
@@ -512,8 +406,10 @@ class ImageProcessor(m.Ui_MainWindow):
             mask_size = int(np.round(np.interp(mask_size, [1, 4], [3, 9])))
 
             # Noise Options
-            if combo_id == 0:
+            if combo_id == "0_1":
+                # Enable SNR Slider and Filters Combo
                 self.snr_slider_1.setEnabled(True)
+                self.combo_filter.setEnabled(True)
 
                 if selected_component == "uniform noise":
                     self.currentNoiseImage = Noise.uniform_noise(source=self.imagesData[img_key], snr=noise_snr)
@@ -527,12 +423,12 @@ class ImageProcessor(m.Ui_MainWindow):
                     self.currentNoiseImage = Noise.salt_pepper_noise(source=self.imagesData[img_key], snr=noise_snr)
 
                 try:
-                    self.display_image(source=self.currentNoiseImage, widget=self.filtersImages[combo_id])
+                    self.display_image(source=self.currentNoiseImage, widget=self.processedImages[combo_id])
                 except TypeError:
-                    print("Cannot display Image")
+                    print("Cannot display Noisy Image")
 
             # Filters Options
-            if combo_id == 1:
+            if combo_id == "0_2":
                 self.mask_size_1.setEnabled(True)
 
                 # Check if there's a noisy image already
@@ -549,15 +445,16 @@ class ImageProcessor(m.Ui_MainWindow):
                                                                   sigma=filter_sigma)
 
                 elif selected_component == "median filter":
-                    self.create_median_thread(source=self.currentNoiseImage, shape=mask_size, source_id=2)
+                    self.create_median_thread(source=self.currentNoiseImage, shape=mask_size,
+                                              source_id=2, combo_id=combo_id)
 
                 try:
-                    self.display_image(source=self.filtered_image, widget=self.filtersImages[combo_id])
+                    self.display_image(source=self.filtered_image, widget=self.processedImages[combo_id])
                 except TypeError:
-                    print("Cannot display Image")
+                    print("Cannot display filtered Image")
 
             # Edge Detection Options
-            if combo_id == 2:
+            if combo_id == "0_3":
                 if selected_component == "sobel mask":
                     self.edged_image = EdgeDetection.sobel_edge(source=self.imagesData[img_key])
 
@@ -571,24 +468,26 @@ class ImageProcessor(m.Ui_MainWindow):
                     self.edged_image = EdgeDetection.canny_edge(source=self.imagesData[img_key])
 
                 try:
-                    self.display_image(source=self.edged_image, widget=self.filtersImages[combo_id])
+                    self.display_image(source=self.edged_image, widget=self.processedImages[combo_id])
                 except TypeError:
-                    print("Cannot display Image")
+                    print("Cannot display Edges of the Image")
 
-            logger.info(f"Viewing {selected_component} Of Image #{tab_id}")
+            logger.info(f"Viewing {selected_component} of Image {tab_id}")
 
         # If 2nd tab is selected
         elif tab_id == 1:
 
             # Get Values from combo box
-            selected_component = self.combo_histogram.currentText().lower()
+            # selected_component = self.combo_histogram.currentText().lower()
+            selected_component = self.comboBoxes[combo_id].currentText().lower()
 
             # Histograms Options
-            if combo_id == 3:
+            if combo_id == "1_1":
                 if selected_component == "original histogram":
                     # Clear old results
                     self.img1_input_histo.clear()
                     self.img1_output_histo.clear()
+
                     self.output_hist_image = np.copy(self.imagesData[img_key])
 
                     # Draw the histograms of the input image
@@ -641,7 +540,42 @@ class ImageProcessor(m.Ui_MainWindow):
                 except TypeError:
                     print("Cannot display histogram image")
 
-            logger.info(f"Viewing {selected_component} Component Of Image #{tab_id}")
+            logger.info(f"Viewing {selected_component} Component Of Image{tab_id}")
+
+        # If Segmentation Tab is selected
+        elif tab_id == 7:
+            # Get Values from combo box
+            selected_component = self.comboBoxes[combo_id].currentText().lower()
+            source = np.copy(self.imagesData[combo_id])
+            segmented_image = None
+
+            if combo_id == "7_1":
+                if selected_component == "optimal thresholding":
+                    segmented_image = SegmentationThresholding.apply_optimal_threshold(source=source)
+
+                elif selected_component == "otsu thresholding":
+                    segmented_image = SegmentationThresholding.apply_otsu_threshold(source=source)
+
+                elif selected_component == "spectral thresholding":
+                    segmented_image = SegmentationThresholding.apply_spectral_threshold(source=source)
+
+            elif combo_id == "7_2":
+                if selected_component == "k-means":
+                    segmented_image = SegmentationClustering.apply_k_means(source=source)
+
+                elif selected_component == "region growing":
+                    segmented_image = SegmentationClustering.apply_region_growing(source=source)
+
+                elif selected_component == "agglomerative clustering":
+                    segmented_image = SegmentationClustering.apply_agglomerative(source=source)
+
+                elif selected_component == "mean-shift clustering":
+                    segmented_image = SegmentationClustering.apply_mean_shift(source=source)
+
+            try:
+                self.display_image(source=segmented_image, widget=self.processedImages[combo_id])
+            except TypeError:
+                print("Cannot display Segmented Image")
 
     def hybrid_image(self):
         """
@@ -912,15 +846,16 @@ class ImageProcessor(m.Ui_MainWindow):
                                         match_calculator=match_method, num_matches=num_matches,
                                         source_id=3, start_time=start_time)
 
-    def save_median_result(self, source: np.ndarray):
+    def save_median_result(self, source: np.ndarray, combo_id: str):
         """
         Save the output from Median QThread to view median filter result
 
         :param source:
+        :param combo_id:
         :return:
         """
         print("Median Filter is Finished")
-        self.display_image(source=source, widget=self.filtersImages[1])
+        self.display_image(source=source, widget=self.processedImages[combo_id])
 
     def save_matching_result(self, source: np.ndarray, source_id: int, elapsed_time: float):
         """
@@ -943,7 +878,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
         self.display_image(source=source, widget=self.img6_output)
 
-    def create_thread(self, thread_num: int, worker_class: object):
+    def create_thread(self, thread_num: int, worker_class: Type[Callable]):
         pass
 
     def create_sift_thread(self, source: np.ndarray, source_id: int, start_time: float):
@@ -1025,12 +960,13 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_match_features.setEnabled(False)
         self.threads[source_id].finished.connect(lambda: self.btn_match_features.setEnabled(True))
 
-    def create_median_thread(self, source: np.ndarray, source_id: int, shape: int):
+    def create_median_thread(self, source: np.ndarray, source_id: int, shape: int, combo_id: str):
         """
 
         :param source:
         :param source_id:
         :param shape:
+        :param combo_id:
         :return:
         """
 
@@ -1038,7 +974,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.threads[source_id] = QThread()
 
         # Step 3: Create a worker object
-        self.workers[source_id] = MedianFilterWorker(source=source, shape=shape)
+        self.workers[source_id] = MedianFilterWorker(source=source, shape=shape, combo_id=combo_id)
 
         # Step 4: Move worker to the thread
         self.workers[source_id].moveToThread(self.threads[source_id])
@@ -1066,14 +1002,14 @@ class ImageProcessor(m.Ui_MainWindow):
         :return: void
         """
         if indx == 0 or indx == 1:
-            self.combo_box_changed(tab_id=self.tab_index, combo_id=0)
+            self.combo_box_changed(tab_id=self.tab_index, combo_id="0_1")
 
             # Change the filtered image after changing the noisy image
-            if self.currentNoiseImage is not None:
-                self.combo_box_changed(tab_id=self.tab_index, combo_id=1)
+            if (self.img0_noisy.image is not None) and self.combo_filter.currentIndex() != 0:
+                self.combo_box_changed(tab_id=self.tab_index, combo_id="0_2")
 
         elif indx == 2 or indx == 3:
-            self.combo_box_changed(tab_id=self.tab_index, combo_id=1)
+            self.combo_box_changed(tab_id=self.tab_index, combo_id="0_2")
 
     @staticmethod
     def draw_contour_on_image(source, points_x, points_y):
@@ -1143,6 +1079,19 @@ class ImageProcessor(m.Ui_MainWindow):
         widget.plotItem.showGrid(True, True, alpha=0.8)
         widget.plotItem.setLabel("bottom", text=label)
 
+        # Auto scale Y Axis
+        vb = widget.getViewBox()
+        vb.setAspectLocked(lock=False)
+        vb.setAutoVisible(y=1.0)
+        vb.enableAutoRange(axis='y', enable=True)
+
+    @staticmethod
+    def clear_bar_graph(widget):
+        """
+
+        :param widget:
+        :return:
+        """
         # Auto scale Y Axis
         vb = widget.getViewBox()
         vb.setAspectLocked(lock=False)

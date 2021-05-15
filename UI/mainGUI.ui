@@ -4827,7 +4827,7 @@
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_42">
                      <item>
-                      <widget class="QLabel" name="label_matches_number_3">
+                      <widget class="QLabel" name="label_clusters_number">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -4844,17 +4844,17 @@
                         </size>
                        </property>
                        <property name="text">
-                        <string>...</string>
+                        <string>Clusters</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_sift_matches_3">
+                      <widget class="QLineEdit" name="text_clusters_numbers">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string>3</string>
                        </property>
                       </widget>
                      </item>

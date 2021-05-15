@@ -311,6 +311,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
             if "7_2" in self.imagesData:
                 self.combo_clustering_methods.setEnabled(True)
+                self.label_clusters_number.setEnabled(True)
+                self.text_clusters_numbers.setEnabled(True)
 
     def clear_results(self, tab_id: int, combo_id: int = 0):
         """
@@ -561,7 +563,21 @@ class ImageProcessor(m.Ui_MainWindow):
 
             elif combo_id == "7_2":
                 if selected_component == "k-means":
-                    segmented_image = SegmentationClustering.apply_k_means(source=source)
+                    # TODO: Add QThread for k-means function
+
+                    # Number of clusters
+                    k = int(self.text_clusters_numbers.text())
+
+                    # Calculate function run time
+                    start_time = timeit.default_timer()
+                    segmented_image, labels = SegmentationClustering.apply_k_means(source=source, k=k)
+
+                    # Function end
+                    end_time = timeit.default_timer()
+
+                    # Show only 5 digits after floating point
+                    elapsed_time = format(end_time - start_time, '.5f')
+                    self.label_elapsed_time_clustering.setText(str(elapsed_time))
 
                 elif selected_component == "region growing":
                     segmented_image = SegmentationClustering.apply_region_growing(source=source)

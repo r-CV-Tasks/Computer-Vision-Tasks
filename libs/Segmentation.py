@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import cv2
 # np.random.seed(42)
 
 # KMeans Algorithm
@@ -99,3 +99,36 @@ class KMeans():
         plt.show()
     def cent(self):
         return self.centroids
+
+def k_means(img, k=5, max_iter=100):
+    """Segment image using K-means
+
+    Args:
+        img (nd.array): BGR image to be segmented
+        k (int, optional): Number of clusters. Defaults to 5.
+        max_iter (int, optional): Number of iterations. Defaults to 100.
+
+    Returns:
+        segmented_image (nd.array): image segmented
+        labels (nd.array): labels of every point in image
+    """
+    # convert to RGB
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    # reshape image to points
+    pixel_values = img.reshape((-1,3))
+    pixel_values = np.float32(pixel_values)
+
+    # run k-means algorithm
+    model = KMeans(K=k, max_iters=max_iter)
+    y_pred = model.predict(pixel_values)
+
+    centers = np.uint8(k.cent())
+    y_pred = y_pred.astype(int)
+
+    # flatten labels and get segmented image
+    labels = y_pred.flatten()
+    segmented_image = centers[labels.flatten()]
+    segmented_image = segmented_image.reshape(img.shape)
+
+    return segmented_image, labels

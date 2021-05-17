@@ -312,7 +312,9 @@ class ImageProcessor(m.Ui_MainWindow):
             if "7_2" in self.imagesData:
                 self.combo_clustering_methods.setEnabled(True)
                 self.label_clusters_number.setEnabled(True)
+                self.label_clustering_threshold.setEnabled(True)
                 self.text_clusters_numbers.setEnabled(True)
+                self.text_clustering_threshold.setEnabled(True)
 
     def clear_results(self, tab_id: int, combo_id: int = 0):
         """
@@ -552,6 +554,9 @@ class ImageProcessor(m.Ui_MainWindow):
             segmented_image = None
 
             if combo_id == "7_1":
+                # Calculate function run time
+                start_time = timeit.default_timer()
+
                 if selected_component == "optimal thresholding":
                     segmented_image = SegmentationThresholding.apply_optimal_threshold(source=source)
 
@@ -561,32 +566,42 @@ class ImageProcessor(m.Ui_MainWindow):
                 elif selected_component == "spectral thresholding":
                     segmented_image = SegmentationThresholding.apply_spectral_threshold(source=source)
 
+                # Function end
+                end_time = timeit.default_timer()
+
+                # Show only 5 digits after floating point
+                elapsed_time = format(end_time - start_time, '.5f')
+                self.label_elapsed_time_thresholding.setText(str(elapsed_time))
+
             elif combo_id == "7_2":
+                # Calculate function run time
+                start_time = timeit.default_timer()
+
+                # Number of clusters
+                k = int(self.text_clusters_numbers.text())
+                threshold = int(self.text_clustering_threshold.text())
+
                 if selected_component == "k-means":
                     # TODO: Add QThread for k-means function
 
-                    # Number of clusters
-                    k = int(self.text_clusters_numbers.text())
-
-                    # Calculate function run time
-                    start_time = timeit.default_timer()
                     segmented_image, labels = SegmentationClustering.apply_k_means(source=source, k=k)
 
-                    # Function end
-                    end_time = timeit.default_timer()
-
-                    # Show only 5 digits after floating point
-                    elapsed_time = format(end_time - start_time, '.5f')
-                    self.label_elapsed_time_clustering.setText(str(elapsed_time))
-
                 elif selected_component == "region growing":
+
                     segmented_image = SegmentationClustering.apply_region_growing(source=source)
 
                 elif selected_component == "agglomerative clustering":
                     segmented_image = SegmentationClustering.apply_agglomerative(source=source)
 
                 elif selected_component == "mean-shift clustering":
-                    segmented_image = SegmentationClustering.apply_mean_shift(source=source)
+                    segmented_image = SegmentationClustering.apply_mean_shift(source=source, threshold=threshold)
+
+                # Function end
+                end_time = timeit.default_timer()
+
+                # Show only 5 digits after floating point
+                elapsed_time = format(end_time - start_time, '.5f')
+                self.label_elapsed_time_clustering.setText(str(elapsed_time))
 
             try:
                 self.display_image(source=segmented_image, widget=self.processedImages[combo_id])

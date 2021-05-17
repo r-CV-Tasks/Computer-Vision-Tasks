@@ -581,17 +581,16 @@ class ImageProcessor(m.Ui_MainWindow):
                 k = int(self.text_clusters_numbers.text())
                 threshold = int(self.text_clustering_threshold.text())
 
-                if selected_component == "k-means":
-                    # TODO: Add QThread for k-means function
-
+                if selected_component == "clusters_num-means":
+                    # TODO: Add QThread for clusters_num-means function
                     segmented_image, labels = SegmentationClustering.apply_k_means(source=source, k=k)
 
                 elif selected_component == "region growing":
-
                     segmented_image = SegmentationClustering.apply_region_growing(source=source)
 
                 elif selected_component == "agglomerative clustering":
-                    segmented_image = SegmentationClustering.apply_agglomerative(source=source)
+                    segmented_image = SegmentationClustering.apply_agglomerative(source=source, clusters_numbers=k,
+                                                                                 initial_clusters=25)
 
                 elif selected_component == "mean-shift clustering":
                     segmented_image = SegmentationClustering.apply_mean_shift(source=source, threshold=threshold)

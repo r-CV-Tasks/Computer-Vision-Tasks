@@ -1,15 +1,32 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-
 np.random.seed(42)
 
 
 # KMeans Algorithm
-
-
 def euclidean_distance(x1, x2):
     return np.sqrt(np.sum((x1 - x2) ** 2))
+
+
+def clusters_distance(cluster1, cluster2):
+    """
+    Computes distance between two clusters.
+
+    cluster1 and cluster2 are lists of lists of points
+    """
+    return max([euclidean_distance(point1, point2) for point1 in cluster1 for point2 in cluster2])
+
+
+def clusters_distance_2(cluster1, cluster2):
+    """
+    Computes distance between two centroids of the two clusters
+
+    cluster1 and cluster2 are lists of lists of points
+    """
+    cluster1_center = np.average(cluster1, axis=0)
+    cluster2_center = np.average(cluster2, axis=0)
+    return euclidean_distance(cluster1_center, cluster2_center)
 
 
 class KMeans:
@@ -106,81 +123,6 @@ class KMeans:
 
     def cent(self):
         return self.centroids
-
-
-def apply_k_means(source, k=5, max_iter=100):
-    """Segment image using K-means
-
-    Args:
-        source (nd.array): BGR image to be segmented
-        k (int, optional): Number of clusters. Defaults to 5.
-        max_iter (int, optional): Number of iterations. Defaults to 100.
-
-    Returns:
-        segmented_image (nd.array): image segmented
-        labels (nd.array): labels of every point in image
-    """
-    # convert to RGB
-    source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
-
-    # reshape image to points
-    pixel_values = source.reshape((-1, 3))
-    pixel_values = np.float32(pixel_values)
-
-    # run k-means algorithm
-    model = KMeans(K=k, max_iters=max_iter)
-    y_pred = model.predict(pixel_values)
-
-    centers = np.uint8(model.cent())
-    y_pred = y_pred.astype(int)
-
-    # flatten labels and get segmented image
-    labels = y_pred.flatten()
-    segmented_image = centers[labels.flatten()]
-    segmented_image = segmented_image.reshape(source.shape)
-
-    return segmented_image, labels
-
-
-def apply_region_growing(source: np.ndarray):
-    """
-
-    :param source:
-    :return:
-    """
-
-    src = np.copy(source)
-
-    return src
-
-
-def apply_agglomerative(source: np.ndarray):
-    """
-
-    :param source:
-    :return:
-    """
-
-    src = np.copy(source)
-
-    return src
-
-
-def apply_mean_shift(source: np.ndarray, threshold: int = 60):
-    """
-
-    :param source:
-    :param threshold:
-    :return:
-    """
-
-    src = np.copy(source)
-
-    ms = MeanShift(source=src, threshold=threshold)
-    ms.run_mean_shift()
-    output = ms.get_output()
-
-    return output
 
 
 class MeanShift:
@@ -341,3 +283,188 @@ class MeanShift:
             self.current_mean_arr[2] = mean_b
             self.current_mean_arr[3] = mean_i
             self.current_mean_arr[4] = mean_j
+
+
+class AgglomerativeClustering:
+    def __init__(self, source: np.ndarray, clusters_numbers: int = 2, initial_k: int = 25):
+        """
+
+        :param source:
+        :param clusters_numbers:
+        :param initial_k:
+        """
+        self.clusters_num = clusters_numbers
+        self.initial_k = initial_k
+        src = np.copy(source.reshape((-1, 3)))
+
+        self.fit(src)
+
+        self.output_image = [[self.predict_center(list(src)) for src in row] for row in source]
+        self.output_image = np.array(self.output_image, np.uint8)
+
+    def initial_clusters(self, points):
+        """
+        partition pixels into self.initial_k groups based on color similarity
+        """
+        groups = {}
+        d = int(256 / self.initial_k)
+        for i in range(self.initial_k):
+            j = i * d
+            groups[(j, j, j)] = []
+        for i, p in enumerate(points):
+            if i % 100000 == 0:
+                print('processing pixel:', i)
+            go = min(groups.keys(), key=lambda c: euclidean_distance(p, c))
+            groups[go].append(p)
+        return [g for g in groups.values() if len(g) > 0]
+
+    def fit(self, points):
+        # initially, assign each point to a distinct cluster
+        print('Computing initial clusters ...')
+        self.clusters_list = self.initial_clusters(points)
+        print('number of initial clusters:', len(self.clusters_list))
+        print('merging clusters ...')
+
+        while len(self.clusters_list) > self.clusters_num:
+            # Find the closest (most similar) pair of clusters
+            cluster1, cluster2 = min(
+                [(c1, c2) for i, c1 in enumerate(self.clusters_list) for c2 in self.clusters_list[:i]],
+                key=lambda c: clusters_distance_2(c[0], c[1]))
+
+            # Remove the two clusters from the clusters list
+            self.clusters_list = [c for c in self.clusters_list if c != cluster1 and c != cluster2]
+
+            # Merge the two clusters
+            merged_cluster = cluster1 + cluster2
+
+            # Add the merged cluster to the clusters list
+            self.clusters_list.append(merged_cluster)
+
+            print('number of clusters:', len(self.clusters_list))
+
+        print('assigning cluster num to each point ...')
+        self.cluster = {}
+        for cl_num, cl in enumerate(self.clusters_list):
+            for point in cl:
+                self.cluster[tuple(point)] = cl_num
+
+        print('Computing cluster centers ...')
+        self.centers = {}
+        for cl_num, cl in enumerate(self.clusters_list):
+            self.centers[cl_num] = np.average(cl, axis=0)
+
+    def predict_cluster(self, point):
+        """
+        Find cluster number of point
+        """
+        # assuming point belongs to clusters that were computed by fit functions
+        return self.cluster[tuple(point)]
+
+    def predict_center(self, point):
+        """
+        Find center of the cluster that point belongs to
+        """
+        point_cluster_num = self.predict_cluster(point)
+        center = self.centers[point_cluster_num]
+        return center
+
+
+def apply_k_means(source, k=5, max_iter=100):
+    """Segment image using K-means
+
+    Args:
+        source (nd.array): BGR image to be segmented
+        k (int, optional): Number of clusters. Defaults to 5.
+        max_iter (int, optional): Number of iterations. Defaults to 100.
+
+    Returns:
+        segmented_image (nd.array): image segmented
+        labels (nd.array): labels of every point in image
+    """
+    # convert to RGB
+    source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
+
+    # reshape image to points
+    pixel_values = source.reshape((-1, 3))
+    pixel_values = np.float32(pixel_values)
+
+    # run clusters_num-means algorithm
+    model = KMeans(K=k, max_iters=max_iter)
+    y_pred = model.predict(pixel_values)
+
+    centers = np.uint8(model.cent())
+    y_pred = y_pred.astype(int)
+
+    # flatten labels and get segmented image
+    labels = y_pred.flatten()
+    segmented_image = centers[labels.flatten()]
+    segmented_image = segmented_image.reshape(source.shape)
+
+    return segmented_image, labels
+
+
+def apply_region_growing(source: np.ndarray):
+    """
+
+    :param source:
+    :return:
+    """
+
+    src = np.copy(source)
+
+    return src
+
+
+def apply_agglomerative(source: np.ndarray, clusters_numbers: int = 2, initial_clusters: int = 25):
+    """
+
+    :param source:
+    :param clusters_numbers:
+    :param initial_clusters:
+    :return:
+    """
+    agglomerative = AgglomerativeClustering(source=source, clusters_numbers=clusters_numbers,
+                                            initial_k=initial_clusters)
+
+    return agglomerative.output_image
+
+
+def apply_mean_shift(source: np.ndarray, threshold: int = 60):
+    """
+
+    :param source:
+    :param threshold:
+    :return:
+    """
+
+    src = np.copy(source)
+
+    ms = MeanShift(source=src, threshold=threshold)
+    ms.run_mean_shift()
+    output = ms.get_output()
+
+    return output
+
+
+if __name__ == "__main__":
+    image = cv2.imread('../resources/Images/dog256.jpg')
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    clusters_num = 4
+    initial_k = 25
+
+    output_image = apply_agglomerative(source=image, clusters_numbers=clusters_num, initial_clusters=initial_k)
+
+    plt.figure(figsize=(15, 15))
+
+    plt.subplot(1, 2, 1)
+    plt.imshow(image)
+    plt.axis('off')
+    plt.title('Original image')
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(output_image)
+    plt.axis('off')
+    plt.title(f'Segmented image with clusters_num={clusters_num}')
+
+    plt.show()

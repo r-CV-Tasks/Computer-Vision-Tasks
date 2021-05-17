@@ -4,6 +4,63 @@ import cv2
 np.random.seed(42)
 
 
+class Point(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def getX(self):
+        return self.x
+
+    def getY(self):
+        return self.y
+
+def getGrayDiff(img, currentPoint, tmpPoint):
+    return abs(int(img[currentPoint.x, currentPoint.y]) - int(img[tmpPoint.x, tmpPoint.y]))
+
+
+def selectConnects(p):
+    if p != 0:
+        connects = [Point(-1, -1), Point(0, -1), Point(1, -1),
+                    Point(1, 0), Point(1, 1), Point(0, 1),
+                    Point(-1, 1), Point(-1, 0)]
+    else:
+        connects = [Point(0, -1), Point(1, 0), Point(0, 1), Point(-1, 0)]
+
+    return connects
+
+
+def regionGrow(img, seeds, thresh, p = 1):
+    height, weight = img.shape
+    seedMark = np.zeros(img.shape)
+    seedList = []
+
+    for seed in seeds:
+        seedList.append(seed)
+    label = 1
+    connects = selectConnects(p)
+
+    while (len(seedList) > 0):
+        currentPoint = seedList.pop(0)
+
+        seedMark[currentPoint.x, currentPoint.y] = label
+
+        for i in range(8):
+            tmpX = currentPoint.x + connects[i].x
+            tmpY = currentPoint.y + connects[i].y
+
+            if tmpX < 0 or tmpY < 0 or tmpX >= height or tmpY >= weight:
+                continue
+
+            grayDiff = getGrayDiff(img, currentPoint, Point(tmpX, tmpY))
+
+            if grayDiff < thresh and seedMark[tmpX, tmpY] == 0:
+                seedMark[tmpX, tmpY] = label
+                seedList.append(Point(tmpX, tmpY))
+
+    return seedMark
+
+
 # KMeans Algorithm
 def euclidean_distance(x1, x2):
     return np.sqrt(np.sum((x1 - x2) ** 2))
@@ -411,8 +468,17 @@ def apply_region_growing(source: np.ndarray):
     """
 
     src = np.copy(source)
+    img_gray = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+    seeds = []
+    for i in range(3):
+        x = np.random.randint(0, img_gray.shape[0])
+        y = np.random.randint(0, img_gray.shape[1])
+        seeds.append(Point(x, y))
 
-    return src
+    # seeds = [Point(10, 10), Point(82, 150), Point(20, 300)]
+    output_image = regionGrow(img_gray, seeds, 10)
+
+    return output_image
 
 
 def apply_agglomerative(source: np.ndarray, clusters_numbers: int = 2, initial_clusters: int = 25):
@@ -450,21 +516,29 @@ if __name__ == "__main__":
     image = cv2.imread('../resources/Images/dog256.jpg')
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    clusters_num = 4
-    initial_k = 25
+    # img = cv2.imread('../resources/Images/dog256.jpg', 0)
+    img = cv2.imread('../resources/Images/seg-image.png')
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    seeds = []
+    for i in range(3):
+        x = np.random.randint(0, img.shape[0])
+        y = np.random.randint(0, img.shape[1])
+        seeds.append(Point(x, y))
 
-    output_image = apply_agglomerative(source=image, clusters_numbers=clusters_num, initial_clusters=initial_k)
+    # seeds = [Point(10, 10), Point(82, 150), Point(20, 300)]
+    binaryImg = regionGrow(img_gray, seeds, 10)
 
-    plt.figure(figsize=(15, 15))
+    plt.figure()
 
     plt.subplot(1, 2, 1)
-    plt.imshow(image)
+    plt.imshow(img_rgb)
     plt.axis('off')
     plt.title('Original image')
 
     plt.subplot(1, 2, 2)
-    plt.imshow(output_image)
+    plt.imshow(binaryImg, cmap='gray')
     plt.axis('off')
-    plt.title(f'Segmented image with clusters_num={clusters_num}')
+    plt.title(f'Segmented image')
 
     plt.show()

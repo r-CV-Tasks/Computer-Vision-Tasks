@@ -2,7 +2,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Histogram import global_threshold, histogram
+from Histogram import global_threshold, normalize_histogram
 
 
 def apply_optimal_threshold(source: np.ndarray):
@@ -82,7 +82,7 @@ def apply_otsu_threshold(source: np.ndarray):
     # Get Image Dimensions
     YRange, XRange = src.shape
     # Get The Values of The Histogram Bins
-    HistValues = histogram(src)[0]
+    HistValues = plt.hist(src.ravel(), 256)[0]
     # Calculate The Probability Density Function
     PDF = HistValues / (YRange * XRange)
     # Calculate The Cumulative Density Function

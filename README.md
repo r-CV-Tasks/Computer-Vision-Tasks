@@ -323,28 +323,45 @@ In the above results, each SIFT Algorithm applied was running on a separate thre
 In this section we present some algorithms implementations for Image Segmentation; `Using Thresholding and Clustering Methods`.
 
 ## 1. Segmentation Using Thresholding
-We implemented 3 types of Thresholding:
+We implemented 3 types of Thresholding, Local and Global for each threshold:
 - `Optimal Thresholding`
 - `Otsu Thresholding`
-- `Spectral Thresholding (More than 2 modes, Local and Global)`
+- `Spectral Thresholding (More than 2 modes)`
+
+There are mainly 1 parameter used in Local Thresholding:
+- `X-Regions`: indicates how many regions we want to divide in x-direction
+- `Y-Regions`: indicates how many regions we want to divide in y-direction
 
 ### 1.1 Optimal Thresholding
-<img src="resources/results/segmentation/Thresholding_Optimal_1.png" alt="Thresholding_Optimal_1" width="600" height="500">
+#### Using Global Thresholding
+<img src="resources/results/segmentation/Thresholding_Optimal_Global_1.png" alt="Thresholding_Optimal_Global_1" width="600" height="500">
 
-<img src="resources/results/segmentation/Thresholding_Optimal_2.png" alt="Thresholding_Optimal_2" width="600" height="500">
+<img src="resources/results/segmentation/Thresholding_Optimal_Global_2.png" alt="Thresholding_Optimal_Global_2" width="600" height="500">
+
+#### Using Local Thresholding
+<img src="resources/results/segmentation/Thresholding_Optimal_Local_1.png" alt="Thresholding_Optimal_Local_1" width="600" height="500">
+
+<img src="resources/results/segmentation/Thresholding_Optimal_Local_2.png" alt="Thresholding_Optimal_Local_2" width="600" height="500">
 
 ### 1.2 Otsu Thresholding
-<img src="resources/results/segmentation/Thresholding_Otsu_1.png" alt="Thresholding_Otsu_1" width="600" height="500">
+#### Using Global Thresholding
+<img src="resources/results/segmentation/Thresholding_Otsu_Global_1.png" alt="Thresholding_Otsu_Global_1" width="600" height="500">
 
-<img src="resources/results/segmentation/Thresholding_Otsu_2.png" alt="Thresholding_Otsu_2" width="600" height="500">
+<img src="resources/results/segmentation/Thresholding_Otsu_Global_2.png" alt="Thresholding_Otsu_Global_2" width="600" height="500">
 
 **Note**: There is some noise in the image which affects the output a little.
 
+#### Using Local Thresholding
+<img src="resources/results/segmentation/Thresholding_Otsu_Local_1.png" alt="Thresholding_Otsu_Local_1" width="600" height="500">
+
 ### 1.3 Spectral Thresholding
-<img src="resources/results/segmentation/Thresholding_Spectral_1.png" alt="Thresholding_Spectral_1" width="600" height="500">
+#### Using Global Thresholding
+<img src="resources/results/segmentation/Thresholding_Spectral_Global_1.png" alt="Thresholding_Spectral_Global_1" width="600" height="500">
 
-<img src="resources/results/segmentation/Thresholding_Spectral_2.png" alt="Thresholding_Spectral_2" width="600" height="500">
+<img src="resources/results/segmentation/Thresholding_Spectral_Global_2.png" alt="Thresholding_Spectral_Global_2" width="600" height="500">
 
+#### Using Local Thresholding
+<img src="resources/results/segmentation/Thresholding_Spectral_Local_1.png" alt="Thresholding_Spectral_Local_1" width="600" height="500">
 
 ## 2. Segmentation Using Clustering
 We implemented 4 Clustering methods:

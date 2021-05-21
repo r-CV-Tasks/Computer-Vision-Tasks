@@ -161,19 +161,24 @@ def NonMaximumSuppression(GradientMagnitude: np.ndarray, GradientDirection: np.n
     return SuppressedImage
 
 
-def DoubleThreshold(Image, LowRatio, HighRatio, Weak):
+def DoubleThreshold(Image, LowThreshold, HighThreshold, Weak, isRatio=True):
     """
        Apply Double Thresholding To Image
        :param Image: Image to Threshold
-       :param LowRatio: Low Threshold Ratio, Used to Get Lowest Allowed Value
-       :param HighRatio: High Threshold Ratio, Used to Get Minimum Value To Be Boosted
+       :param LowThreshold: Low Threshold Ratio/Intensity, Used to Get Lowest Allowed Value
+       :param HighThreshold: High Threshold Ratio/Intensity, Used to Get Minimum Value To Be Boosted
        :param Weak: Pixel Value For Pixels Between The Two Thresholds
+       :param isRatio: Deal With Given Values as Ratios or Intensities
        :return: Threshold Image
        """
 
     # Get Threshold Values
-    High = Image.max() * HighRatio
-    Low = Image.max() * LowRatio
+    if isRatio:
+        High = Image.max() * HighThreshold
+        Low = Image.max() * LowThreshold
+    else:
+        High = HighThreshold
+        Low = LowThreshold
 
     # Create Empty Array
     ThresholdedImage = np.zeros(Image.shape)

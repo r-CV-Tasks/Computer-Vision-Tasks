@@ -26,6 +26,10 @@ In this Repository we present a variety of Image Processing Techniques implement
 
 * [Matching the Image Set Features](#3-matching-the-image-set-features)
 
+### <a href="#image-segmentation_h">Image Segmentation</a>
+* [Using Thresholding Techniques](#1-thresholding-segmentation)
+* [Using Clustering Methods](#2-clustering-segmentation)
+
 <div style="page-break-after: always;"></div>
 
 
@@ -313,6 +317,66 @@ In the above results, each SIFT Algorithm applied was running on a separate thre
 <div style="page-break-after: always;"></div>
 
 
+<!-- Task #4 Report -->
+
+# <a name="image-segmentation_h">Image Segmentation</a>
+In this section we present some algorithms implementations for Image Segmentation; `Using Thresholding and Clustering Methods`.
+
+## 1. Segmentation Using Thresholding
+We implemented 3 types of Thresholding:
+- `Optimal Thresholding`
+- `Otsu Thresholding`
+- `Spectral Thresholding (More than 2 modes, Local and Global)`
+
+### 1.1 Optimal Thresholding
+<img src="resources/results/segmentation/Thresholding_Optimal_1.png" alt="Thresholding_Optimal_1" width="600" height="500">
+
+<img src="resources/results/segmentation/Thresholding_Optimal_2.png" alt="Thresholding_Optimal_2" width="600" height="500">
+
+### 1.2 Otsu Thresholding
+<img src="resources/results/segmentation/Thresholding_Otsu_1.png" alt="Thresholding_Otsu_1" width="600" height="500">
+
+<img src="resources/results/segmentation/Thresholding_Otsu_2.png" alt="Thresholding_Otsu_2" width="600" height="500">
+
+**Note**: There is some noise in the image which affects the output a little.
+
+### 1.3 Spectral Thresholding
+<img src="resources/results/segmentation/Thresholding_Spectral_1.png" alt="Thresholding_Spectral_1" width="600" height="500">
+
+<img src="resources/results/segmentation/Thresholding_Spectral_2.png" alt="Thresholding_Spectral_2" width="600" height="500">
+
+
+## 2. Segmentation Using Clustering
+We implemented 4 Clustering methods:
+- `K-Means`
+- `Region Growing`
+- `Agglomerative Clustering`
+- `Mean-Shift`
+
+There are mainly 2 parameters in some Clustering methods:
+- `Number of Clusters`: to specify how many clusters you need in the output image.
+- `Threshold`: to threshold the output image in specif level in some methods.
+
+
+### 2.1 K-Means with `6` Clusters
+<img src="resources/results/segmentation/Clustering_K_Means_1.png" alt="Clustering_K_Means_1" width="600" height="500">
+
+### 2.2 Region Growing with `3` Clusters
+<img src="resources/results/segmentation/Clustering_Region_Growing_1.png" alt="Clustering_Region_Growing_1.png" width="600" height="500">
+
+
+### 2.3 Agglomerative Clustering with `10` Clusters
+<img src="resources/results/segmentation/Clustering_Agglomerative_1.png" alt="Clustering_Agglomerative_1.png" width="600" height="500">
+
+### 2.4 Mean-Shift with `30` Threshold
+<img src="resources/results/segmentation/Clustering_Mean_Shift_1.png" alt="Clustering_Mean_Shift_1.png" width="600" height="500">
+
+### Mean-Shift with `90` Threshold
+<img src="resources/results/segmentation/Clustering_Mean_Shift_2.png" alt="Clustering_Mean_Shift_2.png" width="600" height="500">
+
+The output image is changed whenever you change the threshold. You could choose the desired threshold by trial and error to know what value fits.
+
+<div style="page-break-after: always;"></div>
 
 This repository is created by a group of 4 students in Biomedical Engineering Department, Cairo University. :copyright:
 

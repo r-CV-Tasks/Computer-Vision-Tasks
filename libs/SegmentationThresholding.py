@@ -83,7 +83,12 @@ def apply_otsu_threshold(source: np.ndarray):
      :return: Thresholded Image
      """
     src = np.copy(source)
-    src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+
+    if len(src.shape) > 2:
+        src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+    else:
+        pass
+
 
     # Get Image Dimensions
     YRange, XRange = src.shape
@@ -175,6 +180,8 @@ def LocalThresholding(source: np.ndarray, Regions, ThresholdingFunction):
        :return: Thresholded Image
        """
     src = np.copy(source)
+    src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+
     YMax, XMax = src.shape
     Result = np.zeros((YMax, XMax))
     YStep = YMax // Regions
@@ -197,11 +204,15 @@ def IsolatedTests():
     Tests The Thresholding Techniques Without Need For GUI, DEV-ONLY
     :return:
     """
-    source = cv2.imread("../resources/Images/hand_512.jpg", 0)
-    if len(source.shape) > 2:
-        img = cv2.cvtColor(source, cv2.COLOR_RGB2GRAY)
-    else:
-        img = source
+    # source = cv2.imread("../resources/Images/hand_512.jpg")
+    source = cv2.imread("../resources/Images/hand_512.jpg")
+    source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
+    img = np.copy(source)
+    img_copy = np.copy(source)
+    # if len(source.shape) > 2:
+    #     img = cv2.cvtColor(source, cv2.COLOR_RGB2GRAY)
+    # else:
+    #     img = source
     x = img.shape[1]
     y = img.shape[0]
     LocOpt = LocalThresholding(img, 10, apply_otsu_threshold)

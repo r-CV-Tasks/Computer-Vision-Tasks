@@ -554,6 +554,8 @@ class ImageProcessor(m.Ui_MainWindow):
             segmented_image = None
 
             if combo_id == "7_1":
+                # TODO: Add QThread for Thresholding Segmentation function
+
                 # Calculate function run time
                 start_time = timeit.default_timer()
 
@@ -574,6 +576,8 @@ class ImageProcessor(m.Ui_MainWindow):
                 self.label_elapsed_time_thresholding.setText(str(elapsed_time))
 
             elif combo_id == "7_2":
+                # TODO: Add QThread for Clustering Segmentation function
+
                 # Calculate function run time
                 start_time = timeit.default_timer()
 
@@ -581,8 +585,7 @@ class ImageProcessor(m.Ui_MainWindow):
                 k = int(self.text_clusters_numbers.text())
                 threshold = int(self.text_clustering_threshold.text())
 
-                if selected_component == "clusters_num-means":
-                    # TODO: Add QThread for clusters_num-means function
+                if selected_component == "k-means":
                     segmented_image, labels = SegmentationClustering.apply_k_means(source=source, k=k)
 
                 elif selected_component == "region growing":
@@ -1081,6 +1084,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Rotate the image 90 degree because ImageView is rotated
         src = cv2.transpose(src)
+
         widget.setImage(src)
         widget.view.setRange(xRange=[0, src.shape[0]], yRange=[0, src.shape[1]],
                              padding=0)

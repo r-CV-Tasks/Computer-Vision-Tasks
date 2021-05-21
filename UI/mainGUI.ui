@@ -4659,25 +4659,40 @@
                      </item>
                      <item>
                       <property name="text">
-                       <string>Optimal Thresholding</string>
+                       <string>Optimal Global Thresholding</string>
                       </property>
                      </item>
                      <item>
                       <property name="text">
-                       <string>Otsu Thresholding</string>
+                       <string>Optimal Local Thresholding</string>
                       </property>
                      </item>
                      <item>
                       <property name="text">
-                       <string>Spectral Thresholding</string>
+                       <string>Otsu Global Thresholding</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>Otsu Local Thresholding</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>Spectral Global Thresholding</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>Spectral Local Thresholding</string>
                       </property>
                      </item>
                     </widget>
                    </item>
-                   <item row="1" column="0">
+                   <item row="2" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout_37">
                      <item>
-                      <widget class="QLabel" name="label_matches_number_2">
+                      <widget class="QLabel" name="label_regions_y_local">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -4694,17 +4709,53 @@
                         </size>
                        </property>
                        <property name="text">
-                        <string>...</string>
+                        <string>Y-Regions</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_sift_matches_2">
+                      <widget class="QLineEdit" name="text_regions_y_numbers">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
                        <property name="text">
-                        <string/>
+                        <string>10</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_47">
+                     <item>
+                      <widget class="QLabel" name="label_regions_x_local">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>110</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>X-Regions</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="text_regions_x_numbers">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>10</string>
                        </property>
                       </widget>
                      </item>

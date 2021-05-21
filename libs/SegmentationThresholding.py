@@ -14,9 +14,14 @@ def apply_optimal_threshold(source: np.ndarray):
     """
 
     src = np.copy(source)
-    src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+    if len(src.shape) > 2:
+        src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+    else:
+        pass
 
     # Calculate Initial Thresholds Used in Iteration
+    print(f"src in optimal: {src}")
+    print(f"src shape: {src.shape}")
     OldThreshold = GetInitialThreshold(src)
     NewThreshold = GetOptimalThreshold(src, OldThreshold)
     iteration = 0
@@ -126,7 +131,11 @@ def apply_spectral_threshold(source: np.ndarray):
      :return: Thresholded Image
      """
     src = np.copy(source)
-    src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+    if len(src.shape) > 2:
+        src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+    else:
+        pass
+
     # Get Image Dimensions
     YRange, XRange = src.shape
     # Get The Values of The Histogram Bins
@@ -171,7 +180,7 @@ def apply_spectral_threshold(source: np.ndarray):
     return DoubleThreshold(src, OptimalLow, OptimalHigh, 128, False)
 
 
-def LocalThresholding(source: np.ndarray, Regions, ThresholdingFunction):
+def LocalThresholding(source: np.ndarray, RegionsX: int, RegionsY: int, ThresholdingFunction):
     """
        Applies Local Thresholding To The Given Grayscale Image Using The Given Thresholding Callback Function
        :param source: NumPy Array of The Source Grayscale Image
@@ -180,21 +189,27 @@ def LocalThresholding(source: np.ndarray, Regions, ThresholdingFunction):
        :return: Thresholded Image
        """
     src = np.copy(source)
-    src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+    if len(src.shape) > 2:
+        src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+    else:
+        pass
 
     YMax, XMax = src.shape
     Result = np.zeros((YMax, XMax))
-    YStep = YMax // Regions
-    XStep = XMax // Regions
+    YStep = YMax // RegionsY
+    XStep = XMax // RegionsX
     XRange = []
     YRange = []
-    for i in range(0, Regions):
+    for i in range(0, RegionsX):
         XRange.append(XStep * i)
+
+    for i in range(0, RegionsY):
         YRange.append(YStep * i)
+
     XRange.append(XMax)
     YRange.append(YMax)
-    for x in range(0, Regions):
-        for y in range(0, Regions):
+    for x in range(0, RegionsX):
+        for y in range(0, RegionsY):
             Result[YRange[y]:YRange[y + 1], XRange[x]:XRange[x + 1]] = ThresholdingFunction(src[YRange[y]:YRange[y + 1], XRange[x]:XRange[x + 1]])
     return Result
 
@@ -216,7 +231,7 @@ def IsolatedTests():
     x = img.shape[1]
     y = img.shape[0]
     LocOpt = LocalThresholding(img, 10, apply_otsu_threshold)
-    OptImg = apply_optimal_threshold(img)
+    # OptImg = apply_optimal_threshold(img)
     # OtsuImg = apply_otsu_threshold(img)
     # SpecImg = apply_spectral_threshold(img)
     fig, ax = plt.subplots(2, 2)
@@ -226,9 +241,9 @@ def IsolatedTests():
     ax[0][1].imshow(LocOpt, cmap='gray')
     ax[0][1].title.set_text('Optimal Local Threshold')
     ax[0][1].set_axis_off()
-    ax[1][0].imshow(OptImg, cmap='gray')
-    ax[1][0].title.set_text('Optimal Global Threshold')
-    ax[1][0].set_axis_off()
+    # ax[1][0].imshow(OptImg, cmap='gray')
+    # ax[1][0].title.set_text('Optimal Global Threshold')
+    # ax[1][0].set_axis_off()
     # ax[1][1].imshow(SpecImg, cmap='gray')
     # ax[1][1].title.set_text('Spectral Threshold')
     # ax[1][1].set_axis_off()

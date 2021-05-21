@@ -308,6 +308,10 @@ class ImageProcessor(m.Ui_MainWindow):
         elif tab_id == 7:
             if "7_1" in self.imagesData:
                 self.combo_thresholding_methods.setEnabled(True)
+                self.label_regions_x_local.setEnabled(True)
+                self.label_regions_y_local.setEnabled(True)
+                self.text_regions_x_numbers.setEnabled(True)
+                self.text_regions_y_numbers.setEnabled(True)
 
             if "7_2" in self.imagesData:
                 self.combo_clustering_methods.setEnabled(True)
@@ -559,14 +563,34 @@ class ImageProcessor(m.Ui_MainWindow):
                 # Calculate function run time
                 start_time = timeit.default_timer()
 
-                if selected_component == "optimal thresholding":
+                regions_x = int(self.text_regions_x_numbers.text())
+                regions_y = int(self.text_regions_y_numbers.text())
+
+                # Global Thresholding
+                if selected_component == "optimal global thresholding":
                     segmented_image = SegmentationThresholding.apply_optimal_threshold(source=source)
 
-                elif selected_component == "otsu thresholding":
+                elif selected_component == "otsu global thresholding":
                     segmented_image = SegmentationThresholding.apply_otsu_threshold(source=source)
 
-                elif selected_component == "spectral thresholding":
+                elif selected_component == "spectral global thresholding":
                     segmented_image = SegmentationThresholding.apply_spectral_threshold(source=source)
+
+                # Local Thresholding
+                elif selected_component == "optimal local thresholding":
+                    segmented_image = SegmentationThresholding.LocalThresholding(
+                        source=source, RegionsX=regions_x, RegionsY=regions_y,
+                        ThresholdingFunction=SegmentationThresholding.apply_optimal_threshold)
+
+                elif selected_component == "otsu local thresholding":
+                    segmented_image = SegmentationThresholding.LocalThresholding(
+                        source=source, RegionsX=regions_x, RegionsY=regions_y,
+                        ThresholdingFunction=SegmentationThresholding.apply_otsu_threshold)
+
+                elif selected_component == "spectral local thresholding":
+                    segmented_image = SegmentationThresholding.LocalThresholding(
+                        source=source, RegionsX=regions_x, RegionsY=regions_y,
+                        ThresholdingFunction=SegmentationThresholding.apply_spectral_threshold)
 
                 # Function end
                 end_time = timeit.default_timer()

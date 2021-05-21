@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from Histogram import global_threshold, normalize_histogram
+from EdgeDetection import DoubleThreshold
 
 
 def apply_optimal_threshold(source: np.ndarray):
@@ -96,10 +97,11 @@ def apply_otsu_threshold(source: np.ndarray):
         # Object/Foreground Intensities Array
         Fore = np.arange(t, 256)
         # Calculation Mean of Background & The Object (Foreground), Based on CDF & PDF
+        CDF2 = np.sum(PDF[t + 1:256])
         BackMean = sum(Back * PDF[0:t]) / CDF[t]
-        ForeMean = sum(Fore * PDF[t:256]) / (1 - CDF[t])
+        ForeMean = sum(Fore * PDF[t:256]) / CDF2
         # Calculate Cross-Class Variance
-        Variance = CDF[t] * (1 - CDF[t]) * (ForeMean - BackMean) ** 2
+        Variance = CDF[t] * CDF2 * (ForeMean - BackMean) ** 2
         # Filter Out Max Variance & It's Threshold
         if Variance > MaxVariance:
             MaxVariance = Variance
@@ -109,14 +111,79 @@ def apply_otsu_threshold(source: np.ndarray):
 
 def apply_spectral_threshold(source: np.ndarray):
     """
-
-    :param source:
-    :return:
-    """
-
+     Applies Thresholding To The Given Grayscale Image Using Spectral Thresholding Method
+     :param source: NumPy Array of The Source Grayscale Image
+     :return: Thresholded Image
+     """
     src = np.copy(source)
+    # Get Image Dimensions
+    YRange, XRange = src.shape
+    # Get The Values of The Histogram Bins
+    HistValues = plt.hist(src.ravel(), 256)[0]
+    # Calculate The Probability Density Function
+    PDF = HistValues / (YRange * XRange)
+    # Calculate The Cumulative Density Function
+    CDF = np.cumsum(PDF)
+    OptimalLow = 1
+    OptimalHigh = 1
+    MaxVariance = 0
+    # Loop Over All Possible Thresholds, Select One With Maximum Variance Between Background & The Object (Foreground)
+    Global = np.arange(0, 256)
+    GMean = sum(Global * PDF) / CDF[-1]
+    for LowT in range(1, 254):
+        for HighT in range(LowT + 1, 255):
+            try:
+                # Background Intensities Array
+                Back = np.arange(0, LowT)
+                # Low Intensities Array
+                Low = np.arange(LowT, HighT)
+                # High Intensities Array
+                High = np.arange(HighT, 256)
+                # Get Low Intensities CDF
+                CDFL = np.sum(PDF[LowT:HighT])
+                # Get Low Intensities CDF
+                CDFH = np.sum(PDF[HighT:256])
+                # Calculation Mean of Background & The Object (Foreground), Based on CDF & PDF
+                BackMean = sum(Back * PDF[0:LowT]) / CDF[LowT]
+                LowMean = sum(Low * PDF[LowT:HighT]) / CDFL
+                HighMean = sum(High * PDF[HighT:256]) / CDFH
+                # Calculate Cross-Class Variance
+                Variance = (CDF[LowT] * (BackMean - GMean) ** 2 + (CDFL * (LowMean - GMean) ** 2) + (
+                        CDFH * (HighMean - GMean) ** 2))
+                # Filter Out Max Variance & It's Threshold
+                if Variance > MaxVariance:
+                    MaxVariance = Variance
+                    OptimalLow = LowT
+                    OptimalHigh = HighT
+            except RuntimeWarning:
+                pass
+    return DoubleThreshold(src, OptimalLow, OptimalHigh, 128, False)
 
-    return src
+
+def LocalThresholding(source: np.ndarray, Regions, ThresholdingFunction):
+    """
+       Applies Local Thresholding To The Given Grayscale Image Using The Given Thresholding Callback Function
+       :param source: NumPy Array of The Source Grayscale Image
+       :param Regions: Number of Regions To Divide The Image To
+       :param ThresholdingFunction: Function That Does The Thresholding
+       :return: Thresholded Image
+       """
+    src = np.copy(source)
+    YMax, XMax = src.shape
+    Result = np.zeros((YMax, XMax))
+    YStep = YMax // Regions
+    XStep = XMax // Regions
+    XRange = []
+    YRange = []
+    for i in range(0, Regions):
+        XRange.append(XStep * i)
+        YRange.append(YStep * i)
+    XRange.append(XMax)
+    YRange.append(YMax)
+    for x in range(0, Regions):
+        for y in range(0, Regions):
+            Result[YRange[y]:YRange[y + 1], XRange[x]:XRange[x + 1]] = ThresholdingFunction(src[YRange[y]:YRange[y + 1], XRange[x]:XRange[x + 1]])
+    return Result
 
 
 def IsolatedTests():
@@ -131,13 +198,23 @@ def IsolatedTests():
         img = source
     x = img.shape[1]
     y = img.shape[0]
+    LocOpt = LocalThresholding(img, 10, apply_otsu_threshold)
     OptImg = apply_optimal_threshold(img)
-    OtsuImg = apply_otsu_threshold(img)
+    # OtsuImg = apply_otsu_threshold(img)
+    # SpecImg = apply_spectral_threshold(img)
     fig, ax = plt.subplots(2, 2)
     ax[0][0].imshow(source, cmap='gray')
-    ax[0][1].imshow(OptImg, cmap='gray')
-    ax[1][0].imshow(source, cmap='gray')
-    ax[1][1].imshow(OtsuImg, cmap='gray')
+    ax[0][0].title.set_text('Source Image')
+    ax[0][0].set_axis_off()
+    ax[0][1].imshow(LocOpt, cmap='gray')
+    ax[0][1].title.set_text('Optimal Local Threshold')
+    ax[0][1].set_axis_off()
+    ax[1][0].imshow(OptImg, cmap='gray')
+    ax[1][0].title.set_text('Optimal Global Threshold')
+    ax[1][0].set_axis_off()
+    # ax[1][1].imshow(SpecImg, cmap='gray')
+    # ax[1][1].title.set_text('Spectral Threshold')
+    # ax[1][1].set_axis_off()
     plt.show()
 
 

@@ -12,7 +12,10 @@ def apply_optimal_threshold(source: np.ndarray):
     :param source: NumPy Array of The Source Grayscale Image
     :return: Thresholded Image
     """
+
     src = np.copy(source)
+    src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+
     # Calculate Initial Thresholds Used in Iteration
     OldThreshold = GetInitialThreshold(src)
     NewThreshold = GetOptimalThreshold(src, OldThreshold)
@@ -80,6 +83,8 @@ def apply_otsu_threshold(source: np.ndarray):
      :return: Thresholded Image
      """
     src = np.copy(source)
+    src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
+
     # Get Image Dimensions
     YRange, XRange = src.shape
     # Get The Values of The Histogram Bins
@@ -116,6 +121,7 @@ def apply_spectral_threshold(source: np.ndarray):
      :return: Thresholded Image
      """
     src = np.copy(source)
+    src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
     # Get Image Dimensions
     YRange, XRange = src.shape
     # Get The Values of The Histogram Bins

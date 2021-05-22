@@ -53,15 +53,18 @@ class ImageProcessor(m.Ui_MainWindow):
                             [self.img3_input], [self.img4_input],
                             [self.img5_input],
                             [self.img6_1_input, self.img6_2_input],
-                            [self.img7_1_input, self.img7_2_input]]
+                            [self.img7_1_input, self.img7_2_input],
+                            [self.img8_input]]
 
         self.outputImages = [[self.img0_noisy, self.img0_filtered, self.img0_edged],
                              self.img1_output, self.img2_output, self.img3_output,
                              self.img4_output, self.img5_output, self.img6_output,
-                             [self.img7_1_output, self.img7_2_output]]
+                             [self.img7_1_output, self.img7_2_output],
+                             self.img8_output]
 
         self.processedImages = {"0_1": self.img0_noisy, "0_2": self.img0_filtered, "0_3": self.img0_edged,
-                                "7_1": self.img7_1_output, "7_2": self.img7_2_output}
+                                "7_1": self.img7_1_output, "7_2": self.img7_2_output,
+                                "8_1": self.img8_output}
 
         self.histogramImages = {"1_1": self.img1_input_histo, "1_2": self.img1_output, "1_3": self.img1_output_histo}
 
@@ -73,7 +76,8 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img4_input, self.img4_output,
                              self.img5_input, self.img5_output,
                              self.img6_1_input, self.img6_2_input, self.img6_output,
-                             self.img7_1_input, self.img7_2_input, self.img7_1_output, self.img7_2_output]
+                             self.img7_1_input, self.img7_2_input, self.img7_1_output, self.img7_2_output,
+                             self.img8_input, self.img8_output]
 
         # Initial Variables
         self.currentNoiseImage = None
@@ -112,7 +116,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
-        self.sliders = [self.snr_slider_1, self.sigma_slider_1, self.mask_size_1, self.sigma_slider_2]
+        self.sliders = [self.snr_slider_1, self.sigma_slider_1, self.mask_size_1, self.sigma_slider_2,
+                        self.test_images_slider]
 
         # Sliders Connections
         for slider in self.sliders:
@@ -138,6 +143,10 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_load_6_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
         self.btn_load_7_1.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_7_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
+
+        # Face Detection
+        self.btn_load_8_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_8_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_1"))
@@ -1067,6 +1076,10 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif indx == 2 or indx == 3:
             self.combo_box_changed(tab_id=self.tab_index, combo_id="0_2")
+
+        # Test Images Slider
+        elif indx == 4:
+            pass
 
     @staticmethod
     def draw_contour_on_image(source, points_x, points_y):

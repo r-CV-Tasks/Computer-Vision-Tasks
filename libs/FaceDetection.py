@@ -1,3 +1,4 @@
+import os, sys
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
@@ -16,12 +17,17 @@ def detect_faces(source: np.ndarray) -> list:
 
     src = np.copy(source)
     if len(src.shape) > 2:
-        src = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+        src = cv2.cvtColor(src, cv2.COLOR_RGB2GRAY)
     else:
         pass
 
     # Create the haar cascade
-    cascade_path = "haarcascade_frontalface_default.xml"
+    repo_root = os.path.dirname(os.getcwd())
+    sys.path.append(repo_root)
+
+    cascade_path = "./src/haarcascade_frontalface_default.xml"
+
+    # cascade_path = "../src/haarcascade_frontalface_default.xml"
     face_cascade = cv2.CascadeClassifier(cascade_path)
 
     # Detect faces in the image
@@ -29,19 +35,20 @@ def detect_faces(source: np.ndarray) -> list:
         image=src,
         scaleFactor=1.2,
         minNeighbors=5,
-        minSize=(30, 30),
+        minSize=(20, 20),
         flags=cv2.CASCADE_SCALE_IMAGE
     )
 
     return faces
 
 
-def draw_faces(source: np.ndarray, faces: list) -> np.ndarray:
+def draw_faces(source: np.ndarray, faces: list, thickness: int = 10) -> np.ndarray:
     """
     Draw rectangle around each face in the given faces list
 
     :param source:
     :param faces:
+    :param thickness:
     :return:
     """
 
@@ -49,13 +56,15 @@ def draw_faces(source: np.ndarray, faces: list) -> np.ndarray:
 
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
-        cv2.rectangle(src, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.rectangle(img=src, pt1=(x, y), pt2=(x + w, y + h),
+                      color=(0, 255, 0), thickness=thickness)
 
     return src
 
 
 if __name__ == "__main__":
-    image = cv2.imread("../resources/Images/persons_image.jpg")
+    image = cv2.imread("../resources/Images/faces/persons_image.jpg")
+    # image = cv2.imread("../resources/Images/faces/IMG_8117.jpeg")
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     detected_faces = detect_faces(source=image)

@@ -15,7 +15,8 @@ from PyQt5.QtWidgets import QMessageBox
 from UI import mainGUI as m
 from UI import breeze_resources
 from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
-    Hough, Contour, Harris, FeatureMatching, SegmentationThresholding, SegmentationClustering
+    Hough, Contour, Harris, FeatureMatching, SegmentationThresholding, SegmentationClustering, \
+    FaceDetection, FaceRecognition
 
 from WorkersClasses import SIFTWorker, MatchingWorker, MedianFilterWorker
 
@@ -54,17 +55,19 @@ class ImageProcessor(m.Ui_MainWindow):
                             [self.img5_input],
                             [self.img6_1_input, self.img6_2_input],
                             [self.img7_1_input, self.img7_2_input],
-                            [self.img8_input]]
+                            [self.img8_input],
+                            [self.img9_input]]
 
         self.outputImages = [[self.img0_noisy, self.img0_filtered, self.img0_edged],
                              self.img1_output, self.img2_output, self.img3_output,
                              self.img4_output, self.img5_output, self.img6_output,
                              [self.img7_1_output, self.img7_2_output],
-                             self.img8_output]
+                             self.img8_output, self.img9_output]
 
         self.processedImages = {"0_1": self.img0_noisy, "0_2": self.img0_filtered, "0_3": self.img0_edged,
                                 "7_1": self.img7_1_output, "7_2": self.img7_2_output,
-                                "8_1": self.img8_output}
+                                "8_1": self.img8_output,
+                                "9_1": self.img9_output}
 
         self.histogramImages = {"1_1": self.img1_input_histo, "1_2": self.img1_output, "1_3": self.img1_output_histo}
 
@@ -77,7 +80,8 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img5_input, self.img5_output,
                              self.img6_1_input, self.img6_2_input, self.img6_output,
                              self.img7_1_input, self.img7_2_input, self.img7_1_output, self.img7_2_output,
-                             self.img8_input, self.img8_output]
+                             self.img8_input, self.img8_output,
+                             self.img9_input, self.img9_output]
 
         # Initial Variables
         self.currentNoiseImage = None
@@ -105,14 +109,18 @@ class ImageProcessor(m.Ui_MainWindow):
                              "3_1": self.label_imgName_3, "4_1": self.label_imgName_4,
                              "5_1": self.label_imgName_5,
                              "6_1": self.label_imgName_6_1, "6_2": self.label_imgName_6_2,
-                             "7_1": self.label_imgName_7_1, "7_2": self.label_imgName_7_2}
+                             "7_1": self.label_imgName_7_1, "7_2": self.label_imgName_7_2,
+                             "8_1": self.label_imgName_8_1,
+                             "9_1": self.label_imgName_9_1}
 
         self.imagesSizes = {"0_1": self.label_imgSize_0, "1_1": self.label_imgSize_1,
                             "2_1": self.label_imgSize_2_1, "2_2": self.label_imgSize_2_2,
                             "3_1": self.label_imgSize_3, "4_1": self.label_imgSize_4,
                             "5_1": self.label_imgSize_5,
                             "6_1": self.label_imgSize_6_1, "6_2": self.label_imgSize_6_2,
-                            "7_1": self.label_imgSize_7_1, "7_2": self.label_imgSize_7_2}
+                            "7_1": self.label_imgSize_7_1, "7_2": self.label_imgSize_7_2,
+                            "8_1": self.label_imgSize_8_1,
+                            "9_1": self.label_imgSize_9_1}
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
@@ -132,13 +140,13 @@ class ImageProcessor(m.Ui_MainWindow):
                            "7_1": self.combo_thresholding_methods, "7_2": self.combo_clustering_methods}
 
         # Setup Load Buttons Connections
-        self.btn_load_0.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_0_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_1_1.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_2_1.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_2_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
-        self.btn_load_3.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_4.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_5.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_3_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_4_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_5_1.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_6_1.clicked.connect(lambda: self.load_file(self.tab_index))
         self.btn_load_6_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
         self.btn_load_7_1.clicked.connect(lambda: self.load_file(self.tab_index))
@@ -146,7 +154,10 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Face Detection
         self.btn_load_8_1.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_8_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
+
+        # Face Recognition
+        self.btn_load_9_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_9_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_1"))
@@ -176,6 +187,12 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Setup SIFT Button
         self.btn_match_features.clicked.connect(self.sift)
+
+        # Setup Face Detection Buttons
+        self.btn_detect_faces.clicked.connect(self.detect_faces)
+
+        # Set Face Recognition Buttons
+        self.btn_match_faces.clicked.connect(self.match_faces)
 
         self.setup_images_view()
 
@@ -328,6 +345,18 @@ class ImageProcessor(m.Ui_MainWindow):
                 self.label_clustering_threshold.setEnabled(True)
                 self.text_clusters_numbers.setEnabled(True)
                 self.text_clustering_threshold.setEnabled(True)
+
+        # Face Detection Tab
+        elif tab_id == 8:
+            self.btn_detect_faces.setEnabled(True)
+            self.text_rect_thickness.setEnabled(True)
+            self.text_scale_factor.setEnabled(True)
+
+
+        # Face Detection Tab
+        elif tab_id == 9:
+            self.btn_match_faces.setEnabled(True)
+
 
     def clear_results(self, tab_id: int, combo_id: int = 0):
         """
@@ -1059,6 +1088,32 @@ class ImageProcessor(m.Ui_MainWindow):
         # Final resets
         self.combo_filter.setEnabled(False)
         self.threads[source_id].finished.connect(lambda: self.combo_filter.setEnabled(True))
+
+    def detect_faces(self):
+        """
+
+        :return:
+        """
+
+        thickness = int(self.text_rect_thickness.text())
+
+        # Calculate function run time
+        start_time = timeit.default_timer()
+
+        detected_faces = FaceDetection.detect_faces(source=self.imagesData["8_1"])
+        faced_image = FaceDetection.draw_faces(source=self.imagesData["8_1"], faces=detected_faces, thickness=thickness)
+
+        # Function end
+        end_time = timeit.default_timer()
+
+        # Show only 5 digits after floating point
+        elapsed_time = format(end_time - start_time, '.5f')
+        self.label_elapsed_time_face_detection.setText(str(elapsed_time))
+
+        self.display_image(source=faced_image, widget=self.img8_output)
+
+    def match_faces(self):
+        pass
 
     def slider_changed(self, indx):
         """

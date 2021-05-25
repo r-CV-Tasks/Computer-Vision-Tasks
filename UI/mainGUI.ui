@@ -48,7 +48,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>8</number>
+       <number>9</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -5905,7 +5905,7 @@
             <item>
              <widget class="QPushButton" name="btn_make_eigenfaces">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
@@ -6390,7 +6390,7 @@
             <item>
              <widget class="QPushButton" name="btn_match_faces">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Maximum">

@@ -2676,7 +2676,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_71.addWidget(self.label_persons_num_9_1)
         self.verticalLayout_14.addLayout(self.horizontalLayout_71)
         self.btn_make_eigenfaces = QtWidgets.QPushButton(self.Face_Recognition_Tab)
-        self.btn_make_eigenfaces.setEnabled(False)
+        self.btn_make_eigenfaces.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -2885,7 +2885,7 @@ class Ui_MainWindow(object):
         spacerItem47 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.verticalLayout_14.addItem(spacerItem47)
         self.btn_match_faces = QtWidgets.QPushButton(self.Face_Recognition_Tab)
-        self.btn_match_faces.setEnabled(False)
+        self.btn_match_faces.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -3011,7 +3011,7 @@ class Ui_MainWindow(object):
         self.actionImage_2.setObjectName("actionImage_2")
 
         self.retranslateUi(MainWindow)
-        self.Main_TabWidget.setCurrentIndex(8)
+        self.Main_TabWidget.setCurrentIndex(9)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

@@ -103,6 +103,9 @@ class ImageProcessor(m.Ui_MainWindow):
         self.heights = {}
         self.weights = {}
 
+        # Object of FaceRecognizer Class
+        self.recognizer = None
+
         # Images Labels and Sizes
         self.imagesLabels = {"0_1": self.label_imgName_0, "1_1": self.label_imgName_1,
                              "2_1": self.label_imgName_2_1, "2_2": self.label_imgName_2_2,
@@ -156,8 +159,12 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_load_8_1.clicked.connect(lambda: self.load_file(self.tab_index))
 
         # Face Recognition
-        self.btn_load_9_1.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_9_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
+        # self.btn_load_9_1.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_9_2.clicked.connect(lambda: self.load_file(self.tab_index))
+
+        # TODO: Refactor this to other specific function
+        self.btn_load_9_1.clicked.connect(self.create_database)
+        # self.btn_load_9_2.clicked.connect(self.make_eigenfaces)
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_1"))
@@ -192,7 +199,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_detect_faces.clicked.connect(self.detect_faces)
 
         # Set Face Recognition Buttons
-        self.btn_match_faces.clicked.connect(self.match_faces)
+        self.btn_match_faces.clicked.connect(self.recognize_faces)
 
         self.setup_images_view()
 
@@ -1112,8 +1119,25 @@ class ImageProcessor(m.Ui_MainWindow):
 
         self.display_image(source=faced_image, widget=self.img8_output)
 
-    def match_faces(self):
-        pass
+    def create_database(self):
+        self.recognizer = FaceRecognition.FaceRecognizer()
+        self.recognizer.create_images_matrix()
+
+    def make_eigenfaces(self):
+        self.recognizer.fit()
+
+    def recognize_faces(self, path: str):
+        """
+
+        :param path:
+        :return:
+        """
+        path = "./resources/Images/faces/right_test.png"
+        self.recognizer = FaceRecognition.FaceRecognizer()
+        self.recognizer.create_images_matrix()
+        self.recognizer.fit()
+        recognized_name = self.recognizer.recognize_face(source_path=path)
+        print(f"recognized_name: {recognized_name}")
 
     def slider_changed(self, indx):
         """

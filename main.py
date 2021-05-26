@@ -8,6 +8,7 @@ from typing import Callable, Type
 
 import cv2
 import numpy as np
+from PIL import Image
 import pyqtgraph as pg
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread, QFile, QTextStream
@@ -90,6 +91,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.filtered_image = None
         self.output_hist_image = None
         self.updated_image = None
+        self.db_path = None
 
         # Threads and workers we will use in QThread
         # Used for SIFT Algorithm, Feature Matching and Median Filter
@@ -1126,17 +1128,17 @@ class ImageProcessor(m.Ui_MainWindow):
         """
 
         # Get Database Directory Name
-        db_path = QtWidgets.QFileDialog.getExistingDirectory(None, str("Choose DB Directory"), os.getcwd(),
+        self.db_path = QtWidgets.QFileDialog.getExistingDirectory(None, str("Choose DB Directory"), os.getcwd(),
                                                              QtWidgets.QFileDialog.ShowDirsOnly
                                                              | QtWidgets.QFileDialog.DontResolveSymlinks)
 
         # Check if user chose a directory
-        if db_path != "":
-            self.recognizer = FaceRecognition.FaceRecognizer(path=db_path)
+        if self.db_path != "":
+            self.recognizer = FaceRecognition.FaceRecognizer(path=self.db_path)
             persons_num, images_num, img_shape = self.recognizer.create_images_matrix()
 
             # Set Parameters in GUI
-            self.label_imgName_9_1.setText(db_path.split('/')[-1])
+            self.label_imgName_9_1.setText(self.db_path.split('/')[-1])
             self.label_imgSize_9_1.setText(f"{img_shape[1]}x{img_shape[0]}")
             self.label_images_num_9_1.setText(str(images_num))
             self.label_persons_num_9_1.setText(str(persons_num))
@@ -1172,6 +1174,12 @@ class ImageProcessor(m.Ui_MainWindow):
         recognized_name = self.recognizer.recognize_face(source_path=test_path)
         print(f"recognized_name: {recognized_name}")
 
+        if recognized_name != "Unknown Face!":
+            self.display_output_face(recognized_name)
+        else:
+            self.show_message(header="Warning!!", message="Face is not found!!",
+                              button=QMessageBox.Ok, icon=QMessageBox.Warning)
+
     def slider_changed(self, indx):
         """
         detects the changes in the sliders using the indx given by ith slider
@@ -1192,6 +1200,53 @@ class ImageProcessor(m.Ui_MainWindow):
         # Test Images Slider
         elif indx == 4:
             pass
+
+    def combine_images(self, dir_name: str) -> np.ndarray:
+        """
+
+        :param dir_name:
+        :return:
+        """
+
+        images = []
+        for file in os.listdir(dir_name):
+            # Get Full Path
+            file_path = os.path.join(dir_name, file)
+
+            images.append(Image.open(file_path))
+
+        # Remove one image (Display only 9 in GUI)
+        images = images[:-1]
+        widths, heights = zip(*(image.size for image in images))
+
+        total_width = widths[0] * 3
+        max_height = max(heights) * 3
+
+        new_im = Image.new('RGB', (total_width, max_height))
+
+        x_offset = 0
+        y_offset = 0
+
+        for image in images:
+            new_im.paste(image, (x_offset, y_offset))
+
+            if x_offset != (total_width - image.size[0]):
+                x_offset += image.size[0]
+            else:
+                x_offset = 0
+                y_offset += image.size[1]
+
+        # new_im.save('test.jpg')
+        return new_im
+
+    def display_output_face(self, class_name: str):
+        print(f"db_path: {self.db_path}")
+        print(f"class_name: {class_name}")
+
+        path = self.db_path + class_name
+        recognized_face = self.combine_images(dir_name=path)
+        self.display_image(source=recognized_face, widget=self.img9_2_output)
+
 
     @staticmethod
     def draw_contour_on_image(source, points_x, points_y):

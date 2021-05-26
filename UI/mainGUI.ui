@@ -5408,6 +5408,42 @@
                 <layout class="QGridLayout" name="gridLayout_80">
                  <item row="0" column="1">
                   <layout class="QGridLayout" name="gridLayout_83">
+                   <item row="1" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_50">
+                     <item>
+                      <widget class="QLabel" name="label_detection_parameter2">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>110</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Scale Factor</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="text_scale_factor">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>1.2</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
                    <item row="0" column="0">
                     <layout class="QHBoxLayout" name="horizontalLayout_49">
                      <item>
@@ -5444,10 +5480,10 @@
                      </item>
                     </layout>
                    </item>
-                   <item row="1" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_50">
+                   <item row="2" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_52">
                      <item>
-                      <widget class="QLabel" name="label_detection_parameter2">
+                      <widget class="QLabel" name="label_detection_parameter3">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -5464,17 +5500,17 @@
                         </size>
                        </property>
                        <property name="text">
-                        <string>Scale Factor</string>
+                        <string>Min. Window Size</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="text_scale_factor">
+                      <widget class="QLineEdit" name="text_min_window_size">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
                        <property name="text">
-                        <string>1.2</string>
+                        <string>75</string>
                        </property>
                       </widget>
                      </item>

@@ -357,6 +357,7 @@ class ImageProcessor(m.Ui_MainWindow):
             self.btn_detect_faces.setEnabled(True)
             self.text_rect_thickness.setEnabled(True)
             self.text_scale_factor.setEnabled(True)
+            self.text_min_window_size.setEnabled(True)
 
         # Face Recognition Tab
         elif tab_id == 9:
@@ -1166,11 +1167,18 @@ class ImageProcessor(m.Ui_MainWindow):
         """
 
         thickness = int(self.text_rect_thickness.text())
+        scale_factor = float(self.text_scale_factor.text())
+        min_size = int(self.text_min_window_size.text())
+
+        # Should be more than 1.0
+        if scale_factor <= 1:
+            scale_factor = 1.2
 
         # Calculate function run time
         start_time = timeit.default_timer()
 
-        detected_faces = FaceDetection.detect_faces(source=self.imagesData["8_1"])
+        detected_faces = FaceDetection.detect_faces(source=self.imagesData["8_1"], scale_factor=scale_factor,
+                                                    min_size=min_size)
         faced_image = FaceDetection.draw_faces(source=self.imagesData["8_1"], faces=detected_faces, thickness=thickness)
 
         # Function end

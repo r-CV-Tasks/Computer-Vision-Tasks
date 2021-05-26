@@ -4,13 +4,14 @@ import cv2
 import matplotlib.pyplot as plt
 
 
-def detect_faces(source: np.ndarray) -> list:
+def detect_faces(source: np.ndarray, scale_factor: float = 1.1, min_size: int = 50) -> list:
     """
-    Detect faces in given image using xlm cascades file which contains OpenCV data used to detect objects
+    Detect faces in given image using xml cascades file which contains OpenCV data used to detect objects
 
     - loads the face cascade into memory
 
     :param source:
+    :param min_size:
     :return: faces list which contains a lists of:
         - x, y location and width, height of each detected face
     """
@@ -33,9 +34,9 @@ def detect_faces(source: np.ndarray) -> list:
     # Detect faces in the image
     faces = face_cascade.detectMultiScale(
         image=src,
-        scaleFactor=1.2,
+        scaleFactor=scale_factor,
         minNeighbors=5,
-        minSize=(75, 75),
+        minSize=(min_size, min_size),
         flags=cv2.CASCADE_SCALE_IMAGE
     )
 

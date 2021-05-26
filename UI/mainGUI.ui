@@ -5616,7 +5616,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_87">
                <item row="0" column="0">
-                <widget class="ImageView" name="img8_input" native="true">
+                <widget class="ImageView" name="img8_1_input" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -5647,7 +5647,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_88">
                <item row="0" column="0">
-                <widget class="ImageView" name="img8_output" native="true">
+                <widget class="ImageView" name="img8_1_output" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -5835,7 +5835,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string># Images:</string>
+                 <string>Images:</string>
                 </property>
                </widget>
               </item>
@@ -5877,7 +5877,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string># Persons:</string>
+                 <string>Persons:</string>
                 </property>
                </widget>
               </item>
@@ -5905,7 +5905,7 @@
             <item>
              <widget class="QPushButton" name="btn_make_eigenfaces">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
@@ -6025,7 +6025,7 @@
               <property name="sizeHint" stdset="0">
                <size>
                 <width>20</width>
-                <height>60</height>
+                <height>30</height>
                </size>
               </property>
              </spacer>
@@ -6052,7 +6052,7 @@
             <item>
              <widget class="QPushButton" name="btn_load_9_2">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -6076,6 +6076,93 @@
                <string>Load Testing Database</string>
               </property>
              </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_78">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetFixedSize</enum>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_92">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_imgName_9_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>210</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>No Image</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_79">
+              <item>
+               <widget class="QLabel" name="label_93">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Size:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_imgSize_9_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>210</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>No Image</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <spacer name="verticalSpacer_35">
@@ -6390,7 +6477,7 @@
             <item>
              <widget class="QPushButton" name="btn_match_faces">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
@@ -6552,7 +6639,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_82">
                <item row="0" column="0">
-                <widget class="ImageView" name="img9_input" native="true">
+                <widget class="ImageView" name="img9_2_input" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -6583,7 +6670,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_84">
                <item row="0" column="0">
-                <widget class="ImageView" name="img9_output" native="true">
+                <widget class="ImageView" name="img9_2_output" native="true">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>

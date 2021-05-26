@@ -1,6 +1,7 @@
-import os, sys
-import numpy as np
+import os
+import sys
 import cv2
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -11,6 +12,7 @@ def detect_faces(source: np.ndarray, scale_factor: float = 1.1, min_size: int = 
     - loads the face cascade into memory
 
     :param source:
+    :param scale_factor:
     :param min_size:
     :return: faces list which contains a lists of:
         - x, y location and width, height of each detected face

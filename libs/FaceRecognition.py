@@ -2,8 +2,6 @@ import glob
 import math
 
 import cv2
-import face_recognition
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import preprocessing
 
@@ -67,16 +65,16 @@ class FaceRecognizer:
         """
 
         # convert the images into vectors. Each row has an image vector. i.e. samples x image_vector matrix
-        A = np.resize(self.all_images, (self.total_images, self.img_shape[0] * self.img_shape[1]))
+        a = np.resize(self.all_images, (self.total_images, self.img_shape[0] * self.img_shape[1]))
 
         # calculate the mean vector
-        self.mean_vector = np.sum(A, axis=0, dtype='float64') / self.total_images
+        self.mean_vector = np.sum(a, axis=0, dtype='float64') / self.total_images
 
         # make a 400 copy of the same vector. 400 x image_vector_size matrix.
         mean_matrix = np.tile(self.mean_vector, (self.total_images, 1))
 
         # mean-subtracted image vectors
-        self.A_tilde = A - mean_matrix
+        self.A_tilde = a - mean_matrix
 
         # show the mean image vector
         # plt.imshow(np.resize(self.mean_vector, (shape[0], shape[1])), cmap='gray')
@@ -99,7 +97,7 @@ class FaceRecognizer:
         eigenvectors = eigenvectors[:, idx]
 
         # linear combination of each column of A_tilde
-        eigenvectors_C = self.A_tilde.T @ eigenvectors
+        eigenvectors_c = self.A_tilde.T @ eigenvectors
 
         # each column is an eigenvector of C where C = (A_tilde.T)(A_tilde).
         # NOTE : in the notes, C = (A_tilde)(A_tilde.T)
@@ -107,7 +105,7 @@ class FaceRecognizer:
 
         # normalize the eigenvectors
         # normalize only accepts matrix with n_samples, n_feature. Hence the transpose.
-        self.eigenfaces = preprocessing.normalize(eigenvectors_C.T)
+        self.eigenfaces = preprocessing.normalize(eigenvectors_c.T)
         # print(self.eigenfaces.shape)
 
         # to visualize some of the eigenfaces
@@ -207,24 +205,12 @@ class FaceRecognizer:
 
         return face_name
 
-def apply_face_recognition(source_path: str):
-    """
-
-    :param source_path:
-    :return:
-    """
-
-    recognizer = FaceRecognizer()
-    recognizer.create_images_matrix()
-    recognizer.fit()
-    recognized_name = recognizer.recognize_face(source_path=source_path)
-    print(f"recognized_name: {recognized_name}")
 
 if __name__ == "__main__":
 
     # image_path = "../resources/Images/faces/right_test.png"
     image_path = "../resources/Images/faces/wrong_test.jpeg"
-    recognizer = FaceRecognizer()
+    recognizer = FaceRecognizer(path="")
     recognizer.fit()
     # recognizer.detect_face(source_path=image_path)
     recognized_name = recognizer.recognize_face(source_path=image_path)

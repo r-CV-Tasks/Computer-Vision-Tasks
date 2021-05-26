@@ -6,7 +6,7 @@ import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from libs import SIFT, FeatureMatching
-from libs.FaceRecognition import FaceRecognizer
+# from libs.FaceRecognition import FaceRecognizer
 
 
 # Step 1: Create a worker class (subclass of QObject)

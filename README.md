@@ -38,29 +38,22 @@ In this Repository we present a variety of Image Processing Techniques implement
 
 
 # <a name="installation_h">Installation</a> (Not Implemented Yet!!)
-You should have `Python 3` installed on your machine in addition to some other used libraries and dependencies. These dependencies are listed in `setup.ps1`, a shell script which maintains the installation of needed dependencies.
 
-### Windows
-
-Basic dependencies are needed like `python & pip` , to run setup script you'll need to open Windows Power Shell (Windows User) as an Administrator and type the following:
-
+To install the required libraries and dependencies, open your terminal in the repository directory and run this command:
 ```
-Set-ExecutionPolicy Unrestricted
+pip install -r requirements.txt
 ```
-
-then press `'A'`, which will allow execution of the script by pressing right-click on script `setup.ps1` file then `Run with Powershell`.
-
-### Linux
-Added a bash script version `setup.sh`  with which a simple `bash ./setup.sh` will do fine.
 
 ### Script's Components
-Script will install these Libraries , if already installed the installation will be skipped:
-- opencv-python
+requirements.txt contains the versions of each libraries, if already installed the installation will be skipped:
+- Scipy
+- Numpy
+- Pyqtgraph
 - PyQt5
-- Pillow
-
-This is a completely optional, but it is a recommended way to install all the required dependencies. 
-
+- opencv-python
+- Pillows
+- Matplotlib
+- scikit_learn
 
 # <a name="usage_h">Usage</a>
 The **GUI** is composed of many tabs; each tab contains some push buttons, combo boxes or sliders, input texts and some widgets to view the images.

@@ -131,8 +131,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
-        self.sliders = [self.snr_slider_1, self.sigma_slider_1, self.mask_size_1, self.sigma_slider_2,
-                        self.test_images_slider]
+        self.sliders = [self.snr_slider_1, self.sigma_slider_1, self.mask_size_1, self.sigma_slider_2]
 
         # Sliders Connections
         for slider in self.sliders:
@@ -163,21 +162,18 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_load_8_1.clicked.connect(lambda: self.load_file(self.tab_index))
 
         # Face Recognition
-        # self.btn_load_9_1.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_9_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
-
         # TODO: Refactor this to other specific function
         self.btn_load_9_1.clicked.connect(self.create_database)
+        self.btn_load_9_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
+
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_1"))
         self.combo_filter.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_2"))
         self.combo_edges.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_3"))
         self.combo_histogram.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="1_1"))
-
         self.combo_thresholding_methods.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index,
                                                                                          combo_id="7_1"))
-
         self.combo_clustering_methods.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index,
                                                                                        combo_id="7_2"))
 
@@ -424,7 +420,6 @@ class ImageProcessor(m.Ui_MainWindow):
 
         elif tab_id == 7:
             # Don't clear Output of the other image
-
             if combo_id == 0:
                 self.img7_1_output.clear()
                 self.combo_thresholding_methods.setCurrentIndex(0)
@@ -432,6 +427,16 @@ class ImageProcessor(m.Ui_MainWindow):
             elif combo_id == 1:
                 self.img7_2_output.clear()
                 self.combo_clustering_methods.setCurrentIndex(0)
+
+        # Face Detection Tab
+        elif tab_id == 8:
+            self.img8_1_output.clear()
+
+        # Face Recognition Tab
+        elif tab_id == 9:
+            if combo_id == 1:
+                self.label_elapsed_time_face_testing.setText("0.0")
+                self.img9_2_output.clear()
 
     def combo_box_changed(self, tab_id: int, combo_id: str):
         """
@@ -1156,8 +1161,19 @@ class ImageProcessor(m.Ui_MainWindow):
         :return:
         """
 
+        # Calculate function run time
+        start_time = timeit.default_timer()
+
         # Train the model
-        self.recognizer.fit()
+        eigenfaces_num = self.recognizer.fit()
+        self.text_eignedfaces_num.setText(str(eigenfaces_num))
+
+        # Function end
+        end_time = timeit.default_timer()
+
+        # Show only 5 digits after floating point
+        elapsed_time = format(end_time - start_time, '.5f')
+        self.label_elapsed_time_face_training.setText(str(elapsed_time))
 
         # Now User can start matching faces
         self.btn_load_9_2.setEnabled(True)
@@ -1170,9 +1186,19 @@ class ImageProcessor(m.Ui_MainWindow):
 
         test_path = self.imagesPaths["9_2"]
 
+        # Calculate function run time
+        start_time = timeit.default_timer()
+
         # TODO: Add QThread For recognize_face Function
         recognized_name = self.recognizer.recognize_face(source_path=test_path)
         print(f"recognized_name: {recognized_name}")
+
+        # Function end
+        end_time = timeit.default_timer()
+
+        # Show only 5 digits after floating point
+        elapsed_time = format(end_time - start_time, '.5f')
+        self.label_elapsed_time_face_testing.setText(str(elapsed_time))
 
         if recognized_name != "Unknown Face!":
             self.display_output_face(recognized_name)

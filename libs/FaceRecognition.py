@@ -60,7 +60,7 @@ class FaceRecognizer:
 
         return self.classes_num, self.total_images, self.img_shape
 
-    def fit(self) -> None:
+    def fit(self):
         """
 
         :return:
@@ -114,6 +114,8 @@ class FaceRecognizer:
         # list containing values from 1 to number of eigenfaces
         # eigenface_labels = [x for x in range(self.eigenfaces.shape[0])]
         # plot_portraits(eigenfaces, eigenface_labels, 112, 92, 2, 10)
+
+        return self.eigenfaces_num
 
     def detect_face(self, source_path: str) -> bool:
         """

@@ -1,5 +1,5 @@
 import timeit
-from typing import Callable
+from typing import Callable, Type
 
 import cv2
 import numpy as np
@@ -142,6 +142,11 @@ class FilterWorker(QObject):
         self.finished.emit(filtered_image, self.combo_id)
 
 class FaceRecognitionWorker(QObject):
+
+    # Create 2 signals
+    finished = pyqtSignal(str, float)
+    progress = pyqtSignal(int)
+
     def __init__(self, recognizer_obj: Type[Callable], test_path: str, source_id: int, start_time: float):
         """
 
@@ -163,9 +168,6 @@ class FaceRecognitionWorker(QObject):
         self.start_time = start_time
         self.end_time = 0
 
-    # Create 2 signals
-    finished = pyqtSignal(str, float)
-    progress = pyqtSignal(int)
 
     def run(self):
         """

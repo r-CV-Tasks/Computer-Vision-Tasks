@@ -1249,22 +1249,6 @@ class ImageProcessor(m.Ui_MainWindow):
         self.create_face_recognition_thread(recognizer_obj=self.recognizer, source_id=3, test_path=test_path,
                                             start_time=start_time)
 
-        # recognized_name = self.recognizer.recognize_face(source_path=test_path)
-        # print(f"recognized_name: {recognized_name}")
-
-        # Function end
-        # end_time = timeit.default_timer()
-
-        # Show only 5 digits after floating point
-        # elapsed_time = format(end_time - start_time, '.5f')
-        # self.label_elapsed_time_face_testing.setText(str(elapsed_time))
-
-        # if recognized_name != "Unknown Face!":
-        #     self.display_output_face(recognized_name)
-        # else:
-        #     self.show_message(header="Warning!!", message="Face is not found!!",
-        #                       button=QMessageBox.Ok, icon=QMessageBox.Warning)
-
     def slider_changed(self, indx):
         """
         detects the changes in the sliders using the indx given by ith slider
@@ -1325,8 +1309,11 @@ class ImageProcessor(m.Ui_MainWindow):
         return new_im
 
     def display_output_face(self, class_name: str):
-        print(f"db_path: {self.db_path}")
-        print(f"class_name: {class_name}")
+        """
+
+        :param class_name:
+        :return:
+        """
 
         path = self.db_path + class_name
         recognized_face = self.combine_images(directory_name=path)

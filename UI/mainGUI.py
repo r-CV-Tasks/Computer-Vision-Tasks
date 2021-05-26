@@ -2907,7 +2907,7 @@ class Ui_MainWindow(object):
         self.actionImage_2.setObjectName("actionImage_2")
 
         self.retranslateUi(MainWindow)
-        self.Main_TabWidget.setCurrentIndex(9)
+        self.Main_TabWidget.setCurrentIndex(8)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -3131,7 +3131,7 @@ class Ui_MainWindow(object):
         self.label_imgSize_8_1.setText(_translate("MainWindow", "No Image"))
         self.label_91.setText(_translate("MainWindow", "Detection Parameters"))
         self.label_detection_parameter1.setText(_translate("MainWindow", "Rect. Thickness"))
-        self.text_rect_thickness.setText(_translate("MainWindow", "10"))
+        self.text_rect_thickness.setText(_translate("MainWindow", "5"))
         self.label_detection_parameter2.setText(_translate("MainWindow", "Scale Factor"))
         self.text_scale_factor.setText(_translate("MainWindow", "1.2"))
         self.btn_detect_faces.setText(_translate("MainWindow", "Detect"))

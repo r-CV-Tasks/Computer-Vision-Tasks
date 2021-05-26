@@ -35,7 +35,7 @@ def detect_faces(source: np.ndarray) -> list:
         image=src,
         scaleFactor=1.2,
         minNeighbors=5,
-        minSize=(20, 20),
+        minSize=(75, 75),
         flags=cv2.CASCADE_SCALE_IMAGE
     )
 

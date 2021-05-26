@@ -1,6 +1,7 @@
 # Importing Packages
 # importing module
 import logging
+import os
 import sys
 import timeit
 from typing import Callable, Type
@@ -55,19 +56,19 @@ class ImageProcessor(m.Ui_MainWindow):
                             [self.img5_input],
                             [self.img6_1_input, self.img6_2_input],
                             [self.img7_1_input, self.img7_2_input],
-                            [self.img8_input],
-                            [self.img9_input]]
+                            [self.img8_1_input],
+                            [None, self.img9_2_input]]
 
         self.outputImages = [[self.img0_noisy, self.img0_filtered, self.img0_edged],
                              self.img1_output, self.img2_output, self.img3_output,
                              self.img4_output, self.img5_output, self.img6_output,
                              [self.img7_1_output, self.img7_2_output],
-                             self.img8_output, self.img9_output]
+                             self.img8_1_output, self.img9_2_output]
 
         self.processedImages = {"0_1": self.img0_noisy, "0_2": self.img0_filtered, "0_3": self.img0_edged,
                                 "7_1": self.img7_1_output, "7_2": self.img7_2_output,
-                                "8_1": self.img8_output,
-                                "9_1": self.img9_output}
+                                "8_1": self.img8_1_output,
+                                "9_1": None, "9_2": self.img9_2_output}
 
         self.histogramImages = {"1_1": self.img1_input_histo, "1_2": self.img1_output, "1_3": self.img1_output_histo}
 
@@ -80,8 +81,8 @@ class ImageProcessor(m.Ui_MainWindow):
                              self.img5_input, self.img5_output,
                              self.img6_1_input, self.img6_2_input, self.img6_output,
                              self.img7_1_input, self.img7_2_input, self.img7_1_output, self.img7_2_output,
-                             self.img8_input, self.img8_output,
-                             self.img9_input, self.img9_output]
+                             self.img8_1_input, self.img8_1_output,
+                             self.img9_2_input, self.img9_2_output]
 
         # Initial Variables
         self.currentNoiseImage = None
@@ -100,8 +101,9 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Dictionaries to store images data
         self.imagesData = {}
+        self.imagesPaths = {}
+        self.widths = {}
         self.heights = {}
-        self.weights = {}
 
         # Object of FaceRecognizer Class
         self.recognizer = None
@@ -114,7 +116,7 @@ class ImageProcessor(m.Ui_MainWindow):
                              "6_1": self.label_imgName_6_1, "6_2": self.label_imgName_6_2,
                              "7_1": self.label_imgName_7_1, "7_2": self.label_imgName_7_2,
                              "8_1": self.label_imgName_8_1,
-                             "9_1": self.label_imgName_9_1}
+                             "9_1": self.label_imgName_9_1, "9_2": self.label_imgName_9_2}
 
         self.imagesSizes = {"0_1": self.label_imgSize_0, "1_1": self.label_imgSize_1,
                             "2_1": self.label_imgSize_2_1, "2_2": self.label_imgSize_2_2,
@@ -123,7 +125,7 @@ class ImageProcessor(m.Ui_MainWindow):
                             "6_1": self.label_imgSize_6_1, "6_2": self.label_imgSize_6_2,
                             "7_1": self.label_imgSize_7_1, "7_2": self.label_imgSize_7_2,
                             "8_1": self.label_imgSize_8_1,
-                            "9_1": self.label_imgSize_9_1}
+                            "9_1": self.label_imgSize_9_1, "9_2": self.label_imgSize_9_2}
 
         # list contains the last pressed values
         self.sliderValuesClicked = {0: ..., 1: ..., 2: ..., 3: ...}
@@ -160,11 +162,10 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Face Recognition
         # self.btn_load_9_1.clicked.connect(lambda: self.load_file(self.tab_index))
-        self.btn_load_9_2.clicked.connect(lambda: self.load_file(self.tab_index))
+        self.btn_load_9_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
 
         # TODO: Refactor this to other specific function
         self.btn_load_9_1.clicked.connect(self.create_database)
-        # self.btn_load_9_2.clicked.connect(self.make_eigenfaces)
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_1"))
@@ -199,6 +200,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_detect_faces.clicked.connect(self.detect_faces)
 
         # Set Face Recognition Buttons
+        self.btn_make_eigenfaces.clicked.connect(self.make_eigenfaces)
         self.btn_match_faces.clicked.connect(self.recognize_faces)
 
         self.setup_images_view()
@@ -263,7 +265,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
             # Store the image
             self.imagesData[img_idx] = img_rgb
-            self.heights[img_idx], self.weights[img_idx], _ = img_rgb.shape
+            self.imagesPaths[img_idx] = filename
+            self.heights[img_idx], self.widths[img_idx], _ = img_rgb.shape
 
             # Reset Results
             self.clear_results(tab_id=img_id, combo_id=multi_widget)
@@ -276,8 +279,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
             # Set Image Name and Sizes
             self.imagesLabels[img_idx].setText(img_name)
-            self.imagesSizes[img_idx].setText(f"{self.heights[img_idx]}x"
-                                              f"{self.weights[img_idx]}")
+            self.imagesSizes[img_idx].setText(f"{self.widths[img_idx]}x{self.heights[img_idx]}")
 
             logger.info(f"Added Image #{img_id}: {img_name} successfully")
 
@@ -359,11 +361,9 @@ class ImageProcessor(m.Ui_MainWindow):
             self.text_rect_thickness.setEnabled(True)
             self.text_scale_factor.setEnabled(True)
 
-
-        # Face Detection Tab
+        # Face Recognition Tab
         elif tab_id == 9:
             self.btn_match_faces.setEnabled(True)
-
 
     def clear_results(self, tab_id: int, combo_id: int = 0):
         """
@@ -1117,26 +1117,59 @@ class ImageProcessor(m.Ui_MainWindow):
         elapsed_time = format(end_time - start_time, '.5f')
         self.label_elapsed_time_face_detection.setText(str(elapsed_time))
 
-        self.display_image(source=faced_image, widget=self.img8_output)
+        self.display_image(source=faced_image, widget=self.img8_1_output)
 
     def create_database(self):
-        self.recognizer = FaceRecognition.FaceRecognizer()
-        self.recognizer.create_images_matrix()
-
-    def make_eigenfaces(self):
-        self.recognizer.fit()
-
-    def recognize_faces(self, path: str):
         """
 
-        :param path:
         :return:
         """
-        path = "./resources/Images/faces/right_test.png"
-        self.recognizer = FaceRecognition.FaceRecognizer()
-        self.recognizer.create_images_matrix()
+
+        # Get Database Directory Name
+        db_path = QtWidgets.QFileDialog.getExistingDirectory(None, str("Choose DB Directory"), os.getcwd(),
+                                                             QtWidgets.QFileDialog.ShowDirsOnly
+                                                             | QtWidgets.QFileDialog.DontResolveSymlinks)
+
+        # Check if user chose a directory
+        if db_path != "":
+            self.recognizer = FaceRecognition.FaceRecognizer(path=db_path)
+            persons_num, images_num, img_shape = self.recognizer.create_images_matrix()
+
+            # Set Parameters in GUI
+            self.label_imgName_9_1.setText(db_path.split('/')[-1])
+            self.label_imgSize_9_1.setText(f"{img_shape[1]}x{img_shape[0]}")
+            self.label_images_num_9_1.setText(str(images_num))
+            self.label_persons_num_9_1.setText(str(persons_num))
+
+            self.btn_make_eigenfaces.setEnabled(True)
+
+        # The folder wasn't loaded correctly
+        else:
+            self.show_message(header="Warning!!", message="You didn't choose any image",
+                              button=QMessageBox.Ok, icon=QMessageBox.Warning)
+
+    def make_eigenfaces(self):
+        """
+
+        :return:
+        """
+
+        # Train the model
         self.recognizer.fit()
-        recognized_name = self.recognizer.recognize_face(source_path=path)
+
+        # Now User can start matching faces
+        self.btn_load_9_2.setEnabled(True)
+
+    def recognize_faces(self):
+        """
+
+        :return:
+        """
+
+        test_path = self.imagesPaths["9_2"]
+
+        # TODO: Add QThread For recognize_face Function
+        recognized_name = self.recognizer.recognize_face(source_path=test_path)
         print(f"recognized_name: {recognized_name}")
 
     def slider_changed(self, indx):

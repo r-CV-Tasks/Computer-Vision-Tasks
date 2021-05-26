@@ -9,9 +9,10 @@ from sklearn import preprocessing
 
 
 class FaceRecognizer:
-    def __init__(self):
-        self.dataset_path = "./src/orl_faces/"      # path to the dataset
+    def __init__(self, path):
+        self.dataset_path = path                     # path to the dataset
         self.total_images = 0                        # Total number of images
+        self.classes_num = 0                         # Number of classes in each folder
         self.img_shape = (112, 92)                   # size of the dataset images (Fixed)
         self.all_images = None                       # Matrix of all images data
         self.names = list()                          # Save Dataset Classes names
@@ -20,7 +21,7 @@ class FaceRecognizer:
         self.eigenfaces = None                       # EigenFaces Matrix
         self.eigenfaces_num = 350                    # number of chosen eigenfaces
 
-    def create_images_matrix(self) -> None:
+    def create_images_matrix(self) -> tuple:
         """
 
         :return:
@@ -36,6 +37,8 @@ class FaceRecognizer:
 
         # iterate through all the class
         for folder in glob.glob(self.dataset_path + '/*'):
+            self.classes_num += 1
+
             # makes 10 copy of each class name in the list (since we have 10 images in each class)
             for _ in range(10):
                 # list for the classes of the faces
@@ -54,6 +57,8 @@ class FaceRecognizer:
 
         # plot 20 of the images
         # plot_portraits(all_images, self.names, 112, 92, 2, 10)
+
+        return self.classes_num, self.total_images, self.img_shape
 
     def fit(self) -> None:
         """

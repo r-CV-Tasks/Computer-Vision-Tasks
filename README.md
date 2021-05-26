@@ -37,7 +37,7 @@ In this Repository we present a variety of Image Processing Techniques implement
 <div style="page-break-after: always;"></div>
 
 
-# <a name="installation_h">Installation</a> (Not Implemented Yet!!)
+# <a name="installation_h">Installation</a>
 
 To install the required libraries and dependencies, open your terminal in the repository directory and run this command:
 ```

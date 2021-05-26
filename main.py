@@ -20,7 +20,7 @@ from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
     Hough, Contour, Harris, FeatureMatching, SegmentationThresholding, SegmentationClustering, \
     FaceDetection, FaceRecognition
 
-from WorkersClasses import SIFTWorker, MatchingWorker, FilterWorker
+from WorkersClasses import SIFTWorker, MatchingWorker, FilterWorker, FaceRecognitionWorker
 
 # Create and configure logger
 logging.basicConfig(level=logging.DEBUG,
@@ -985,6 +985,23 @@ class ImageProcessor(m.Ui_MainWindow):
 
         self.display_image(source=source, widget=self.img6_output)
 
+    def save_recognition_result(self, recognized_name: str, elapsed_time: float):
+        """
+
+        :param recognized_name:
+        :param elapsed_time:
+        :return:
+        """
+
+        self.label_elapsed_time_face_testing.setText(str(elapsed_time))
+
+        if recognized_name != "Unknown Face!":
+            print(f"recognized_name: {recognized_name}")
+            self.display_output_face(recognized_name)
+        else:
+            self.show_message(header="Warning!!", message="Face is not found!!",
+                              button=QMessageBox.Ok, icon=QMessageBox.Warning)
+
     # TODO: Add decorator Function to remove redundancy from Threads
     def create_thread(self, thread_num: int, worker_class: Type[Callable]):
         pass
@@ -1106,6 +1123,42 @@ class ImageProcessor(m.Ui_MainWindow):
         self.combo_filter.setEnabled(False)
         self.threads[source_id].finished.connect(lambda: self.combo_filter.setEnabled(True))
 
+    def create_face_recognition_thread(self, recognizer_obj: object, source_id: int, test_path: str,
+                                       start_time: float):
+        """
+
+        :param recognizer_obj:
+        :param source_id:
+        :param test_path:
+        :param start_time:
+        :return:
+        """
+
+        # Step 2: Create a QThread object
+        self.threads[source_id] = QThread()
+
+        # Step 3: Create a worker object
+        self.workers[source_id] = FaceRecognitionWorker(recognizer_obj=recognizer_obj, test_path=test_path,
+                                                        source_id=source_id, start_time=start_time)
+
+        # Step 4: Move worker to the thread
+        self.workers[source_id].moveToThread(self.threads[source_id])
+
+        # Step 5: Connect signals and slots
+        self.threads[source_id].started.connect(self.workers[source_id].run)
+        self.workers[source_id].finished.connect(self.threads[source_id].quit)
+        self.workers[source_id].finished.connect(self.workers[source_id].deleteLater)
+        self.threads[source_id].finished.connect(self.threads[source_id].deleteLater)
+        self.workers[source_id].finished.connect(self.save_recognition_result)
+        # self.worker.progress.connect(self.reportProgress)
+
+        # Step 6: Start the thread
+        self.threads[source_id].start()
+
+        # Final resets
+        self.btn_match_faces.setEnabled(False)
+        self.threads[source_id].finished.connect(lambda: self.btn_match_faces.setEnabled(True))
+
     def detect_faces(self):
         """
 
@@ -1193,21 +1246,24 @@ class ImageProcessor(m.Ui_MainWindow):
         start_time = timeit.default_timer()
 
         # TODO: Add QThread For recognize_face Function
-        recognized_name = self.recognizer.recognize_face(source_path=test_path)
-        print(f"recognized_name: {recognized_name}")
+        self.create_face_recognition_thread(recognizer_obj=self.recognizer, source_id=3, test_path=test_path,
+                                            start_time=start_time)
+
+        # recognized_name = self.recognizer.recognize_face(source_path=test_path)
+        # print(f"recognized_name: {recognized_name}")
 
         # Function end
-        end_time = timeit.default_timer()
+        # end_time = timeit.default_timer()
 
         # Show only 5 digits after floating point
-        elapsed_time = format(end_time - start_time, '.5f')
-        self.label_elapsed_time_face_testing.setText(str(elapsed_time))
+        # elapsed_time = format(end_time - start_time, '.5f')
+        # self.label_elapsed_time_face_testing.setText(str(elapsed_time))
 
-        if recognized_name != "Unknown Face!":
-            self.display_output_face(recognized_name)
-        else:
-            self.show_message(header="Warning!!", message="Face is not found!!",
-                              button=QMessageBox.Ok, icon=QMessageBox.Warning)
+        # if recognized_name != "Unknown Face!":
+        #     self.display_output_face(recognized_name)
+        # else:
+        #     self.show_message(header="Warning!!", message="Face is not found!!",
+        #                       button=QMessageBox.Ok, icon=QMessageBox.Warning)
 
     def slider_changed(self, indx):
         """

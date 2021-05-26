@@ -72,12 +72,13 @@ def apply_kernel(source: np.ndarray, kernel: np.ndarray, mode: str) -> np.ndarra
     return np.stack(out, -1)
 
 
-def average_filter(source: np.ndarray, shape: int = 3) -> np.ndarray:
+def average_filter(source: np.ndarray, shape: int = 3, sigma: float = None) -> np.ndarray:
     """
         Implementation of Average Low-pass Filter
     :param source: Image to apply Filter to
     :param shape: An Integer that denotes the Kernel size if 3
                    then the kernel is (3, 3)
+    :param sigma:
     :return: Filtered Image
     """
     src = np.copy(source)
@@ -109,7 +110,7 @@ def gaussian_filter(source: np.ndarray, shape: int = 5, sigma: [int, float] = 64
     return out.astype('uint8')
 
 
-def median_filter(source: np.ndarray, shape: int) -> np.ndarray:
+def median_filter(source: np.ndarray, shape: int, sigma: float = None) -> np.ndarray:
     """
         Median Low Pass Filter Implementation
     :param source: Image to Apply Filter to

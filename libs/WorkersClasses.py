@@ -111,8 +111,8 @@ class MatchingWorker(QObject):
         self.finished.emit(matched_image, self.source_id, elapsed_time)
 
 
-class MedianFilterWorker(QObject):
-    def __init__(self, source: np.ndarray, shape: int, combo_id: str):
+class FilterWorker(QObject):
+    def __init__(self, source: np.ndarray, filter_function: Callable, shape: int, combo_id: str,  sigma: float = 0.0):
         """
 
         :param source:
@@ -121,7 +121,9 @@ class MedianFilterWorker(QObject):
         super().__init__()
         self.noisy_image = source
         self.shape = shape
+        self.sigma = sigma
         self.combo_id = combo_id
+        self.filter_function = filter_function
 
     # Create 2 signals
     finished = pyqtSignal(np.ndarray, str)
@@ -130,10 +132,11 @@ class MedianFilterWorker(QObject):
     def run(self):
         """
         Function to run a long task
-        This is executed when calling MedianFilterWorker.start() in the main application
+        This is executed when calling FilterWorker.start() in the main application
         :return:
         """
-        filtered_image = LowPass.median_filter(source=self.noisy_image, shape=self.shape)
+        # filtered_image = LowPass.median_filter(source=self.noisy_image, shape=self.shape)
+        filtered_image = self.filter_function(source=self.noisy_image, shape=self.shape, sigma=self.sigma)
 
         # Emit finished signal to end the thread
         self.finished.emit(filtered_image, self.combo_id)

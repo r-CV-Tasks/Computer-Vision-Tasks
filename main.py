@@ -20,7 +20,7 @@ from libs import EdgeDetection, Noise, LowPass, Histogram, FrequencyFilters, \
     Hough, Contour, Harris, FeatureMatching, SegmentationThresholding, SegmentationClustering, \
     FaceDetection, FaceRecognition
 
-from WorkersClasses import SIFTWorker, MatchingWorker, MedianFilterWorker
+from WorkersClasses import SIFTWorker, MatchingWorker, FilterWorker
 
 # Create and configure logger
 logging.basicConfig(level=logging.DEBUG,
@@ -165,7 +165,6 @@ class ImageProcessor(m.Ui_MainWindow):
         # TODO: Refactor this to other specific function
         self.btn_load_9_1.clicked.connect(self.create_database)
         self.btn_load_9_2.clicked.connect(lambda: self.load_file(self.tab_index, True))
-
 
         # Setup Combo Connections
         self.combo_noise.activated.connect(lambda: self.combo_box_changed(tab_id=self.tab_index, combo_id="0_1"))
@@ -497,21 +496,20 @@ class ImageProcessor(m.Ui_MainWindow):
                                       button=QMessageBox.Ok, icon=QMessageBox.Warning)
 
                 elif selected_component == "average filter":
-                    self.filtered_image = LowPass.average_filter(source=self.currentNoiseImage, shape=mask_size)
+                    self.create_filter_thread(source=self.currentNoiseImage, source_id=2,
+                                              filter_function=LowPass.average_filter, shape=mask_size,
+                                              combo_id=combo_id)
 
                 elif selected_component == "gaussian filter":
                     self.sigma_slider_2.setEnabled(True)
-                    self.filtered_image = LowPass.gaussian_filter(source=self.currentNoiseImage, shape=mask_size,
-                                                                  sigma=filter_sigma)
+
+                    self.create_filter_thread(source=self.currentNoiseImage, source_id=2,
+                                              filter_function=LowPass.gaussian_filter, shape=mask_size,
+                                              combo_id=combo_id, sigma=filter_sigma)
 
                 elif selected_component == "median filter":
-                    self.create_median_thread(source=self.currentNoiseImage, shape=mask_size,
-                                              source_id=2, combo_id=combo_id)
-
-                try:
-                    self.display_image(source=self.filtered_image, widget=self.processedImages[combo_id])
-                except TypeError:
-                    print("Cannot display filtered Image")
+                    self.create_filter_thread(source=self.currentNoiseImage, source_id=2,
+                                              filter_function=LowPass.median_filter, shape=mask_size, combo_id=combo_id)
 
             # Edge Detection Options
             if combo_id == "0_3":
@@ -955,15 +953,15 @@ class ImageProcessor(m.Ui_MainWindow):
                                         match_calculator=match_method, num_matches=num_matches,
                                         source_id=3, start_time=start_time)
 
-    def save_median_result(self, source: np.ndarray, combo_id: str):
+    def save_filter_result(self, source: np.ndarray, combo_id: str):
         """
-        Save the output from Median QThread to view median filter result
+        Save the output from Filter QThread to view filter result
 
         :param source:
         :param combo_id:
         :return:
         """
-        print("Median Filter is Finished")
+        print("Filter Processing Finished")
         self.display_image(source=source, widget=self.processedImages[combo_id])
 
     def save_matching_result(self, source: np.ndarray, source_id: int, elapsed_time: float):
@@ -987,6 +985,7 @@ class ImageProcessor(m.Ui_MainWindow):
 
         self.display_image(source=source, widget=self.img6_output)
 
+    # TODO: Add decorator Function to remove redundancy from Threads
     def create_thread(self, thread_num: int, worker_class: Type[Callable]):
         pass
 
@@ -1069,13 +1068,16 @@ class ImageProcessor(m.Ui_MainWindow):
         self.btn_match_features.setEnabled(False)
         self.threads[source_id].finished.connect(lambda: self.btn_match_features.setEnabled(True))
 
-    def create_median_thread(self, source: np.ndarray, source_id: int, shape: int, combo_id: str):
+    def create_filter_thread(self, source: np.ndarray, source_id: int, filter_function: Callable,
+                             shape: int, combo_id: str, sigma: float = 0.0):
         """
 
         :param source:
         :param source_id:
+        :param filter_function:
         :param shape:
         :param combo_id:
+        :param sigma:
         :return:
         """
 
@@ -1083,7 +1085,8 @@ class ImageProcessor(m.Ui_MainWindow):
         self.threads[source_id] = QThread()
 
         # Step 3: Create a worker object
-        self.workers[source_id] = MedianFilterWorker(source=source, shape=shape, combo_id=combo_id)
+        self.workers[source_id] = FilterWorker(source=source, filter_function=filter_function,
+                                               shape=shape, sigma=sigma, combo_id=combo_id)
 
         # Step 4: Move worker to the thread
         self.workers[source_id].moveToThread(self.threads[source_id])
@@ -1093,7 +1096,7 @@ class ImageProcessor(m.Ui_MainWindow):
         self.workers[source_id].finished.connect(self.threads[source_id].quit)
         self.workers[source_id].finished.connect(self.workers[source_id].deleteLater)
         self.threads[source_id].finished.connect(self.threads[source_id].deleteLater)
-        self.workers[source_id].finished.connect(self.save_median_result)
+        self.workers[source_id].finished.connect(self.save_filter_result)
         # self.worker.progress.connect(self.reportProgress)
 
         # Step 6: Start the thread
@@ -1134,8 +1137,8 @@ class ImageProcessor(m.Ui_MainWindow):
 
         # Get Database Directory Name
         self.db_path = QtWidgets.QFileDialog.getExistingDirectory(None, str("Choose DB Directory"), os.getcwd(),
-                                                             QtWidgets.QFileDialog.ShowDirsOnly
-                                                             | QtWidgets.QFileDialog.DontResolveSymlinks)
+                                                                  QtWidgets.QFileDialog.ShowDirsOnly
+                                                                  | QtWidgets.QFileDialog.DontResolveSymlinks)
 
         # Check if user chose a directory
         if self.db_path != "":
@@ -1227,17 +1230,18 @@ class ImageProcessor(m.Ui_MainWindow):
         elif indx == 4:
             pass
 
-    def combine_images(self, dir_name: str) -> np.ndarray:
+    @staticmethod
+    def combine_images(directory_name: str) -> np.ndarray:
         """
 
-        :param dir_name:
+        :param directory_name:
         :return:
         """
 
         images = []
-        for file in os.listdir(dir_name):
+        for file in os.listdir(directory_name):
             # Get Full Path
-            file_path = os.path.join(dir_name, file)
+            file_path = os.path.join(directory_name, file)
 
             images.append(Image.open(file_path))
 
@@ -1262,7 +1266,6 @@ class ImageProcessor(m.Ui_MainWindow):
                 x_offset = 0
                 y_offset += image.size[1]
 
-        # new_im.save('test.jpg')
         return new_im
 
     def display_output_face(self, class_name: str):
@@ -1270,9 +1273,8 @@ class ImageProcessor(m.Ui_MainWindow):
         print(f"class_name: {class_name}")
 
         path = self.db_path + class_name
-        recognized_face = self.combine_images(dir_name=path)
+        recognized_face = self.combine_images(directory_name=path)
         self.display_image(source=recognized_face, widget=self.img9_2_output)
-
 
     @staticmethod
     def draw_contour_on_image(source, points_x, points_y):

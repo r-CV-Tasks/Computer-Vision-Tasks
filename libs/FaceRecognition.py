@@ -53,9 +53,6 @@ class FaceRecognizer:
                 self.all_images[i] = np.array(resized_image)
                 i += 1
 
-        # plot 20 of the images
-        # plot_portraits(all_images, self.names, 112, 92, 2, 10)
-
         return self.classes_num, self.total_images, self.img_shape
 
     def fit(self):
@@ -76,15 +73,9 @@ class FaceRecognizer:
         # mean-subtracted image vectors
         self.A_tilde = a - mean_matrix
 
-        # show the mean image vector
-        # plt.imshow(np.resize(self.mean_vector, (shape[0], shape[1])), cmap='gray')
-        # plt.title('Mean Image')
-        # plt.show()
-
         # since each row is an image vector
         # (unlike in the notes, L = (A_tilde)(A_tilde.T) instead of L = (A_tilde.T)(A_tilde)
         L = (self.A_tilde.dot(self.A_tilde.T)) / self.total_images
-        # print("L shape : ", L.shape)
 
         # find the eigenvalues and the eigenvectors of L
         eigenvalues, eigenvectors = np.linalg.eig(L)
@@ -101,17 +92,10 @@ class FaceRecognizer:
 
         # each column is an eigenvector of C where C = (A_tilde.T)(A_tilde).
         # NOTE : in the notes, C = (A_tilde)(A_tilde.T)
-        # print(eigenvectors_C.shape)
 
         # normalize the eigenvectors
         # normalize only accepts matrix with n_samples, n_feature. Hence the transpose.
         self.eigenfaces = preprocessing.normalize(eigenvectors_c.T)
-        # print(self.eigenfaces.shape)
-
-        # to visualize some of the eigenfaces
-        # list containing values from 1 to number of eigenfaces
-        # eigenface_labels = [x for x in range(self.eigenfaces.shape[0])]
-        # plot_portraits(eigenfaces, eigenface_labels, 112, 92, 2, 10)
 
         return self.eigenfaces_num
 
@@ -132,13 +116,9 @@ class FaceRecognizer:
 
         # subtract the mean
         mean_subtracted_test_img = np.reshape(test_img, (test_img.shape[0] * test_img.shape[1])) - self.mean_vector
-        # plt.imshow(np.reshape(mean_subtracted_test_img, (112, 92)), cmap='gray')
-        # plt.title("Mean Subtracted Test Image")
-        # plt.show()
 
         # the vector that represents the image with respect to the eigenfaces.
         omega = self.eigenfaces[:self.eigenfaces_num].dot(mean_subtracted_test_img)
-        # print(omega.shape)
 
         # chosen threshold for face detection
         alpha_1 = 3000
@@ -198,7 +178,6 @@ class FaceRecognizer:
                 index = k
 
         if smallest_value < alpha_2:
-            # print(f"smallest_value, {self.names[index]}")
             face_name = self.names[index]
         else:
             print(f"smallest_value = {smallest_value}, 'Unknown Face!'")
@@ -212,6 +191,5 @@ if __name__ == "__main__":
     image_path = "../resources/Images/faces/wrong_test.jpeg"
     recognizer = FaceRecognizer(path="")
     recognizer.fit()
-    # recognizer.detect_face(source_path=image_path)
     recognized_name = recognizer.recognize_face(source_path=image_path)
     print(f"recognized_name: {recognized_name}")

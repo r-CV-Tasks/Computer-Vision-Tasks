@@ -1253,7 +1253,6 @@ class ImageProcessor(m.Ui_MainWindow):
         # Calculate function run time
         start_time = timeit.default_timer()
 
-        # TODO: Add QThread For recognize_face Function
         self.create_face_recognition_thread(recognizer_obj=self.recognizer, source_id=3, test_path=test_path,
                                             start_time=start_time)
 
